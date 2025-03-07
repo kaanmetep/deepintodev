@@ -1,0 +1,160 @@
+---
+title: "Do Client Components in Next.js Really Run Only on the Client?"
+description: "Where client components are actually rendered in NextJS, what hydration is, what a hydration error is, and how to fix one."
+date: "2025-03-01"
+author: "Kaan Peksen"
+category: "Web Development"
+tags:
+  [
+    "nextjs",
+    "client-components",
+    "web-development",
+    "hydration-error",
+    "hydration",
+  ]
+canonicalUrl: "https://deepintodev.com/blog/nextjs-client-components"
+timeToRead: "8 minutes"
+language: "en"
+noIndex: false
+noFollow: false
+relatedPosts: # Suggest related content to readers
+  [
+    {
+      "title": "Server Components in Next.js Explained",
+      "slug": "server-components-nextjs-explained",
+    },
+    {
+      "title": "Fixing Hydration Errors in React Applications",
+      "slug": "fixing-hydration-errors-react",
+    },
+  ]
+---
+
+After you complete this article, you will have a solid understanding of:
+
+- **Where client components are actually rendered.**
+- **Why client components aren't just rendered on the client, and what the benefits are.**
+- **What hydration is, what a hydration error is, and how to fix one.**
+
+There are two types of components in Next.js
+
+1. **Server Components**
+2. **Client Components**
+
+Server components are relatively easy to understand (okay, maybe not). They are rendered only on the server and sent to the client as a static HTML file.
+
+_But what happens with client components? Do they only render on the client?
+Why do we even need client components? How are they useful?_
+
+I know you have many questions in your mind, but let's take it step by step.
+
+## Have You Ever Encountered a Hydration Error?
+
+If you're lucky and have never seen one, let's take a look at what a hydration error looks like. This error will actually help you understand some concepts even more clearly.
+
+Try running this code in your editor:
+
+```jsx
+"use client";
+const MyComponent = () => {
+  const currentTime = new Date().getTime();
+  return <div>{currentTime}</div>;
+};
+```
+
+And, you will see;
+
+![Hydration Error](/hydration.png)
+
+**"Server-rendered HTML didn't match the client."**
+
+<Alert type="error">
+  Wait, what? Why was the HTML rendered on the server even though it was a
+  client component? Isn't it supposed to be rendered on the client? How is this
+  different from server components if everything is rendered on the server?
+</Alert>
+
+Let's start by understanding what hydration actually is.
+
+### What is Hydration?
+
+Hydration → The process of taking pre-rendered HTML (usually generated on the
+server) and enhancing it with client-side JavaScript to enable interactivity.
+
+So, hydration gives our HTML a superpower. Thanks to the hydration process, we're not just reading a plain HTML document coming from the server, but we're also able to interact with it.
+
+When we create a client component in Next.js, first, a **pre-rendered HTML** is created for that component on the **server side**—but nothing else.
+
+No JavaScript code, no React `useState` calls, no `useEffect` calls. It's just the HTML code.
+
+After we receive that HTML on the client side, we are ready to start the hydration process. At this point, we get our `useState` calls, `useEffect`, or any other interactivity used in our component.
+
+_Okay. But can we render everything on the client? I don't want to get involved with hydration or any other stuff!_
+
+Of course, we can. But there are downsides.
+
+## Benefits of Server-Side Rendering Before Hydration
+
+1. Faster Initial Load
+
+If all Client Components ran only on the client, you would see a blank screen while waiting for JavaScript to load and execute.
+
+2. Better SEO
+
+A fully client-rendered page can cause SEO issues, as search engines may struggle to index content properly.
+
+3. Network Optimization
+
+Server-rendered HTML has a smaller bundle size and better caching opportunities at the CDN level.
+
+---
+
+Now we know why rendering the HTML part on the server and sending the JavaScript code afterward (a.k.a hydration) is a better approach in most cases.
+
+## Understanding Hydration Errors
+
+Let's go back to the hydration error we encountered earlier. What exactly is causing the hydration error?
+
+React compares the **server-rendered HTML** with the **Virtual DOM** it creates on the client side during hydration.
+
+If something changes between these two steps, you'll get an error. Remember what it said:
+_"Server-rendered HTML didn't match the client."_
+
+### Common Causes of Hydration Errors
+
+```jsx
+"use client";
+const MyComponent = () => {
+  return (
+    <p>
+      <div></div>
+    </p>
+  );
+};
+```
+
+In a case like this, the browser might try to fix the incorrectly placed elements. If that happens, the final HTML won't match React's Virtual DOM, leading to a hydration error.
+
+Another common cause is trying to access the `window` object inside a client component. Since `window` doesn't exist on the server, it causes hydration issues.
+
+## Opting Out of Server-Side Rendering
+
+_What if we want to render a component **only** on the client? Is there a way to do that?_
+
+There is always a way for everything!
+
+```jsx
+import dynamic from "next/dynamic";
+
+const MyComponent = dynamic(() => import("../components/MyComponent"), {
+  ssr: false,
+});
+
+export default function Page() {
+  return <MyComponent />;
+}
+```
+
+This way, `MyComponent` will **only** render on the client, and Next.js won't attempt to pre-render it on the server.
+
+Now you fully understand how Client Components work in Next.js!
