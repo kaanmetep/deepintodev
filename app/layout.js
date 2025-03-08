@@ -50,7 +50,7 @@ export default function RootLayout({ children }) {
           <Moon className="absolute right-6 top-4 cursor-pointer" />
           <Menu className="absolute left-6 top-4 cursor-pointer lg:opacity-0 md:pointer-events-none" />
           <Sidebar />
-          <div className="flex flex-col relative basis-0 grow-[3]  ">
+          <div className="flex flex-col overflow-y-auto relative basis-0 grow-[3]  ">
             {children}
             <footer
               className="flex flex-col gap-2 items-center mt-auto py-3 border-t border-gray-200"

@@ -66,7 +66,7 @@ export default async function BlogPost({ params }) {
   const { mdxContent, frontMatter } = await getPostBySlug(slug);
 
   return (
-    <div className="flex justify-center w-full overflow-y-auto">
+    <div className="flex justify-center w-full ">
       <article className="w-full max-w-3xl mx-auto px-4 py-10">
         <header className="mb-8">
           <h1 className="text-4xl font-bold mb-4 mt-4 lg:mt-0">
