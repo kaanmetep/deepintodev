@@ -54,13 +54,11 @@ async function getPostBySlug(slug) {
   }
 }
 
-// generateStaticParams ile statik yolları oluştur
 export async function generateStaticParams() {
   const posts = getAllPosts();
   return posts.map((post) => ({ slug: post.slug }));
 }
 
-// Sayfa bileşeni
 export default async function BlogPost({ params }) {
   const slug = (await params)?.slug;
   const { mdxContent, frontMatter } = await getPostBySlug(slug);

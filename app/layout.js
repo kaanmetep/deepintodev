@@ -3,11 +3,13 @@ import Sidebar from "@/components/Sidebar";
 import { Moon, Sun, Menu } from "lucide-react";
 import Link from "next/link";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
 });
+
 export const metadata = {
   metadataBase: new URL("https://deepintodev.com"),
   alternates: {
@@ -45,12 +47,27 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        {/* Google Analytics */}
+        <Script
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=G-5S6MLJ6YDN"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-5S6MLJ6YDN');
+          `}
+        </Script>
+      </head>
       <body className={`${inter.variable} text-gray-900`}>
         <div className="lg:flex relative h-screen ">
           <Moon className="absolute right-6 top-4 cursor-pointer" />
           <Menu className="absolute left-6 top-4 cursor-pointer lg:opacity-0 md:pointer-events-none" />
           <Sidebar />
-          <div className="flex flex-col overflow-y-auto relative basis-0 grow-[3]  ">
+          <div className="flex flex-col overflow-y-auto relative basis-0 grow-[3]">
             {children}
             <footer
               className="flex flex-col gap-2 items-center mt-auto py-3 border-t border-gray-200"
@@ -69,7 +86,7 @@ export default function RootLayout({ children }) {
               </div>
 
               <nav
-                className="flex gap-4 "
+                className="flex gap-4"
                 itemScope
                 itemType="https://schema.org/SiteNavigationElement"
               >
