@@ -6,4 +6,11 @@ export const blogPosts = [
     slug: "nextjs-client-components",
     date: "March 1, 2025",
   },
+  {
+    id: 1,
+    title: "Complete Guide to Form Handling in NextJS",
+    readTime: 13,
+    slug: "form-handling-in-nextjs",
+    date: "March 13, 2025",
+  },
 ];

@@ -84,30 +84,21 @@ Of course, we can. But there are downsides.
 
 ## Benefits of Server-Side Rendering Before Hydration
 
-1. Faster Initial Load
+1.Faster Initial Load
 
 If all Client Components ran only on the client, you would see a blank screen while waiting for JavaScript to load and execute.
 
-2. Better SEO
+2.Better SEO
 
 A fully client-rendered page can cause SEO issues, as search engines may struggle to index content properly.
 
-3. Network Optimization
+3.Network Optimization
 
 Server-rendered HTML has a smaller bundle size and better caching opportunities at the CDN level.
 
 ---
 
 Now we know why rendering the HTML part on the server and sending the JavaScript code afterward (a.k.a hydration) is a better approach in most cases.
-
-## Understanding Hydration Errors
-
-Let's go back to the hydration error we encountered earlier. What exactly is causing the hydration error?
-
-React compares the **server-rendered HTML** with the **Virtual DOM** it creates on the client side during hydration.
-
-If something changes between these two steps, you'll get an error. Remember what it said:
-_"Server-rendered HTML didn't match the client."_
 
 ### Common Causes of Hydration Errors
 
@@ -125,6 +116,54 @@ const MyComponent = () => {
 In a case like this, the browser might try to fix the incorrectly placed elements. If that happens, the final HTML won't match React's Virtual DOM, leading to a hydration error.
 
 Another common cause is trying to access the `window` object inside a client component. Since `window` doesn't exist on the server, it causes hydration issues.
+
+```jsx
+"use client";
+const MyComponent = () => {
+  // This will cause a hydration error
+  const screenWidth = window.innerWidth;
+  return <div>Your screen width is: {screenWidth}px</div>;
+};
+```
+
+In this example, trying to access `window.innerWidth` during server rendering will fail because the `window` object doesn't exist on the server. This causes the component to render differently on the server versus the client.
+
+```jsx
+"use client";
+const MyComponent = () => {
+  // This will cause a hydration error
+  const currentTime = new Date().getTime();
+  return <div>{currentTime}</div>;
+};
+```
+
+The issue here is that `new Date().getTime()` will return different values on the server and client, causing a mismatch between server-rendered HTML and client-side rendering.
+
+```jsx
+"use client";
+const MyComponent = () => {
+  // This will cause a hydration error
+  const randomValue = Math.random();
+  return <div>Random value: {randomValue}</div>;
+};
+```
+
+Using `Math.random()` generates different values on the server and client, leading to a hydration error since the server-rendered content doesn't match what's generated on the client.
+
+```jsx
+"use client";
+const MyComponent = () => {
+  // This will cause a hydration error
+  useEffect(() => {
+    // This runs after initial render
+    document.getElementById("my-element").innerHTML = "Changed content";
+  }, []);
+
+  return <div id="my-element">Initial content</div>;
+};
+```
+
+Direct DOM manipulation inside a `useEffect` can cause hydration errors if it runs too early and changes the DOM before React has finished hydrating the component.
 
 ## Opting Out of Server-Side Rendering
 

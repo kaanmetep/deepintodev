@@ -9,7 +9,7 @@ const Sidebar = () => {
   return (
     <aside
       className={`
-        max-w-[470px] hidden lg:block relative  bg-gray-50 text-gray-700 font-medium 
+        dark:bg-gray-950 dark:text-white max-w-[470px] hidden lg:block relative  bg-gray-50 text-gray-700 font-medium 
         transition-all duration-300 ease-in-out
         ${isOpen ? "basis-0 grow-[1]" : "w-[50px]"}
         overflow-hidden py-8 px-3  shadow-lg
@@ -18,8 +18,8 @@ const Sidebar = () => {
     >
       <ChevronLeft
         className={`
-          absolute right-3 top-4 bg-gray-200 rounded-full cursor-pointer 
-          hover:bg-gray-50 transition-all delay-[50ms] p-1
+          absolute right-3 top-4 bg-gray-200 dark:bg-gray-400 rounded-full cursor-pointer 
+          hover:bg-gray-50 dark:hover:bg-gray-300 transition-all delay-[50ms] p-1
           ${!isOpen && "rotate-180"}
         `}
         size={28}
@@ -34,7 +34,7 @@ const Sidebar = () => {
         }`}
       >
         <header>
-          <h2 className="flex items-center justify-center gap-[3px] text-black text-xl">
+          <h2 className="flex items-center justify-center gap-[3px] dark:text-white text-black text-xl">
             <Shell size={20} aria-hidden="true" />
             DeepIntoDev
           </h2>
@@ -53,16 +53,16 @@ const Sidebar = () => {
               <Link
                 href="/"
                 itemProp="url"
-                className="text-sm text-gray-500 hover:text-gray-700 transition-colors delay-[50ms]"
+                className="text-sm dark:text-gray-300 text-gray-500 hover:text-gray-700 dark:hover:text-gray-500 transition-colors delay-[50ms]"
               >
                 Home
               </Link>
             </li>
-            <li className="text-black">|</li>
+            <li className="text-black dark:text-white">|</li>
             <li>
               <a
                 href="mailto:kaanpmete@gmail.com"
-                className="text-sm text-gray-500 hover:text-gray-700 transition-colors delay-[50ms]"
+                className="text-sm dark:text-gray-300 text-gray-500 hover:text-gray-700 dark:hover:text-gray-500 transition-colors delay-[50ms]"
                 itemProp="email"
               >
                 <span itemProp="name">Contact</span>
@@ -72,33 +72,37 @@ const Sidebar = () => {
         </nav>
         <nav aria-label="Other Posts Navigation" className="mt-8" itemScope>
           <ul role="list" className="flex flex-col gap-4">
-            {blogPosts.map((post) => (
-              <li key={post.id} className="flex flex-col gap-1 group w-full">
-                <Link
-                  href={`/blog/${post.slug}`}
-                  title={`Read more about ${post.title}`}
-                  className="flex items-center gap-1 lg:gap-2 w-fit hover:text-gray-500 transition-all delay-[50ms] text-xs lg:text-sm "
-                >
-                  <FileText size={16} className="shrink-0" />
-                  <span className="hidden 2xl:xl:inline">
-                    {post.title.length > 64
-                      ? `${post.title.slice(0, 64)}...`
-                      : post.title}
-                  </span>
-                  <span className="inline 2xl:hidden">
-                    {post.title.length > 44
-                      ? `${post.title.slice(0, 44)}...`
-                      : post.title}
-                  </span>
-                </Link>
-                <div className="flex justify-between  ">
-                  <span className="text-[11px] text-gray-500">{post.date}</span>
-                  <span className="text-[11px] text-gray-500">
-                    {post.readTime} min. read
-                  </span>
-                </div>
-              </li>
-            ))}
+            {blogPosts
+              .sort((a, b) => b.id - a.id)
+              .map((post) => (
+                <li key={post.id} className="flex flex-col gap-1 group w-full">
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    title={`Read more about ${post.title}`}
+                    className="flex items-center gap-1 lg:gap-2 w-fit dark:text-gray-300 text-gray-500 hover:text-gray-700 dark:hover:text-gray-500 transition-all delay-[50ms] text-xs lg:text-sm "
+                  >
+                    <FileText size={16} className="shrink-0" />
+                    <span className="hidden 2xl:xl:inline">
+                      {post.title.length > 64
+                        ? `${post.title.slice(0, 64)}...`
+                        : post.title}
+                    </span>
+                    <span className="inline 2xl:hidden">
+                      {post.title.length > 44
+                        ? `${post.title.slice(0, 44)}...`
+                        : post.title}
+                    </span>
+                  </Link>
+                  <div className="flex justify-between  ">
+                    <span className="text-[11px] dark:text-gray-400 text-gray-500 ">
+                      {post.date}
+                    </span>
+                    <span className="text-[11px] dark:text-gray-400 text-gray-500 ">
+                      {post.readTime} min. read
+                    </span>
+                  </div>
+                </li>
+              ))}
           </ul>
         </nav>
       </div>

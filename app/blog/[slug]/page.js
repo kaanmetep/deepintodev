@@ -67,24 +67,29 @@ export default async function BlogPost({ params }) {
     <div className="flex justify-center w-full ">
       <article className="w-full max-w-5xl mx-auto px-4 py-10">
         <header className="mb-8">
-          <h1 className="text-4xl font-bold mb-4 mt-4 lg:mt-0">
+          <h1 className="text-4xl font-bold mb-4 mt-4 lg:mt-0 dark:text-white">
             {frontMatter.title}
           </h1>
           {frontMatter.date && (
-            <time className="text-gray-500 dark:text-gray-400">
-              {new Date(frontMatter.date).toLocaleDateString("en-EN", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </time>
+            <div className="flex gap-2 items-center justify-between">
+              <time className="text-gray-500 dark:text-gray-400">
+                {new Date(frontMatter.date).toLocaleDateString("en-EN", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </time>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">
+                {frontMatter.timeToRead} read
+              </p>
+            </div>
           )}
           {frontMatter.tags && (
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-3 flex flex-wrap gap-2 dark:text-white">
               {frontMatter.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="bg-gray-200 dark:bg-gray-800 px-2 py-1 rounded-md text-sm"
+                  className="bg-gray-200 dark:bg-gray-500 px-2 py-1 rounded-md text-sm"
                 >
                   {tag}
                 </span>

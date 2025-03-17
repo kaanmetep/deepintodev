@@ -1,0 +1,398 @@
+---
+title: "Complete Guide to Form Handling in NextJS"
+description: "Learn how to create, validate, and manage forms in NextJS applications with server actions and client components."
+date: "2025-03-15"
+author: "Kaan Peksen"
+category: "Web Development"
+tags:
+  [
+    "nextjs",
+    "forms",
+    "use-action-state",
+    "server-actions",
+    "form-validation",
+    "forms-in-nextjs",
+  ]
+canonicalUrl: "http://localhost:3000/blog/form-handling-in-nextjs"
+timeToRead: "13 minutes"
+language: "en"
+noIndex: false
+noFollow: false
+---
+
+After you complete this article, you will have a solid understanding of:
+
+- **How to create and handle forms in NextJS applications**
+- **How server actions work with forms in NextJS**
+- **Form validation techniques on both client and server sides**
+- **How to use useActionState hook to handle forms in NextJS**
+- **How to preserve form state between submissions and handle errors properly**
+
+If you are building any kind of app, you will definitely need forms in your project. At first, it might seem easy to create. Just create some labels, some input elements, and let users fill them out. Once they click the button, it's all done! Well, it actually gets a bit complicated and hard to keep up with all kinds of features that forms can/should do...
+
+First, you need to validate inputs on both the frontend and backend to prevent users from entering data in the wrong format. Then, you should display errors for specific fields when the user provides incorrect input. Finally, you need to retain the data in input fields even after form submission, so users don’t lose everything just because one field contains an error.
+
+And that's just the beginning—there’s even more to it!
+
+In this blog, you will completely understand how forms work, especially in Next.js apps—how to validate them, control them, manipulate them, throw errors, and more.
+
+You will also learn how to retain input values even after submitting the form.
+
+This is the only blog you will need to create real-world, error-free, customer-friendly, and safe form inputs.
+
+> **Note:** I will be using NextJS to explain forms in the real world, but the concepts you will see are valid for other frameworks and libraries too.
+
+## Creating a Basic Form in NextJS
+
+First, let's start with creating a basic form in NextJS.
+
+```jsx
+<form>
+  <input type="text" placeholder="First Name" />
+  <input type="email" placeholder="Email" />
+  <input type="password" placeholder="Password" />
+  <button>Submit</button>
+</form>
+```
+
+> **Note:** I will be deleting CSS styling from the code, so that you can only see the necessary part.
+
+![Basic Form](/basicform.png)
+
+Right now, our form elements are "uncontrolled elements," which means we don't control or store the values that are given by users. First, we will need to control the values because we're going to do some server-side actions with those values—let's say we need to save them to a database.
+
+The first thing we can think of to control uncontrolled elements might be using our good old friend `useState`.
+
+Let's convert this component to a client component (since we can't use React hooks in server components) and control fields.
+
+```jsx
+const [firstName, setFirstName] = useState("");
+const [email, setEmail] = useState("");
+const [password, setPassword] = useState("");
+
+<form>
+  <input
+    type="text"
+    placeholder="First Name"
+    value={firstName}
+    onChange={(e) => setFirstName(e.target.value)}
+  />
+  <input
+    type="text"
+    placeholder="Email"
+    value={email}
+    onChange={(e) => setEmail(e.target.value)}
+  />
+  <input
+    type="password"
+    placeholder="Password"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+  />
+  <button>Submit</button>
+</form>;
+```
+
+This looks fine for now. But if we had more input fields (which you definitely will in real-world projects), it might seem a little bit complicated. So we can just try to make it look better with some simple changes:
+
+```jsx
+const [formInputs, setFormInputs] = useState({
+  firstName: "",
+  email: "",
+  password: "",
+});
+
+const handleChange = (e) => {
+  const { name, value } = e.target;
+  setFormInputs((prev) => ({ ...prev, [name]: value }));
+};
+
+<form>
+  <input
+    type="text"
+    placeholder="First Name"
+    name="firstName"
+    value={formInputs.firstName}
+    onChange={handleChange}
+  />
+  <input
+    type="text"
+    placeholder="Email"
+    name="email"
+    value={formInputs.email}
+    onChange={handleChange}
+  />
+  <input
+    type="password"
+    placeholder="Password"
+    name="password"
+    value={formInputs.password}
+    onChange={handleChange}
+  />
+  <button>Submit</button>
+</form>;
+```
+
+## Understanding Form States and Server Actions
+
+Now we control our form elements. But did we actually need to create states, and connect them with input elements? Well, not really. But first, let's learn something else. Then we'll get back to this.
+
+99% of the time, you will need to use this form data in a "server-side action," like saving to a database. And if you want to do POST server actions in NextJS, you use "server actions." If you don't know what server actions are, they're just regular functions. The good part is, you write them as regular JavaScript functions, but they're turned into "POST" HTTP methods.
+
+Typically, to write server actions in NextJS, you would create a separate file called "actions.js". To convert functions to POST endpoints, you add "use server" to the top of the file.
+
+> **Note:** Adding "use server" doesn't turn a component into a "server component." To make a component a server component, you basically don't write anything since every component is a server component by default. You only add "use client" to convert a component to a client component, and add "use server" to convert a function to a "server action."
+
+So let's create an actions.js file and then create our function that will be turned into an HTTP POST method. This method is just to mimic saving the form data to our database.
+
+Inside actions.js file:
+
+```jsx
+"use server";
+
+export const saveFormDatasToDatabase = async () => {
+  console.log("data is saved");
+};
+```
+
+## Using Server Actions with Forms
+
+Now, when we submit our form, we need to invoke this HTTP POST endpoint. You might think to add this function to the form tag like this:
+
+```jsx
+<form
+  onSubmit={saveFormDatasToDatabase}
+>
+```
+
+When we submit the form, the form makes a GET request and refreshes the page. But typically, what we do is prevent the default behavior of a form element by using `e.preventDefault()`, then make our own fetch request inside the handleSubmit function that we gave to the onSubmit handler.
+
+But the problem is, onSubmit works on the client-side. So it expects functions that actually will work on the client. We can't just give it a function that will work on the server. The best we could do with onSubmit would be something like this:
+
+```jsx
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  await saveFormDatasToDatabase();
+};
+```
+
+This is not what we want to do in our NextJS project. Instead, we want to use the "action" attribute. With NextJS 13+, the action attribute can take JavaScript functions. And this function can work on the server side with the "use server" directive (just like we did above).
+
+The action attribute will work even if JavaScript is disabled because it's not something that works on the client—it works on the server and gives us the chance to make a "POST" request to our server by default.
+
+> **Note:** So we could actually use both the action and onSubmit attributes on a form element. Action would be to make a POST request, and onSubmit would be for client-side validations or other work that will operate on the client.
+
+Now let's use the action attribute for our server action:
+
+```jsx
+<form
+  action={saveFormDatasToDatabase}
+>
+```
+
+Now let's submit our form and check the network->Fetch/XHR tab.
+
+When we look at the headers of the request, we can clearly see we made a POST request.
+
+![Headers](/headers.png)
+
+Also, if we check the payload, we sent all the form data as the payload with our request inside a formData object.
+
+![Payload](/headers.png)
+
+So now, we can easily get this formData object to control our values. This means we didn't actually need to use `useState` hook, and create states for form inputs as we did before. Because when we submit the form, we send input values anyway.
+
+Let's remove all the state that we defined, and let's take the formData parameter from our server action so that we can access all the data when the form is submitted.
+
+```jsx
+<form action={saveFormDatasToDatabase}>
+  <input type="text" placeholder="First Name" name="firstName" />
+  <input type="text" placeholder="Email" name="email" />
+  <input type="password" placeholder="Password" name="password" />
+  <button>Submit</button>
+</form>
+```
+
+> **Note:** We don't delete name attributes from the inputs since we'll need them for our server action.
+
+```jsx
+export const saveFormDatasToDatabase = async (formData) => {
+  console.log("inputs coming from the form:", formData);
+};
+```
+
+Now, let's submit the form and see what's in our console.
+
+![Console](/console.png)
+
+As we can see, we have our data coming from "frontend" to "backend" successfully.
+
+> **Note:** This formData object is not a plain JavaScript object. It has different methods. To read the data from inside a formData object, you simply do:
+>
+> ```jsx
+> const rawData = {
+>   email: formData.get("email"),
+>   firstName: formData.get("firstName"),
+>   password: formData.get("password"),
+> };
+> ```
+
+## Adding Form Validations
+
+Now we need to have more control over our inputs. We will definitely want to put some validations before we save data to our database. For example, email has to be in the right format, firstName can't be longer than 50 characters, password should at least include a letter, etc.
+
+We ideally want this control to be in both our frontend and backend, but never only on the frontend! Client-side validations can always be manipulated, so we never trust the data coming from users.
+
+We also want to show errors to the users if they put invalid input. And a loading state would be cool too when we're validating the data on our backend (in our server action).
+
+There is a great hook for all this job, and it's called `useActionState`.
+
+`useActionState` is a React hook and therefore must be used in a Client Component! So first, make sure that your form elements are inside a client component.
+
+`useActionState` will take our server action and an initial state as parameters and will return the state that came from our backend, formAction that we pass to the action attribute on our form element, and a pending state while the form is submitting.
+
+Then, our final code will look like this:
+
+```jsx
+"use client";
+import { saveFormDatasToDatabase } from "../actions";
+import { useActionState } from "react";
+
+const initialState = {
+  success: false,
+  message: "",
+};
+
+const Page = () => {
+  const [state, formAction, pending] = useActionState(
+    saveFormDatasToDatabase,
+    initialState
+  );
+  return (
+    <div>
+      <h1>DeepIntoDev - Form Page</h1>
+      <form action={formAction}>
+        <input type="text" placeholder="First Name" name="firstName" />
+        <input type="text" placeholder="Email" name="email" />
+        <input type="password" placeholder="Password" name="password" />
+        <button disabled={pending}>Submit</button>
+        <p>{state?.message}</p>
+      </form>
+    </div>
+  );
+};
+
+export default Page;
+```
+
+And our actions.js:
+
+```jsx
+"use server";
+
+export const saveFormDatasToDatabase = async (_, formData) => {
+  const rawData = {
+    email: formData.get("email"),
+    firstName: formData.get("firstName"),
+    password: formData.get("password"),
+  };
+  if (rawData.firstName.length < 10) {
+    return {
+      success: false,
+      message: "First name can't be less than 10 characters.",
+    };
+  }
+};
+```
+
+> **Note:** By passing the action to useActionState, the action's function signature changes to receive a new initialState parameter as its first argument. But since we don't need that first argument for right now, we simply pass nothing as the first argument, and formData as the second argument.
+
+Thanks to `useActionState`, now we are able to pass the "state" of the form between frontend and backend. Now we can throw some errors from our backend and receive them on our frontend. It also provides us a pending state, so that while the form is submitting, we can disable the button or even show some kind of a "loading" message to the user.
+
+![First Name Input Error](/firstnameerror.png)
+
+## Preserving Form Input Values
+
+Everything looks good for now. But there is one small problem...
+
+When we submit the form, even though the first name was the only invalid input, we reset all the inputs. So the user has to fill all the inputs again, but they should actually just re-fill the first name area.
+
+So if something goes wrong with one input area, we want to reset only that specific one but keep the rest. How are we going to achieve this?
+
+We know that we can send the "state" of the form from our backend (server action) to our frontend. What we can do is also send the inputs that we got from the frontend.
+
+So now, our server action looks like this:
+
+```jsx
+"use server";
+
+export const saveFormDatasToDatabase = async (_, formData) => {
+  const rawData = {
+    email: formData.get("email"),
+    firstName: formData.get("firstName"),
+    password: formData.get("password"),
+  };
+  if (rawData.firstName.length < 10) {
+    const { firstName, ...inputsWithoutFirstName } = rawData;
+    return {
+      success: false,
+      message: "First name can't be less than 10 characters.",
+      inputs: inputsWithoutFirstName,
+    };
+  }
+};
+```
+
+When an error happens, we also send the "rawData" that came from the client side, but without the firstName, because we want the user to refill that specific area.
+
+And now our final form element looks like this:
+
+```jsx
+"use client";
+import React from "react";
+import { saveFormDatasToDatabase } from "../actions";
+import { useActionState } from "react";
+
+const initialState = {
+  success: false,
+  message: "",
+};
+
+const Page = () => {
+  const [state, formAction, pending] = useActionState(
+    saveFormDatasToDatabase,
+    initialState
+  );
+  return (
+    <div>
+      <h1>DeepIntoDev - Form Page</h1>
+      <form action={formAction}>
+        <input
+          type="text"
+          placeholder="First Name"
+          name="firstName"
+          defaultValue={state?.inputs?.firstName}
+        />
+        <input
+          type="text"
+          placeholder="Email"
+          name="email"
+          defaultValue={state?.inputs?.email}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          name="password"
+          defaultValue={state?.inputs?.password}
+        />
+        <button disabled={pending}>Submit</button>
+        <p>{state?.message}</p>
+      </form>
+    </div>
+  );
+};
+
+export default Page;
+```
+
+We've added "defaultValue" attributes to every input element so that they will not reset when the form is submitted—unless a specific error occurs in that input field.

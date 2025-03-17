@@ -1,10 +1,10 @@
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
-import { Moon, Sun, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import Link from "next/link";
 import { Inter } from "next/font/google";
 import Script from "next/script";
-
+import ThemeToggle from "@/components/ThemeToggle";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
@@ -46,7 +46,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
         {/* Google Analytics */}
         <Script
@@ -62,20 +62,20 @@ export default function RootLayout({ children }) {
           `}
         </Script>
       </head>
-      <body className={`${inter.variable} text-gray-900`}>
-        <div className="lg:flex relative h-screen ">
-          <Moon className="absolute right-6 top-4 cursor-pointer" />
-          <Menu className="absolute left-6 top-4 cursor-pointer lg:opacity-0 md:pointer-events-none" />
+      <body className={`${inter.variable} text-gray-900 dark:bg-black`}>
+        <div className="flex relative h-screen ">
+          <ThemeToggle />
+          <Menu className="absolute left-6 top-4 cursor-pointer lg:opacity-0 md:pointer-events-none dark:text-white" />
           <Sidebar />
           <div className="flex flex-col overflow-y-auto relative basis-0 grow-[3]">
             {children}
             <footer
-              className="flex flex-col gap-2 items-center mt-auto py-3 border-t border-gray-200"
+              className="flex flex-col gap-2 items-center mt-auto py-3 border-t border-gray-200 dark:border-gray-600"
               itemScope
               itemType="https://schema.org/WPFooter"
             >
               <div
-                className="flex items-center gap-2 text-gray-600"
+                className="flex items-center gap-2 text-gray-600 dark:text-gray-300"
                 itemScope
                 itemType="https://schema.org/Organization"
               >
@@ -86,27 +86,27 @@ export default function RootLayout({ children }) {
               </div>
 
               <nav
-                className="flex gap-4"
+                className="flex gap-4 text-gray-500 dark:text-gray-300  text-sm"
                 itemScope
                 itemType="https://schema.org/SiteNavigationElement"
               >
                 <Link
                   href="/"
-                  className="text-sm text-gray-500 hover:text-gray-700 transition-colors delay-[50ms]"
+                  className="  transition-colors delay-[50ms] hover:text-gray-700 dark:hover:text-gray-500"
                   itemProp="url"
                 >
                   Home
                 </Link>
                 <Link
                   href="/"
-                  className="text-sm text-gray-500 hover:text-gray-700 transition-colors delay-[50ms]"
+                  className="  transition-colors delay-[50ms] hover:text-gray-700 dark:hover:text-gray-500"
                   itemProp="url"
                 >
                   Menu
                 </Link>
                 <a
                   href="mailto:kaanpmete@gmail.com"
-                  className="text-sm text-gray-500 hover:text-gray-700 transition-colors delay-[50ms]"
+                  className="  transition-colors delay-[50ms] hover:text-gray-700 dark:hover:text-gray-500"
                   itemProp="email"
                 >
                   Contact

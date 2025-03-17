@@ -13,20 +13,20 @@ const H1 = ({ children }) => (
 );
 
 const H2 = ({ children }) => (
-  <h2 className="text-2xl font-semibold mt-8 mb-3 text-gray-800 dark:text-gray-100">
+  <h2 className="text-2xl font-semibold mt-8 mb-3 text-gray-800 dark:text-gray-50">
     {children}
   </h2>
 );
 
 const H3 = ({ children }) => (
-  <h3 className="text-xl font-semibold mt-6 mb-2 text-gray-800 dark:text-gray-100">
+  <h3 className="text-xl font-semibold mt-6 mb-2 text-gray-800 dark:text-gray-50">
     {children}
   </h3>
 );
 
 // Paragraf
 const P = ({ children }) => (
-  <p className="mb-4 text-gray-700 dark:text-gray-300 leading-relaxed">
+  <p className="mb-4 text-gray-700 dark:text-gray-100 leading-relaxed">
     {children}
   </p>
 );
@@ -67,7 +67,7 @@ const InlineCode = ({ children }) => (
 
 // Alıntı
 const BlockQuote = ({ children }) => (
-  <blockquote className="border-l-4 border-gray-300 dark:border-gray-700 pl-4 italic my-4 text-gray-600 dark:text-gray-400">
+  <blockquote className="border-l-4 border-gray-300 dark:border-gray-400 pl-4 italic my-4 text-gray-600 dark:text-gray-400">
     {children}
   </blockquote>
 );
@@ -101,13 +101,13 @@ const CustomLink = ({ href, children }) => {
 
 // Listeler
 const Ul = ({ children }) => (
-  <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300">
+  <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-200">
     {children}
   </ul>
 );
 
 const Ol = ({ children }) => (
-  <ol className="list-decimal pl-6 mb-4 text-gray-700 dark:text-gray-300">
+  <ol className="list-decimal pl-6 mb-4 text-gray-700 dark:text-gray-200">
     {children}
   </ol>
 );
@@ -125,8 +125,8 @@ const ResponsiveImage = ({ src, alt, ...props }) => {
       src={src || "/placeholder.png"}
       alt={alt || ""}
       className="rounded-lg object-contain"
-      width={800}
-      height={800}
+      width={500}
+      height={500}
       priority={props.priority}
     />
   );
