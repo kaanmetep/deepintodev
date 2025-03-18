@@ -79,7 +79,7 @@ const Sidebar = () => {
                   <Link
                     href={`/blog/${post.slug}`}
                     title={`Read more about ${post.title}`}
-                    className="flex items-center gap-1 lg:gap-2 w-fit dark:text-gray-300 text-gray-500 hover:text-gray-700 dark:hover:text-gray-500 transition-all delay-[50ms] text-xs lg:text-sm "
+                    className="flex items-center gap-1 lg:gap-2 w-fit dark:text-gray-300 text-gray-700 hover:text-gray-500 dark:hover:text-gray-500 transition-all delay-[50ms] text-xs lg:text-sm "
                   >
                     <FileText size={16} className="shrink-0" />
                     <span className="hidden 2xl:xl:inline">

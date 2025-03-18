@@ -1,10 +1,9 @@
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
-import { Menu } from "lucide-react";
 import Link from "next/link";
 import { Inter } from "next/font/google";
 import Script from "next/script";
-import ThemeToggle from "@/components/ThemeToggle";
+import MobileHeader from "@/components/MobileHeader";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
@@ -64,8 +63,7 @@ export default function RootLayout({ children }) {
       </head>
       <body className={`${inter.variable} text-gray-900 dark:bg-black`}>
         <div className="flex relative h-screen ">
-          <ThemeToggle />
-          <Menu className="absolute left-6 top-4 cursor-pointer lg:opacity-0 md:pointer-events-none dark:text-white" />
+          <MobileHeader />
           <Sidebar />
           <div className="flex flex-col overflow-y-auto relative basis-0 grow-[3]">
             {children}
@@ -97,15 +95,9 @@ export default function RootLayout({ children }) {
                 >
                   Home
                 </Link>
-                <Link
-                  href="/"
-                  className="  transition-colors delay-[50ms] hover:text-gray-700 dark:hover:text-gray-500"
-                  itemProp="url"
-                >
-                  Menu
-                </Link>
+
                 <a
-                  href="mailto:kaanpmete@gmail.com"
+                  href="mailto:kaan@kmpcodes.com"
                   className="  transition-colors delay-[50ms] hover:text-gray-700 dark:hover:text-gray-500"
                   itemProp="email"
                 >

@@ -72,16 +72,32 @@ export default async function BlogPost({ params }) {
           </h1>
           {frontMatter.date && (
             <div className="flex gap-2 items-center justify-between">
-              <time className="text-gray-500 dark:text-gray-400">
-                {new Date(frontMatter.date).toLocaleDateString("en-EN", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </time>
-              <p className="text-gray-500 dark:text-gray-400 text-sm">
-                {frontMatter.timeToRead} read
-              </p>
+              <div className="flex flex-col gap-1">
+                <time className="text-gray-500 dark:text-gray-400">
+                  {new Date(frontMatter.date).toLocaleDateString("en-EN", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </time>
+                {frontMatter.dateModified && (
+                  <div className="flex gap-1">
+                    <span className="text-gray-500 dark:text-gray-400">
+                      Last updated at:
+                    </span>
+                    <time className="text-gray-500 dark:text-gray-400">
+                      {new Date(frontMatter.dateModified).toLocaleDateString(
+                        "en-EN",
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }
+                      )}
+                    </time>
+                  </div>
+                )}
+              </div>
             </div>
           )}
           {frontMatter.tags && (

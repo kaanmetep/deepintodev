@@ -4,6 +4,7 @@ description: "Learn how to create, validate, and manage forms in NextJS applicat
 date: "2025-03-15"
 author: "Kaan Peksen"
 category: "Web Development"
+dateModified: "2025-03-19"
 tags:
   [
     "nextjs",
@@ -14,7 +15,7 @@ tags:
     "forms-in-nextjs",
   ]
 canonicalUrl: "http://localhost:3000/blog/form-handling-in-nextjs"
-timeToRead: "13 minutes"
+timeToRead: "16 minutes"
 language: "en"
 noIndex: false
 noFollow: false
@@ -24,9 +25,9 @@ After you complete this article, you will have a solid understanding of:
 
 - **How to create and handle forms in NextJS applications**
 - **How server actions work with forms in NextJS**
-- **Form validation techniques on both client and server sides**
 - **How to use useActionState hook to handle forms in NextJS**
 - **How to preserve form state between submissions and handle errors properly**
+- **Form validation techniques on both client and server sides**
 
 If you are building any kind of app, you will definitely need forms in your project. At first, it might seem easy to create. Just create some labels, some input elements, and let users fill them out. Once they click the button, it's all done! Well, it actually gets a bit complicated and hard to keep up with all kinds of features that forms can/should do...
 
@@ -34,13 +35,13 @@ First, you need to validate inputs on both the frontend and backend to prevent u
 
 And that's just the beginning—there’s even more to it!
 
+There are many libraries, best practices, and different approaches when it comes to forms—React Hook Form, Next.js forms, TanStack Form, Zod, Yup, various hooks, and more. At some point, it can start to feel overwhelming, and it's easy to get lost in all of it. But don’t worry—we’ll go through everything together, and you’ll gain the confidence you need to handle forms like a pro! This is the only blog you will need to create real-world, error-free, customer-friendly, and safe form inputs.
+
 In this blog, you will completely understand how forms work, especially in Next.js apps—how to validate them, control them, manipulate them, throw errors, and more.
 
 You will also learn how to retain input values even after submitting the form.
 
-This is the only blog you will need to create real-world, error-free, customer-friendly, and safe form inputs.
-
-> **Note:** I will be using NextJS to explain forms in the real world, but the concepts you will see are valid for other frameworks and libraries too.
+> **Note:** I will be using NextJS to explain forms in the real world, but some of the concepts you will see are valid for other frameworks and libraries too.
 
 ## Creating a Basic Form in NextJS
 
@@ -180,7 +181,7 @@ This is not what we want to do in our NextJS project. Instead, we want to use th
 
 The action attribute will work even if JavaScript is disabled because it's not something that works on the client—it works on the server and gives us the chance to make a "POST" request to our server by default.
 
-> **Note:** So we could actually use both the action and onSubmit attributes on a form element. Action would be to make a POST request, and onSubmit would be for client-side validations or other work that will operate on the client.
+> **Note:** So we could actually use both the action and onSubmit attributes on a form element. Action would be to make a POST request, and onSubmit would be for client-side validations or other work that will operate on the client. However, if you use both action and onSubmit, do not call e.preventDefault() inside onSubmit, as it will prevent the form from making a POST request.
 
 Now let's use the action attribute for our server action:
 
@@ -396,3 +397,247 @@ export default Page;
 ```
 
 We've added "defaultValue" attributes to every input element so that they will not reset when the form is submitted—unless a specific error occurs in that input field.
+
+## Proper Form Validation
+
+So far, we haven't implemented proper form validation in our form. Validation is essential for both the frontend and backend, but as we mentioned before, it should never rely solely on the frontend! This is because client-side validations can be easily bypassed.
+
+For the client side, we could use simple, built-in form validation attributes such as required, minlength, email, etc.
+
+```jsx
+<!-- Email Input -->
+  <input type="email" required />
+
+<!-- Address Input -->
+  <input type="text" required minlength="10" />
+
+<!-- Phone Input -->
+  <input type="tel" pattern="[0-9]{10}" required />
+```
+
+On the backend, we could perform validation using if statements, like this:
+
+```jsx
+export const saveFormDatasToDatabase = async (_, formData) => {
+  const rawData = {
+    email: formData.get("email"),
+    firstName: formData.get("firstName"),
+    password: formData.get("password"),
+  };
+  if (
+    !rawData.email ||
+    !rawData.password ||
+    !rawData.full_name ||
+    !rawData.rePassword
+  ) {
+    return { message: "Please fill all the areas.", inputs: rawData };
+  }
+  // check email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(rawData.email)) {
+    return {
+      message: "Please enter a valid email address.",
+      inputs: rawData,
+    };
+  }
+  if (rawData.full_name.length < 2 || rawData.full_name.length > 50) {
+    return {
+      message: "Name must be between 2 and 50 characters.",
+      inputs: rawData,
+    };
+  }
+};
+```
+
+> **Note:** When there was an error before, we didn’t send the faulty data on the client side, and that field was removed from input element. But now, we’re sending all the data directly. So for example, even if there’s an error in the email field, the input will still keep its value. This is up to your design choice. You can choose either.
+
+However, there are a few issues with this approach:
+
+1. Limited frontend validation – Relying on basic HTML attributes may not be sufficient for complex validation.
+2. Messy backend code – Our current validation logic is difficult to manage.
+3. Inconsistent rules – We might have different validation rules on the frontend and backend. For example, the frontend might allow a firstName up to 50 characters, while the backend enforces a 40-character limit. This inconsistency is a problem.
+
+## A Better Solution: Using Zod
+
+One of the best ways to solve these issues is by using a validation library like Zod. With Zod, we can define a single validation schema and reuse it on both the frontend and backend. This ensures we have one source of truth for our validation rules.
+
+Zod also provides built-in validation methods, so we don't need to manually write regex patterns to check if an email is valid, for example.
+
+By implementing Zod, we can make our validation stronger, cleaner, and more consistent across our application.
+
+First, let's install Zod from npm;
+
+```terminal
+npm install zod
+```
+
+Now, since we want to use the same validation rules for both the frontend and backend, we need to create a separate file for our validation rules using Zod. This way, we can use the same validation rules wherever we need it.
+
+Typically, you would have a `lib` folder in your project for these types of files.
+
+Let’s create a `lib` folder and add a `types.js` file inside of it.
+
+lib/types.js:
+
+```js
+import { z } from "zod";
+
+export const signUpSchema = z.object({
+  firstName: z
+    .string()
+    .min(2, "First name must be at least 2 characters")
+    .max(50, "First name must be maxium 50 characters."),
+  email: z.string().email(),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters long.")
+    .regex(/[a-zA-Z]/, "Password must contain at least one letter."),
+});
+```
+
+You can clearly see how easy it is. Now we have created our "Zod schema." With this schema, we have a single source of truth. Let’s now use this schema on both the frontend and the backend.
+
+Our final form element will look like this:
+
+```jsx
+"use client";
+import { useState } from "react";
+import { saveFormDatasToDatabase } from "../actions";
+import { useActionState } from "react";
+import { signUpSchema } from "../../lib/types";
+
+const initialState = {
+  success: false,
+  message: "",
+};
+
+const Page = () => {
+  const [state, formAction, pending] = useActionState(
+    saveFormDatasToDatabase,
+    initialState
+  );
+  const [errors, setErrors] = useState({});
+
+  // To validate with our Zod Schema before we send the form
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+    const data = {
+      firstName: formData.get("firstName"),
+      email: formData.get("email"),
+      password: formData.get("password"),
+    };
+
+    try {
+      // Valite with zod schema
+      signUpSchema.parse(data);
+      // If validation is correct
+      setErrors({});
+      // Call formAction with formData
+      formAction(formData);
+    } catch (error) {
+      // If there are errors
+      if (error.errors) {
+        const formattedErrors = {};
+        error.errors.forEach((err) => {
+          formattedErrors[err.path[0]] = err.message;
+        });
+        setErrors(formattedErrors);
+      }
+    }
+  };
+
+  return (
+    <div>
+      <h1>DeepIntoDev - Form Page</h1>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <input
+            type="text"
+            placeholder="First Name"
+            name="firstName"
+            defaultValue={state?.inputs?.firstName}
+          />
+          {errors.firstName && <p>{errors.firstName}</p>}
+        </div>
+
+        <div>
+          <input
+            type="text"
+            placeholder="Email"
+            name="email"
+            defaultValue={state?.inputs?.email}
+          />
+          {errors.email && <p>{errors.email}</p>}
+        </div>
+
+        <div>
+          <input
+            type="password"
+            placeholder="Password"
+            name="password"
+            defaultValue={state?.inputs?.password}
+          />
+          {errors.password && <p>{errors.password}</p>}
+        </div>
+
+        <button disabled={pending}>Submit</button>
+
+        <p>{state?.message}</p>
+      </form>
+    </div>
+  );
+};
+
+export default Page;
+```
+
+Now, let’s use the same validation schema for our backend (server action) as well.
+
+```jsx
+"use server";
+import { signUpSchema } from "../lib/types";
+
+export const saveFormDatasToDatabase = async (_, formData) => {
+  const rawData = {
+    email: formData.get("email"),
+    firstName: formData.get("firstName"),
+    password: formData.get("password"),
+  };
+
+  try {
+    // Validate with zod schema
+    signUpSchema.parse(rawData);
+    // If there is no error return a success message
+    return {
+      success: true,
+      message: "Signed up successfully!",
+    };
+  } catch (error) {
+    // If there are errors with zod validation
+    if (error.errors && error.errors.length > 0) {
+      // Find the error and find where did it happen
+      const firstError = error.errors[0];
+      const fieldName = firstError.path[0];
+
+      // Return except the faulty input
+      const { [fieldName]: _, ...inputsWithoutErrorField } = rawData;
+
+      return {
+        success: false,
+        message: firstError.message,
+        inputs: inputsWithoutErrorField,
+      };
+    }
+
+    return {
+      success: false,
+      message: "Unexpected error happened.",
+      inputs: rawData,
+    };
+  }
+};
+```
+
+Now you fully understand how to handle forms in your Next.js application!

@@ -9,7 +9,7 @@ export const blogPosts = [
   {
     id: 1,
     title: "Complete Guide to Form Handling in NextJS",
-    readTime: 13,
+    readTime: 16,
     slug: "form-handling-in-nextjs",
     date: "March 13, 2025",
   },
