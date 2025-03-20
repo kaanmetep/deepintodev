@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Moon, Sun, Menu, Shell, FileText, X } from "lucide-react";
 import Link from "next/link";
 import { blogPosts } from "@/constants";
+import React from "react";
 
 export default function MobileHeader() {
   const [isDark, setIsDark] = useState(true);
@@ -21,7 +22,6 @@ export default function MobileHeader() {
     }
     setIsDark(!isDark);
   };
-
   return (
     <>
       {showMenu && (
