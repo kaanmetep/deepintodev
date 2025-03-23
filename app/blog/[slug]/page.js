@@ -130,6 +130,32 @@ export async function generateMetadata({ params }) {
 
     const siteUrl = "https://deepintodev.com";
     const authorName = frontMatter.author || "DeepIntoDev";
+    const postUrl = `${siteUrl}/blog/${slug}`;
+
+    // JSON-LD Schema
+    const jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      headline: frontMatter.title,
+      description: frontMatter.description || "",
+      author: {
+        "@type": "Person",
+        name: authorName,
+        url: frontMatter.authorUrl || siteUrl,
+      },
+      datePublished: frontMatter.date,
+      dateModified: frontMatter.dateModified || frontMatter.date,
+      publisher: {
+        "@type": "Organization",
+        name: "DeepIntoDev",
+      },
+      mainEntityOfPage: {
+        "@type": "WebPage",
+        "@id": postUrl,
+      },
+      keywords: frontMatter.tags?.join(", ") || "",
+      articleSection: frontMatter.category || "Software Development",
+    };
 
     return {
       title: frontMatter.title,
@@ -142,17 +168,18 @@ export async function generateMetadata({ params }) {
       openGraph: {
         title: frontMatter.title,
         description: frontMatter.description || "",
-        url: `${siteUrl}/blog/${slug}`,
+        url: postUrl,
         siteName: "DeepIntoDev",
         locale: "en_US",
         type: "article",
         publishedTime: frontMatter.date,
+        modifiedTime: frontMatter.dateModified,
         authors: [authorName],
         tags: frontMatter.tags || [],
       },
       robots: {
-        index: frontMatter.noIndex ? false : true,
-        follow: frontMatter.noFollow ? false : true,
+        index: true,
+        follow: true,
       },
       authors: [
         {
@@ -161,8 +188,12 @@ export async function generateMetadata({ params }) {
         },
       ],
       category: frontMatter.category || "Software Development",
+      other: {
+        "script:ld+json": [JSON.stringify(jsonLd)],
+      },
     };
   } catch (error) {
+    console.error("Error in generateMetadata:", error);
     notFound();
   }
 }
