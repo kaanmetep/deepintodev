@@ -59,7 +59,7 @@ export const metadata = {
     siteName: "DeepIntoDev",
     images: [
       {
-        url: "/shell.webp",
+        url: "https://www.deepintodev.com/shell.webp",
         width: 1200,
         height: 630,
         alt: "DeepIntoDev Preview Image",
@@ -71,7 +71,7 @@ export const metadata = {
     site: "@3o2kmpdev",
     title: "DeepIntoDev",
     description: "Your go-to source for deep development insights.",
-    image: "/shell.webp",
+    image: "https://www.deepintodev.com/shell.webp",
   },
 };
 
