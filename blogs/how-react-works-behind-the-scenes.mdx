@@ -2,6 +2,7 @@
 title: "How React Works Behind the Scenes"
 description: "Learn how rendering works in React, from JSX conversion to Virtual DOM and reconciliation."
 date: "2025-03-22"
+dateModified: "2025-03-24"
 author: "Kaan Peksen"
 category: "Web Development"
 tags:
@@ -295,11 +296,7 @@ This was important to understand because we will always see and use the term of 
 
 ## What Exactly Does Rendering Mean in React?
 
-Rendering in React refers to the process of taking React elements (objects returned by React.createElement()) and converting them into actual DOM nodes in the browser.
-
-> **Note:** Actually, more accurate explanation would be like this: Rendering in React refers to the process of taking React elements (objects returned by React.createElement()) and determining what changes need to be made to the DOM. This process involves reconciling the virtual DOM, but the actual updates to the browser's DOM occur during the commit phase, which follows the render phase. The render phase calculates the differences, while the commit phase applies these changes to the actual DOM elements that appear on screen.
-
-> **Note:** I KNOW IT LOOKS CONFUSING! But believe me or not, after you complete this blog, you will understand this "ununderstandable" paragraph without any doubt. So bear with me here!
+After you trigger a render, React calls your components to figure out what to display on screen. So “Rendering” basically means **React calling your components.**
 
 Rendering is of two types:
 
