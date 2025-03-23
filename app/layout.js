@@ -52,6 +52,27 @@ export const metadata = {
     address: false,
     telephone: false,
   },
+  openGraph: {
+    title: "DeepIntoDev",
+    description: "Your go-to source for deep development insights.",
+    url: "https://deepintodev.com",
+    siteName: "DeepIntoDev",
+    images: [
+      {
+        url: "/shell.webp",
+        width: 1200,
+        height: 630,
+        alt: "DeepIntoDev Preview Image",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@3o2kmpdev",
+    title: "DeepIntoDev",
+    description: "Your go-to source for deep development insights.",
+    image: "/shell.webp",
+  },
 };
 
 export default function RootLayout({ children }) {
