@@ -61,7 +61,7 @@ const Sidebar = () => {
             <li className="text-black dark:text-white">|</li>
             <li>
               <a
-                href="mailto:kaanpmete@gmail.com"
+                href="mailto:kaan@kmpcodes.com"
                 className="text-sm dark:text-gray-300 text-gray-500 hover:text-gray-700 dark:hover:text-gray-500 transition-colors delay-[50ms]"
                 itemProp="email"
               >
