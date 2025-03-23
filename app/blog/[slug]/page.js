@@ -4,6 +4,7 @@ import { compileMDX } from "next-mdx-remote/rsc";
 import matter from "gray-matter";
 import MDXComponents from "@/components/MDXComponents";
 import remarkGfm from "remark-gfm";
+import { notFound } from "next/navigation";
 
 // Blog yazılarının bulunduğu dizin
 const POSTS_PATH = path.join(process.cwd(), "blogs");
@@ -50,7 +51,7 @@ async function getPostBySlug(slug) {
     }
   } catch (error) {
     console.error("Error in getPostBySlug:", error);
-    throw error; // Hata fırlat
+    notFound();
   }
 }
 
@@ -123,42 +124,45 @@ export default async function BlogPost({ params }) {
 }
 
 export async function generateMetadata({ params }) {
-  const slug = (await params)?.slug;
-  const { frontMatter } = await getPostBySlug(slug);
+  try {
+    const slug = (await params)?.slug;
+    const { frontMatter } = await getPostBySlug(slug);
 
-  const siteUrl = "https://deepintodev.com";
+    const siteUrl = "https://deepintodev.com";
+    const authorName = frontMatter.author || "DeepIntoDev";
 
-  const authorName = frontMatter.author || "DeepIntoDev";
-
-  return {
-    title: frontMatter.title,
-    description: frontMatter.description || "",
-    keywords: frontMatter.tags?.join(", ") || "",
-    metadataBase: new URL(siteUrl),
-    alternates: {
-      canonical: `/blog/${slug}`,
-    },
-    openGraph: {
+    return {
       title: frontMatter.title,
       description: frontMatter.description || "",
-      url: `${siteUrl}/blog/${slug}`,
-      siteName: "DeepIntoDev",
-      locale: "en_US",
-      type: "article",
-      publishedTime: frontMatter.date,
-      authors: [authorName],
-      tags: frontMatter.tags || [],
-    },
-    robots: {
-      index: frontMatter.noIndex ? false : true,
-      follow: frontMatter.noFollow ? false : true,
-    },
-    authors: [
-      {
-        name: authorName,
-        url: frontMatter.authorUrl || siteUrl,
+      keywords: frontMatter.tags?.join(", ") || "",
+      metadataBase: new URL(siteUrl),
+      alternates: {
+        canonical: `/blog/${slug}`,
       },
-    ],
-    category: frontMatter.category || "Software Development",
-  };
+      openGraph: {
+        title: frontMatter.title,
+        description: frontMatter.description || "",
+        url: `${siteUrl}/blog/${slug}`,
+        siteName: "DeepIntoDev",
+        locale: "en_US",
+        type: "article",
+        publishedTime: frontMatter.date,
+        authors: [authorName],
+        tags: frontMatter.tags || [],
+      },
+      robots: {
+        index: frontMatter.noIndex ? false : true,
+        follow: frontMatter.noFollow ? false : true,
+      },
+      authors: [
+        {
+          name: authorName,
+          url: frontMatter.authorUrl || siteUrl,
+        },
+      ],
+      category: frontMatter.category || "Software Development",
+    };
+  } catch (error) {
+    notFound();
+  }
 }

@@ -59,7 +59,7 @@ export const metadata = {
     siteName: "DeepIntoDev",
     images: [
       {
-        url: "https://www.deepintodev.com/shell.webp",
+        url: "https://www.deepintodev.com/shelltw.png",
         width: 1200,
         height: 630,
         alt: "DeepIntoDev Preview Image",
@@ -71,7 +71,7 @@ export const metadata = {
     site: "@3o2kmpdev",
     title: "DeepIntoDev",
     description: "Your go-to source for deep development insights.",
-    image: "https://www.deepintodev.com/shell.webp",
+    image: "https://www.deepintodev.com/shelltw.png",
   },
 };
 
@@ -98,10 +98,10 @@ export default function RootLayout({ children }) {
       <body
         className={`${sourceSerif.variable} text-gray-900 dark:bg-black bg-gray-50`}
       >
-        <div className="flex relative h-screen ">
+        <div className="flex relative  ">
           <MobileHeader />
           <Sidebar />
-          <div className="flex flex-col overflow-y-auto basis-0 grow-[3]">
+          <div className="flex flex-col overflow-y-auto basis-0 grow-[3] h-screen">
             {children}
             <footer
               className="flex flex-col gap-2 items-center mt-auto py-3 border-t border-gray-200 dark:border-gray-600"
