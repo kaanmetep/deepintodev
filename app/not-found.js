@@ -16,24 +16,13 @@ export default function NotFound() {
       </Head>
 
       <div className="flex flex-col items-center justify-center min-h-screen px-4 py-16 bg-white dark:bg-black transition-colors duration-200">
-        <div className="max-w-2xl w-full">
+        <div className="max-w-2xl w-full flex flex-col items-center">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
             404 - Page Not Found
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
             The page you are looking for doesnt exist or has been moved.
           </p>
-
-          <div className="bg-gray-50 dark:bg-gray-900 border-l-4 border-gray-800 dark:border-gray-100 p-6 rounded-md mb-8">
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
-              You might want to:
-            </h2>
-            <ul className="ml-6 list-disc text-gray-700 dark:text-gray-300 space-y-2">
-              <li>Check the URL for typos</li>
-              <li>Return to the homepage</li>
-              <li>Browse our latest articles</li>
-            </ul>
-          </div>
 
           <div className="flex gap-4 mb-10">
             <Link
@@ -52,11 +41,6 @@ export default function NotFound() {
             </a>
           </div>
 
-          <div className="border-t border-gray-200 dark:border-gray-800 pt-8">
-            <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
-              Featured Articles
-            </h3>
-          </div>
           <section className="mt-8">
             <h2 className="text-base md:text-lg font-medium text-gray-900 dark:text-white">
               Explore the Most Popular Software Development Blogs
