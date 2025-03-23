@@ -1,6 +1,20 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background-color: #f9fafb;
+}
 body {
   font-family: var(--font-source-serif);
-  /* Other styles */
+  padding-top: env(safe-area-inset-top);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+/* Özellikle o üst alan için */
+@supports (padding-top: env(safe-area-inset-top)) {
+  html,
+  body {
+    padding-top: env(safe-area-inset-top);
+  }
 }
