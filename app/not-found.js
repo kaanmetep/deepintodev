@@ -41,7 +41,7 @@ export default function NotFound() {
             </a>
           </div>
 
-          <section className="mt-8">
+          <section>
             <h2 className="text-base md:text-lg font-medium text-gray-900 dark:text-white">
               Explore the Most Popular Software Development Blogs
             </h2>

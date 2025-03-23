@@ -98,10 +98,10 @@ export default function RootLayout({ children }) {
       <body
         className={`${sourceSerif.variable} text-gray-900 dark:bg-black bg-gray-50`}
       >
-        <div className="flex relative  ">
+        <div className="flex relative h-screen ">
           <MobileHeader />
           <Sidebar />
-          <div className="flex flex-col overflow-y-auto basis-0 grow-[3] h-screen">
+          <div className="flex flex-col overflow-y-auto basis-0 grow-[3]">
             {children}
             <footer
               className="flex flex-col gap-2 items-center mt-auto py-3 border-t border-gray-200 dark:border-gray-600"
