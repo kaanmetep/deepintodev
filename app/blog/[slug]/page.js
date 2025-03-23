@@ -65,8 +65,8 @@ export default async function BlogPost({ params }) {
 
   return (
     <div className="flex justify-center w-full ">
-      <article className="w-full max-w-5xl mx-auto px-4 py-10">
-        <header className="mb-8">
+      <article className="w-full max-w-5xl mx-auto px-4 py-10 ">
+        <header className="mb-8 ">
           <h1 className="text-4xl font-bold mb-4 mt-4 lg:mt-0 dark:text-white">
             {frontMatter.title}
           </h1>

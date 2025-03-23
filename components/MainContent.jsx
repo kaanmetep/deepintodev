@@ -43,12 +43,6 @@ const MainContent = () => {
                 </i>
               </strong>
             </p>
-
-            <p className="mt-4  leading-relaxed text-sm md:text-base">
-              I do not use AI to generate my posts. I prefer to understand
-              things myself first, then put them into words the way I see
-              them—not the way AI sees them.
-            </p>
           </section>
 
           <section className="mt-8">

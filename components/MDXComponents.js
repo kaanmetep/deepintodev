@@ -26,7 +26,7 @@ const H3 = ({ children }) => (
 
 // Paragraf
 const P = ({ children }) => (
-  <p className="mb-4 text-gray-700 dark:text-gray-100 leading-relaxed">
+  <p className="mb-4 text-[rgb(26,26,26)] dark:text-gray-100 leading-[32px] font-normal text-[16px] lg:text-[18px] tracking-[-.06px]">
     {children}
   </p>
 );
@@ -124,9 +124,9 @@ const ResponsiveImage = ({ src, alt, ...props }) => {
     <Image
       src={src || "/placeholder.png"}
       alt={alt || ""}
-      className="rounded-lg object-contain"
-      width={500}
-      height={500}
+      className="rounded-lg object-contain border-2 border-gra"
+      width={600}
+      height={600}
       priority={props.priority}
     />
   );

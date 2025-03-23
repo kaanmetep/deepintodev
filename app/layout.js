@@ -2,11 +2,18 @@ import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 import Link from "next/link";
 import { Inter } from "next/font/google";
+import { Source_Serif_4 } from "next/font/google";
 import Script from "next/script";
 import MobileHeader from "@/components/MobileHeader";
+
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+});
+
+const sourceSerif = Source_Serif_4({
+  subsets: ["latin"],
+  variable: "--font-source-serif",
 });
 
 export const metadata = {
@@ -61,7 +68,7 @@ export default function RootLayout({ children }) {
           `}
         </Script>
       </head>
-      <body className={`${inter.variable} text-gray-900 dark:bg-black`}>
+      <body className={`${sourceSerif.variable} text-gray-900 dark:bg-black`}>
         <div className="flex relative h-screen ">
           <MobileHeader />
           <Sidebar />

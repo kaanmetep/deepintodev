@@ -13,4 +13,11 @@ export const blogPosts = [
     slug: "form-handling-in-nextjs",
     date: "March 13, 2025",
   },
+  {
+    id: 2,
+    title: "How React Works Behind the Scenes",
+    readTime: 22,
+    slug: "how-react-works-behind-the-scenes",
+    date: "March 22, 2025",
+  },
 ];
