@@ -12,12 +12,12 @@ const Sidebar = () => {
         dark:bg-gray-950 dark:text-white max-w-[470px] hidden lg:block relative  bg-gray-50 text-gray-700 font-medium 
         transition-all duration-300 ease-in-out
         ${isOpen ? "basis-0 grow-[1]" : "w-[50px]"}
-        overflow-hidden py-8 px-3  shadow-lg
+        overflow-hidden py-8 px-3  shadow-lg 
       `}
       aria-label="Blog navigation sidebar"
     >
       <ChevronLeft
-        className={`
+        className={` 
           absolute right-3 top-4 bg-gray-200 dark:bg-gray-400 rounded-full cursor-pointer 
           hover:bg-gray-50 dark:hover:bg-gray-300 transition-all delay-[50ms] p-1
           ${!isOpen && "rotate-180"}
@@ -70,6 +70,9 @@ const Sidebar = () => {
             </li>
           </ul>
         </nav>
+        <p className="text-xs dark:text-gray-300 text-gray-500 hover:text-gray-700 dark:hover:text-gray-500 transition-all delay-[50ms] cursor-pointer text-center mt-1">
+          Get Notified When New Blog Drops
+        </p>
         <nav aria-label="Other Posts Navigation" className="mt-8" itemScope>
           <ul role="list" className="flex flex-col gap-4">
             {blogPosts

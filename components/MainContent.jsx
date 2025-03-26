@@ -1,7 +1,7 @@
 import { blogPosts } from "@/constants";
 import { Shell } from "lucide-react";
 import Link from "next/link";
-
+import NewsletterSubscription from "./NewsletterSubscription";
 const MainContent = () => {
   return (
     <>
@@ -76,6 +76,9 @@ const MainContent = () => {
                   </li>
                 ))}
             </ul>
+          </section>
+          <section className="w-full  lg:max-w-3xl mx-auto mt-12">
+            <NewsletterSubscription />
           </section>
         </article>
       </main>

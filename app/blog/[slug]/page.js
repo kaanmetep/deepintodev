@@ -5,6 +5,7 @@ import matter from "gray-matter";
 import MDXComponents from "@/components/MDXComponents";
 import remarkGfm from "remark-gfm";
 import { notFound } from "next/navigation";
+import NewsletterSubscription from "@/components/NewsletterSubscription";
 
 // Blog yazılarının bulunduğu dizin
 const POSTS_PATH = path.join(process.cwd(), "blogs");
@@ -65,8 +66,8 @@ export default async function BlogPost({ params }) {
   const { mdxContent, frontMatter } = await getPostBySlug(slug);
 
   return (
-    <div className="flex justify-center w-full ">
-      <article className="w-full max-w-5xl mx-auto px-4 py-10 ">
+    <div className="flex flex-col items-center w-full ">
+      <article className="w-full max-w-5xl mx-auto px-4 pt-10 ">
         <header className="mb-8 ">
           <h1 className="text-4xl font-bold mb-4 mt-4 lg:mt-0 dark:text-white">
             {frontMatter.title}
@@ -118,7 +119,13 @@ export default async function BlogPost({ params }) {
         <div className="prose prose-lg dark:prose-invert max-w-none">
           {mdxContent}
         </div>
+        <p className="mb-4 text-[rgb(26,26,26)] dark:text-gray-100 leading-[32px] font-normal text-[16px] lg:text-[18px] tracking-[-.06px]">
+          Was this blog helpful for you? If so,
+        </p>
       </article>
+      <div className="w-full px-4  lg:max-w-3xl mx-auto mt-4 pb-10">
+        <NewsletterSubscription />
+      </div>
     </div>
   );
 }

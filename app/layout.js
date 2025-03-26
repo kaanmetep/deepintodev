@@ -120,7 +120,7 @@ export default function RootLayout({ children }) {
               </div>
 
               <nav
-                className="flex gap-4 text-gray-500 dark:text-gray-300  text-sm"
+                className="flex gap-6 text-gray-500 dark:text-gray-300  text-sm"
                 itemScope
                 itemType="https://schema.org/SiteNavigationElement"
               >
@@ -138,6 +138,13 @@ export default function RootLayout({ children }) {
                   itemProp="email"
                 >
                   Contact
+                </a>
+                <a
+                  href="mailto:kaan@kmpcodes.com"
+                  className="  transition-colors delay-[50ms] hover:text-gray-700 dark:hover:text-gray-500"
+                  itemProp="email"
+                >
+                  Get Notified When New Blog Drops
                 </a>
               </nav>
             </footer>
