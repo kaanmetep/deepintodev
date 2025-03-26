@@ -139,13 +139,13 @@ export default function RootLayout({ children }) {
                 >
                   Contact
                 </a>
-                <a
-                  href="mailto:kaan@kmpcodes.com"
+                <Link
+                  href="/"
                   className="  transition-colors delay-[50ms] hover:text-gray-700 dark:hover:text-gray-500"
-                  itemProp="email"
+                  itemProp="url"
                 >
                   Get Notified When New Blog Drops
-                </a>
+                </Link>
               </nav>
             </footer>
           </div>

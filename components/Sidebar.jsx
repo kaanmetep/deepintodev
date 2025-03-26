@@ -70,9 +70,12 @@ const Sidebar = () => {
             </li>
           </ul>
         </nav>
-        <p className="text-xs dark:text-gray-300 text-gray-500 hover:text-gray-700 dark:hover:text-gray-500 transition-all delay-[50ms] cursor-pointer text-center mt-1">
+        <Link
+          href={"/"}
+          className="text-xs dark:text-gray-300 text-gray-500 hover:text-gray-700 dark:hover:text-gray-500 transition-all delay-[50ms] cursor-pointer text-center mt-1 block"
+        >
           Get Notified When New Blog Drops
-        </p>
+        </Link>
         <nav aria-label="Other Posts Navigation" className="mt-8" itemScope>
           <ul role="list" className="flex flex-col gap-4">
             {blogPosts
