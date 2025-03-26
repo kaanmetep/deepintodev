@@ -96,10 +96,10 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
       <body
-        className={`${sourceSerif.variable} text-gray-900 dark:bg-black bg-gray-50`}
+        className={`relative ${sourceSerif.variable} text-gray-900 dark:bg-black bg-gray-50`}
       >
-        <div className="flex relative h-screen ">
-          <MobileHeader />
+        <MobileHeader />
+        <div className="flex  h-screen ">
           <Sidebar />
           <div className="flex flex-col overflow-y-auto basis-0 grow-[3]">
             {children}
