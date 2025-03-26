@@ -1,24 +1,24 @@
-export async function checkRateLimit(redis, key, options = {}) {
-  const {
-    limit = 10,
-    duration = 60,
-    blockDuration = 300, // 5 minutes block
-  } = options;
+import { createClient } from "redis";
 
-  try {
-    const currentAttempts = await redis.incr(key);
+let redisClient;
 
-    if (currentAttempts === 1) {
-      await redis.expire(key, duration);
-    }
+export const createSecureRedisClient = async () => {
+  if (!redisClient) {
+    redisClient = createClient({
+      url: process.env.REDIS_URL,
+      socket: {
+        connectTimeout: 5000,
+        disconnectTimeout: 5000,
+      },
+    });
 
-    if (currentAttempts > limit) {
-      // Block the key for an extended period
-      await redis.set(`${key}:blocked`, "1", "EX", blockDuration);
-      throw new Error("RateLimitExceeded");
-    }
-  } catch (error) {
-    console.error("Rate limit check failed", error);
-    throw error;
+    redisClient.on("error", (err) => {
+      console.error("Redis Client Error", err);
+    });
+
+    await redisClient.connect();
   }
-}
+  return redisClient;
+};
+
+export default createSecureRedisClient;
