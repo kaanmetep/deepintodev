@@ -5,9 +5,9 @@ import { createSecureRedisClient } from "@/_lib/redis";
 import { checkRateLimit } from "@/_lib/checkRateLimit";
 
 async function saveEmailToDatabase(email) {
-  const client = new MongoClient(process.env.MONGODB_URI);
-
   try {
+    const client = new MongoClient(process.env.MONGODB_URI);
+
     await client.connect();
     const collection = client.db("newsletter").collection("subscribers");
 
@@ -17,6 +17,8 @@ async function saveEmailToDatabase(email) {
     }
 
     await collection.insertOne({ email, verified: true });
+  } catch (err) {
+    throw new Error(err.message);
   } finally {
     await client.close();
   }

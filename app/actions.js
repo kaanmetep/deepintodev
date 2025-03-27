@@ -6,6 +6,8 @@ import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { randomBytes } from "crypto";
 import { headers } from "next/headers";
+import { MongoClient } from "mongodb";
+
 const emailSchema = z
   .string()
   .email("Invalid email format")
@@ -93,7 +95,22 @@ export async function subscribe(_, formData) {
     if (!result.success) {
       throw new Error(result.error.errors[0].message);
     }
+    let client;
+    try {
+      client = new MongoClient(process.env.MONGODB_URI);
 
+      await client.connect();
+      const collection = client.db("newsletter").collection("subscribers");
+
+      const existingUser = await collection.findOne({ email });
+      if (existingUser) {
+        throw new Error("User is already subscribed to DeepIntoDev.");
+      }
+    } catch (err) {
+      throw new Error(err.message);
+    } finally {
+      await client.close();
+    }
     const redis = await createSecureRedisClient();
 
     const clientIp =
