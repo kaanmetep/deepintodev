@@ -25,7 +25,7 @@ export default function MobileHeader() {
   return (
     <>
       {showMenu && (
-        <div className="fixed inset-0 z-[999] bg-gray-50 dark:bg-gray-900">
+        <div className=" fixed inset-0 z-[999] bg-gray-50 dark:bg-gray-900">
           <button
             className="bg-gray-100 dark:bg-gray-500 dark:text-white p-3 rounded-full h-4 w-4 flex justify-center items-center text-xs right-4 absolute top-4 cursor-pointer"
             onClick={() => setShowMenu(false)}
@@ -122,32 +122,34 @@ export default function MobileHeader() {
         </div>
       )}
 
-      <div className="mobile-controls">
-        <button
-          className="absolute left-6 top-4 cursor-pointer lg:opacity-0 lg:pointer-events-none pointer-events-auto dark:text-white z-50 bg-gray-50 dark:bg-gray-700 p-[6px] rounded-md"
-          onClick={() => setShowMenu(true)}
-          aria-label="Open main menu"
-        >
-          <Menu
-            className="size-4 lg:size-5 cursor-pointer"
-            aria-hidden="true"
-          />
-        </button>
-        <button
-          onClick={toggleTheme}
-          className="absolute right-8 top-4 cursor-pointer z-50 bg-gray-50 dark:bg-gray-700 p-[6px] rounded-md"
-          aria-label="Toggle theme"
-        >
-          {isDark ? (
-            <Sun
-              color="#ffffff"
-              className="size-4 lg:size-5"
+      <div className="mobile-controls  fixed  right-0 left-0 ">
+        <div className="w-full relative">
+          <button
+            className="absolute left-6 top-4 cursor-pointer lg:opacity-0 lg:pointer-events-none pointer-events-auto dark:text-white z-50 bg-gray-50 dark:bg-gray-700 p-[6px] rounded-md"
+            onClick={() => setShowMenu(true)}
+            aria-label="Open main menu"
+          >
+            <Menu
+              className="size-4 lg:size-5 cursor-pointer"
               aria-hidden="true"
             />
-          ) : (
-            <Moon className="size-4 lg:size-5" aria-hidden="true" />
-          )}
-        </button>
+          </button>
+          <button
+            onClick={toggleTheme}
+            className="absolute right-8 top-4 cursor-pointer z-50 bg-gray-50 dark:bg-gray-700 p-[6px] rounded-md"
+            aria-label="Toggle theme"
+          >
+            {isDark ? (
+              <Sun
+                color="#ffffff"
+                className="size-4 lg:size-5"
+                aria-hidden="true"
+              />
+            ) : (
+              <Moon className="size-4 lg:size-5 " aria-hidden="true" />
+            )}
+          </button>
+        </div>
       </div>
     </>
   );

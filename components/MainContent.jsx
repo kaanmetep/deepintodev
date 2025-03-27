@@ -5,7 +5,7 @@ import NewsletterSubscription from "./NewsletterSubscription";
 const MainContent = () => {
   return (
     <>
-      <main className="px-6 pt-16 overflow-y-auto pb-6 md:pb-10 max-w-[2000px] dark:text-white">
+      <main className="px-6 pt-16 overflow-y-auto pb-6 md:pb-10 max-w-[2000px] dark:text-white h-screen">
         <article itemScope itemType="https://schema.org/Article">
           <header>
             <div className="flex items-start gap-1">

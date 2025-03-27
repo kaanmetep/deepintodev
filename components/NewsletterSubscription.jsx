@@ -12,7 +12,7 @@ export default function NewsletterSubscription() {
   return (
     <>
       <form action={formAction} className="relative">
-        <div className="relative z-10 flex items-center bg-white dark:bg-gray-200 shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-all delay-75">
+        <div className="relative z-10 flex items-center bg-white dark:bg-gray-200 shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-all delay-75 max-w-xl lg:max-w-4xl mx-auto">
           <div className="flex-2">
             <input
               type="email"

@@ -116,13 +116,14 @@ export default async function BlogPost({ params }) {
           )}
         </header>
 
-        <div className="prose prose-lg dark:prose-invert max-w-none">
+        <div className="prose prose-lg dark:prose-invert max-w-none ">
           {mdxContent}
         </div>
-        <p className="mb-4 text-[rgb(26,26,26)] dark:text-gray-100 leading-[32px] font-normal text-[16px] lg:text-[18px] tracking-[-.06px]">
+        <p className="mb-2 text-[rgb(26,26,26)] dark:text-gray-100 leading-[32px] font-normal text-[16px] lg:text-[18px] tracking-[-.06px]">
           Was this blog helpful for you? If so,
         </p>
       </article>
+
       <div className="w-full px-4  lg:max-w-3xl mx-auto mt-4 pb-10">
         <NewsletterSubscription />
       </div>

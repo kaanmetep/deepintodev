@@ -96,12 +96,12 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
       <body
-        className={`relative ${sourceSerif.variable} text-gray-900 dark:bg-black bg-gray-50`}
+        className={`${sourceSerif.variable} text-gray-900 dark:bg-black bg-gray-50 `}
       >
-        <MobileHeader />
-        <div className="flex  h-screen ">
+        <div className="flex relative sm:h-screen ">
+          <MobileHeader />
           <Sidebar />
-          <div className="flex flex-col overflow-y-auto basis-0 grow-[3]">
+          <div className="flex flex-col  overflow-y-auto basis-0 grow-[3]">
             {children}
             <footer
               className="flex flex-col gap-2 items-center mt-auto py-3 border-t border-gray-200 dark:border-gray-600"
@@ -144,7 +144,7 @@ export default function RootLayout({ children }) {
                   className="  transition-colors delay-[50ms] hover:text-gray-700 dark:hover:text-gray-500"
                   itemProp="url"
                 >
-                  Get Notified When New Blog Drops
+                  Get Notified
                 </Link>
               </nav>
             </footer>
