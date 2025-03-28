@@ -50,27 +50,24 @@ export default function MobileHeader() {
 
             <div className="mt-4 flex justify-center">
               <ul role="list" className="flex items-center gap-1">
-                <li>
-                  <Link
-                    href="/"
-                    className="text-sm dark:text-gray-300 text-gray-500 hover:text-gray-700 dark:hover:text-gray-500 transition-colors delay-[50ms]"
-                    onClick={() => setShowMenu(false)}
-                  >
+                <li className="sidebar-link">
+                  <Link href="/" onClick={() => setShowMenu(false)}>
                     <span>Home</span>
                   </Link>
                 </li>
                 <li className="text-black dark:text-white">|</li>
-                <li>
-                  <a
-                    href="mailto:kaanpmete@gmail.com"
-                    className="text-sm dark:text-gray-300 text-gray-500 hover:text-gray-700 dark:hover:text-gray-500 transition-colors delay-[50ms]"
-                  >
-                    <span>Contact</span>
-                  </a>
+                <li className="sidebar-link">
+                  <a href="mailto:kaanpmete@gmail.com">Contact</a>
                 </li>
               </ul>
             </div>
-
+            <Link
+              href={"/"}
+              className="sidebar-link !text-[10px] sm:!text-xs sm:mt-1"
+              onClick={() => setShowMenu(false)}
+            >
+              Get Notified When New Blog Drops
+            </Link>
             <section className="mt-8">
               <h3 className="sr-only">Blog Posts</h3>
               <ul role="list" className="flex flex-col gap-4">

@@ -26,3 +26,7 @@ body {
     -webkit-box-shadow: 0 0 0 30px white inset !important;
   }
 }
+
+.sidebar-link {
+  @apply text-xs sm:text-sm dark:text-gray-300 text-gray-700 hover:text-gray-400 dark:hover:text-gray-500 transition-all delay-[50ms] cursor-pointer text-center block w-fit mx-auto;
+}

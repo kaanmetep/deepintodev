@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import Link from "next/link";
 import { blogPosts } from "@/constants";
@@ -49,34 +50,23 @@ const Sidebar = () => {
           itemType="https://schema.org/SiteNavigationElement"
         >
           <ul role="list" className="flex items-center gap-1">
-            <li>
-              <Link
-                href="/"
-                itemProp="url"
-                className="text-sm dark:text-gray-300 text-gray-500 hover:text-gray-700 dark:hover:text-gray-500 transition-colors delay-[50ms]"
-              >
+            <li className="sidebar-link">
+              <Link href="/" itemProp="url">
                 Home
               </Link>
             </li>
-            <li className="text-black dark:text-white">|</li>
-            <li>
-              <a
-                href="mailto:kaan@kmpcodes.com"
-                className="text-sm dark:text-gray-300 text-gray-500 hover:text-gray-700 dark:hover:text-gray-500 transition-colors delay-[50ms]"
-                itemProp="email"
-              >
-                <span itemProp="name">Contact</span>
+            <span className="text-black dark:text-white">|</span>
+            <li className="sidebar-link">
+              <a href="mailto:kaan@kmpcodes.com" itemProp="email">
+                Contact
               </a>
             </li>
           </ul>
         </nav>
-        <Link
-          href={"/"}
-          className="text-xs dark:text-gray-300 text-gray-500 hover:text-gray-700 dark:hover:text-gray-500 transition-all delay-[50ms] cursor-pointer text-center mt-1 block"
-        >
+        <Link href={"/"} className="sidebar-link !text-[10px] sm:!text-xs mt-1">
           Get Notified When New Blog Drops
         </Link>
-        <nav aria-label="Other Posts Navigation" className="mt-8" itemScope>
+        <nav aria-label="Other Posts Navigation" className="mt-6" itemScope>
           <ul role="list" className="flex flex-col gap-4">
             {blogPosts
               .sort((a, b) => b.id - a.id)
