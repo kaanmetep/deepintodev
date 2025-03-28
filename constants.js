@@ -20,4 +20,11 @@ export const blogPosts = [
     slug: "how-react-works-behind-the-scenes",
     date: "March 22, 2025",
   },
+  {
+    id: 3,
+    title: "Understanding Stateless vs Stateful Architectures",
+    readTime: 7,
+    slug: "what-is-stateless-and-stateful",
+    date: "March 28, 2025",
+  },
 ];

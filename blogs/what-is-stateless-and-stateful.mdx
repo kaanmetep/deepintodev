@@ -1,0 +1,117 @@
+---
+title: "Understanding Stateless vs Stateful Architectures"
+description: "Learn the key differences between stateless and stateful architectures, how to create something stateless or stateful, and explore real-world examples with visuals to make the concepts clearer."
+date: "2025-03-28"
+author: "Kaan Peksen"
+category: "Web Development"
+tags:
+  [
+    "stateless",
+    "stateful",
+    "architecture",
+    "web-development",
+    "JWT",
+    "load-balancer",
+  ]
+canonicalUrl: "https://deepintodev.com/blog/what-is-stateless-and-stateful"
+timeToRead: "7 minutes"
+language: "en"
+noIndex: false
+noFollow: false
+---
+
+So, you’ve probably heard the terms **stateless** and **stateful** a lot. Maybe you already have an idea of what they mean, or perhaps you think you do, but aren’t entirely sure.
+
+Don’t worry, by the end of this blog, you’ll have a clear understanding of how to create something "stateless" or "stateful." We’ll dive into the differences between these two concepts, and I’ll show you real-world examples of how they play out in the software industry. Let’s break it down together.
+
+### Example Scenario
+
+![Jack Sends Login Request](/JackLogins.png)
+
+Let's say we have a server with two endpoints. If a user sends a request to the `/login` endpoint, our server will make another request to the _database_, and if the credentials are correct, the user will be logged in.
+
+But how do we keep track of whether the user is "logged in"? We store this information in a variable—a state—on our server. We change the _logged in_ value to `true` after a successful login request. That's why, after the first request, we can determine if the user is logged in by checking our _state variable_ in the server's memory.
+
+![Jack Views Profile](/jackviewsprofile.png)
+
+Now that Jack is logged in, he can send a request to the `/viewprofile` endpoint—because that endpoint is only allowed for users whose _logged in_ status is `true`.
+
+However, there are some problems.
+
+![Request on Server-2](/RequestsToOtherServer.png)
+
+Our "logged in" check is stored in _Server-1's_ memory. As our app grows, we will likely introduce a _load balancer_ in front of our servers to distribute traffic and send users to the least busy server. (See the note below for more on load balancers.)
+
+The problem is that the load balancer might direct Jack's next request to _Server-2_ instead of _Server-1_. But _Server-2_ doesn't know Jack is logged in because the session state is stored in _Server-1's_ memory. As a result, Jack will be treated as if he is logged out, and the `/viewprofile` request will fail because it requires `logged: true`.
+
+> **Note:** A load balancer distributes incoming network traffic across multiple servers to ensure no single server is overwhelmed. It acts like a traffic cop, routing client requests efficiently to maximize speed and capacity utilization. By spreading the workload, load balancers improve application responsiveness and availability while preventing bottlenecks.
+
+This stateful architecture isn’t just about tracking whether a user is logged in. We could also store other user-related data, such as shopping cart contents, ensuring that users don't lose their data even if they navigate between pages.
+
+Our app’s _client-side_ is dependent on the server that holds its information. The client must keep communicating with that specific server, which is why we call this approach **stateful**. The client is not entirely free—it always needs help from the server.
+
+### How Can We Make This Stateless?
+
+![Token Sent](/token.png)
+
+To make the system **stateless**, when Jack successfully logs in, we generate a **token** using a specific _SecretKey_ and send it to him from the server. This token will ideally have an expiration time and other encrypted information. Importantly, the server **does not store** a _logged in_ state anymore. We simply send the token to the user, and that’s it.
+
+> **Note:** This token is typically sent via web cookies.
+
+![Request Sent with Token](/reqwithtoken.png)
+
+Now, on every request, Jack must send this token in the request header (ideally the header, but it can also be sent in the request body). The server no longer keeps track of logged-in users; instead, it simply verifies the token. When a request arrives, the server checks if the token was created using the same _SecretKey_—if it was, the request is authenticated, and the user is allowed to access their profile.
+
+As you can see in the image, Jack now sends the token along with his request.
+
+Since Jack is no longer tied to a specific server, he doesn’t care which server responds. As long as all servers use the same _SecretKey_ to verify JWTs, any server can authenticate Jack and respond to his requests without issues.
+
+This example shows the key difference between **stateful** and **stateless** architectures.
+
+In a **stateful** scenario, the client is _bound_ to a specific server because it stores session data.
+In a **stateless** scenario, even if a load balancer redirects the request to another server for horizontal scaling, it doesn’t matter. The client simply sends the token, and any server can authenticate the request.
+
+## Recap: Stateful vs. Stateless
+
+Now, let's recap one more time and take a detailed look at both approaches. Let's also see some real-world examples of how they are used.
+
+### **Stateless Architecture**
+
+A stateless architecture means that the server does not store any client session information between requests. Each request from the client must contain all the necessary information for the server to process it. The server treats every request as independent, without relying on previous interactions.
+
+Advantages of Stateless Architecture
+
+1. Scalability → Since there is no session data to manage, stateless systems scale horizontally more easily.
+2. Reliability → If one server fails, another server can handle requests without issues.
+3. Simplicity → Stateless systems are easier to maintain and require less memory.
+
+Common Stateless Examples:
+
+- RESTful APIs → Each request contains all necessary data (e.g., authentication token, query parameters).
+- Serverless Functions → These execute tasks without maintaining user session data.
+
+### **Stateful Architecture**
+
+A stateful architecture means that the server retains information about the client’s session between requests. The system maintains the client’s state across multiple interactions, so requests depend on previous ones.
+
+Advantages of Stateful Architecture
+
+1. Better User Experience → Users don’t need to repeatedly send all information.
+2. Efficient for Continuous Interactions → Applications requiring real-time data (e.g., messaging, banking) benefit from a stateful design.
+
+Common Stateful Examples
+
+- Online Banking Apps → User sessions store account details for ongoing transactions.
+- WebSockets\*\* → Real-time chat applications keep connections open and maintain session data.
+- E-Commerce Shopping Carts → The system remembers a user’s cart contents across page navigations.
+
+## Good to Know
+
+In the stateful architecture, we mentioned that a variable stored in the server's memory tracks whether a user is logged in. However, in real-world applications, you would typically create a **session** instead. The session key would then be sent to the client via **web cookies**, and the client would include this session key in each request, allowing the server to recognize the user and maintain session data.
+
+To improve performance, these session objects are often stored in an in-memory database (e.g., Redis), allowing all servers to access session data quickly. So, they don't just stay in that server's memory; they are stored in a common database that all servers can interact with.
+With this approach, even if a load balancer directs requests to different servers, all servers can access the same session data stored in the in-memory database. However, this requires additional infrastructure and maintenance for Redis, introduces potential performance bottlenecks if Redis becomes overloaded, and poses a risk of data loss if Redis crashes or is improperly configured.
+
+Alternatively, some systems use **sticky sessions**—a method that ensures the load balancer always routes requests from the same client to the same server. However, sticky sessions reduce the flexibility of the load balancer and make scaling more difficult.
+
+Now, you can now make the right decision on when to use **stateful** vs. **stateless** architectures in your applications!
