@@ -58,7 +58,7 @@ First, let's start with creating a basic form in NextJS.
 
 > **Note:** I will be deleting CSS styling from the code, so that you can only see the necessary part.
 
-![Basic Form](/basicform.png)
+![Basic Form](/images/form-handling-in-nextjs/basicform.png)
 
 Right now, our form elements are "uncontrolled elements," which means we don't control or store the values that are given by users. First, we will need to control the values because we're going to do some server-side actions with those values—let's say we need to save them to a database.
 
@@ -195,11 +195,11 @@ Now let's submit our form and check the network->Fetch/XHR tab.
 
 When we look at the headers of the request, we can clearly see we made a POST request.
 
-![Headers](/headers.png)
+![Headers](/images/form-handling-in-nextjs/headers.png)
 
 Also, if we check the payload, we sent all the form data as the payload with our request inside a formData object.
 
-![Payload](/headers.png)
+![Payload](/images/form-handling-in-nextjs/payload.png)
 
 So now, we can easily get this formData object to control our values. This means we didn't actually need to use `useState` hook, and create states for form inputs as we did before. Because when we submit the form, we send input values anyway.
 
@@ -224,7 +224,7 @@ export const saveFormDatasToDatabase = async (formData) => {
 
 Now, let's submit the form and see what's in our console.
 
-![Console](/console.png)
+![Console](/images/form-handling-in-nextjs/console.png)
 
 As we can see, we have our data coming from "frontend" to "backend" successfully.
 
@@ -310,7 +310,7 @@ export const saveFormDatasToDatabase = async (_, formData) => {
 
 Thanks to `useActionState`, now we are able to pass the "state" of the form between frontend and backend. Now we can throw some errors from our backend and receive them on our frontend. It also provides us a pending state, so that while the form is submitting, we can disable the button or even show some kind of a "loading" message to the user.
 
-![First Name Input Error](/firstnameerror.png)
+![First Name Input Error](/images/form-handling-in-nextjs/firstnameerror.png)
 
 ## Preserving Form Input Values
 

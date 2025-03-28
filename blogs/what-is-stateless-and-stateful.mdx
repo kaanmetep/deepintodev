@@ -26,19 +26,19 @@ Don’t worry, by the end of this blog, you’ll have a clear understanding of h
 
 ### Example Scenario
 
-![Jack Sends Login Request](/JackLogins.png)
+![Jack Sends Login Request](/images/what-is-stateless-and-stateful/JackLogins.png)
 
 Let's say we have a server with two endpoints. If a user sends a request to the `/login` endpoint, our server will make another request to the _database_, and if the credentials are correct, the user will be logged in.
 
 But how do we keep track of whether the user is "logged in"? We store this information in a variable—a state—on our server. We change the _logged in_ value to `true` after a successful login request. That's why, after the first request, we can determine if the user is logged in by checking our _state variable_ in the server's memory.
 
-![Jack Views Profile](/jackviewsprofile.png)
+![Jack Views Profile](/images/what-is-stateless-and-stateful/jackviewsprofile.png)
 
 Now that Jack is logged in, he can send a request to the `/viewprofile` endpoint—because that endpoint is only allowed for users whose _logged in_ status is `true`.
 
 However, there are some problems.
 
-![Request on Server-2](/RequestsToOtherServer.png)
+![Request on Server-2](/images/what-is-stateless-and-stateful/RequestsToOtherServer.png)
 
 Our "logged in" check is stored in _Server-1's_ memory. As our app grows, we will likely introduce a _load balancer_ in front of our servers to distribute traffic and send users to the least busy server. (See the note below for more on load balancers.)
 
@@ -52,13 +52,13 @@ Our app’s _client-side_ is dependent on the server that holds its information.
 
 ### How Can We Make This Stateless?
 
-![Token Sent](/token.png)
+![Token Sent](/images/what-is-stateless-and-stateful/token.png)
 
 To make the system **stateless**, when Jack successfully logs in, we generate a **token** using a specific _SecretKey_ and send it to him from the server. This token will ideally have an expiration time and other encrypted information. Importantly, the server **does not store** a _logged in_ state anymore. We simply send the token to the user, and that’s it.
 
 > **Note:** This token is typically sent via web cookies.
 
-![Request Sent with Token](/reqwithtoken.png)
+![Request Sent with Token](/images/what-is-stateless-and-stateful/reqwithtoken.png)
 
 Now, on every request, Jack must send this token in the request header (ideally the header, but it can also be sent in the request body). The server no longer keeps track of logged-in users; instead, it simply verifies the token. When a request arrives, the server checks if the token was created using the same _SecretKey_—if it was, the request is authenticated, and the user is allowed to access their profile.
 

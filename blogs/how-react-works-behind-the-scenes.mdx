@@ -460,7 +460,7 @@ If you click on the button then the count state will change. It will re-render t
 
 Even if a child's props don't change, it will still re-render if its parent re-renders.
 
-![React Component Tree](/tree.png)
+![React Component Tree](/images/how-react-works-behind-the-scenes/tree.png)
 
 ```jsx
 function Parent() {
@@ -533,7 +533,7 @@ Before we dive deep into how Virtual DOM works, let's clarify some concepts furt
 
 We know about how we get `React elements`.`React elements` are just objects that are returned by `React.createElement()` function calls. We've explored many examples, so we have no question about this.
 
-![Diagram](/interface.png)
+![Diagram](/images/how-react-works-behind-the-scenes/interface.png)
 
 Now, we have to figure out how this `React Element` will turn into an actual `DOM Element`.
 
@@ -652,7 +652,7 @@ In this case:
 
 To make everything clear, let's see examples of these possible situations.
 
-![Diffing Algorithm](/diffing.png)
+![Diffing Algorithm](/images/how-react-works-behind-the-scenes/diffing.png)
 
 As we mentioned earlier, "if an element's position is the same, and 'that' element isn't a different element," it will be preserved in the DOM. This means **its state will not reset**. This principle has significant implications in real-world applications.
 
@@ -701,15 +701,15 @@ export default Page;
 
 The initial rendering appears like this:
 
-![Diffing Algorithm Photo 1](/content1.png)
+![Diffing Algorithm Photo 1](/images/how-react-works-behind-the-scenes/content1.png)
 
 Now, let's hide the content by clicking the "Hide content" button:
 
-![Diffing Algorithm Photo 2](/content2.png)
+![Diffing Algorithm Photo 2](/images/how-react-works-behind-the-scenes/content2.png)
 
 Next, let's change the tab by clicking the "Change tabs" button:
 
-![Diffing Algorithm Photo 3](/content3.png)
+![Diffing Algorithm Photo 3](/images/how-react-works-behind-the-scenes/content3.png)
 
 Do you notice what happened? Our content remains hidden. This shows that the state is "preserved," which occurs because it's the "same position, same element." Therefore, the element persists in the DOM along with its states. However, this isn't something that we always want. We actually want to "reset" the state even when it's the "same position, same element."
 
@@ -743,7 +743,7 @@ There's also a second use case for the `key` prop:
 
 When a key value remains consistent across renders, the element will be preserved in the DOM (even if its position in the tree changes). **This is actually why we use the `key` prop in lists**. In fact, it's a requirement to avoid unnecessary re-renders and unexpected UI behaviors.
 
-![Key attribute](/keys.png)
+![Key attribute](/images/how-react-works-behind-the-scenes/keys.png)
 
 > **Note:** Key values must be unique!
 
@@ -759,7 +759,7 @@ So now you understand there are two primary use cases for the `key` prop:
 
 We've covered numerous concepts about React's internal mechanisms. Let's now recap everything we've learned so far and introduce a few additional terms to provide you with a comprehensive understanding of how React operates behind the scenes.
 
-![React Tree](/wholetree.png)
+![React Tree](/images/how-react-works-behind-the-scenes/wholetree.png)
 
 > **Note:** We referred to an "updated fiber tree" in the image above because, rather than creating entirely new tree structures for each update, React efficiently modifies the existing Fiber tree. During the update process, React creates new Fiber nodes where necessary and reuses existing ones when possible. This approach is significantly more memory-efficient than generating a completely new tree structure for every update.
 
