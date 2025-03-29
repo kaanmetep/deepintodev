@@ -57,7 +57,7 @@ export default function MobileHeader() {
                 </li>
                 <li className="text-black dark:text-white">|</li>
                 <li className="sidebar-link">
-                  <a href="mailto:kaanpmete@gmail.com">Contact</a>
+                  <a href="mailto:kaan@kmpcodes.com">Contact</a>
                 </li>
               </ul>
             </div>
