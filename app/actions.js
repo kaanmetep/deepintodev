@@ -11,21 +11,29 @@ import { MongoClient } from "mongodb";
 const emailSchema = z
   .string()
   .email("Invalid email format")
-  .max(255, "Email too long");
+  .max(255, "Email is too long");
 
 async function sendVerificationEmail(email, transporter) {
-  const token = jwt.sign(
-    {
-      email,
-      jti: randomBytes(16).toString("hex"),
-    },
-    process.env.SECRET_KEY,
-    { expiresIn: "10m" }
-  );
+  if (!process.env.SECRET_KEY) {
+    throw new Error("SECRET_KEY is not defined");
+  }
 
-  const verificationLink = `${process.env.BASE_URL}/api/verify?token=${token}`;
+  if (!process.env.BASE_URL) {
+    throw new Error("BASE_URL is not defined");
+  }
 
   try {
+    const token = jwt.sign(
+      {
+        email,
+        jti: randomBytes(16).toString("hex"),
+      },
+      process.env.SECRET_KEY,
+      { expiresIn: "10m" }
+    );
+
+    const verificationLink = `${process.env.BASE_URL}/api/verify?token=${token}`;
+
     await transporter.sendMail({
       from: `"DeepIntoDev" <${process.env.EMAIL}>`,
       to: email,
@@ -79,14 +87,16 @@ async function sendVerificationEmail(email, transporter) {
     });
   } catch (error) {
     console.error("Email sending failed", error);
-    throw new Error("Failed to send verification email");
+    throw new Error(`Failed to send verification email: ${error.message}`);
   }
 }
 
 export async function subscribe(_, formData) {
-  const email = formData.get("email");
+  let client = null;
+  let redis = null;
 
   try {
+    const email = formData.get("email");
     if (!email) {
       throw new Error("Email is required!");
     }
@@ -95,64 +105,96 @@ export async function subscribe(_, formData) {
     if (!result.success) {
       throw new Error(result.error.errors[0].message);
     }
-    let client;
+
+    if (!process.env.MONGODB_URI) {
+      throw new Error("MongoDB connection string is not defined");
+    }
+
     try {
       client = new MongoClient(process.env.MONGODB_URI);
-
       await client.connect();
-      const collection = client.db("newsletter").collection("subscribers");
 
+      const collection = client.db("newsletter").collection("subscribers");
       const existingUser = await collection.findOne({ email });
+
       if (existingUser) {
         throw new Error("User is already subscribed to DeepIntoDev.");
       }
     } catch (err) {
-      throw new Error(err.message);
-    } finally {
-      await client.close();
+      throw new Error(`${err.message}`);
     }
-    const redis = await createSecureRedisClient();
+
+    try {
+      redis = await createSecureRedisClient();
+    } catch (err) {
+      throw new Error(`Redis connection error: ${err.message}`);
+    }
 
     const clientIp =
       headers().get("x-forwarded-for")?.split(",")[0] ||
       headers().get("x-real-ip");
 
-    await checkRateLimit(redis, `ratelimit:subscribe:${clientIp}`, {
-      limit: 3,
-      duration: 300, // 5 minutes window
-      blockDuration: 1800, // 30 mins block if exceeded
-    });
-
-    const transporter = nodemailer.createTransport({
-      host: "smtp.zoho.eu",
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.EMAIL,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-      timeout: 10000, // 10 seconds timeout
-    });
-
-    await sendVerificationEmail(email, transporter);
-
-    return {
-      message: "Invitation email sent. Please check your inbox.",
-      status: "success",
-    };
-  } catch (err) {
-    if (err.message === "RateLimitExceeded") {
-      return {
-        message: "Too many requests. Please try again later.",
-        status: "rate_limited",
-      };
+    if (!clientIp) {
+      throw new Error("Could not determine client IP");
     }
 
+    try {
+      await checkRateLimit(redis, `ratelimit:subscribe:${clientIp}`, {
+        limit: 3,
+        duration: 300, // 5 minutes window
+        blockDuration: 1800, // 30 mins block if exceeded
+      });
+    } catch (err) {
+      if (err.message === "RateLimitExceeded") {
+        return {
+          message: "Too many requests. Please try again later.",
+          status: "rate_limited",
+        };
+      }
+      throw err;
+    }
+
+    if (!process.env.EMAIL || !process.env.EMAIL_PASSWORD) {
+      throw new Error("Email credentials are not configured");
+    }
+
+    try {
+      const transporter = nodemailer.createTransport({
+        host: "smtp.zoho.eu",
+        port: 465,
+        secure: true,
+        auth: {
+          user: process.env.EMAIL,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+        timeout: 10000, // 10 seconds timeout
+      });
+
+      await transporter.verify();
+
+      await sendVerificationEmail(email, transporter);
+
+      return {
+        message: "Invitation email sent. Please check your inbox.",
+        status: "success",
+      };
+    } catch (err) {
+      throw new Error(`Email service error: ${err.message}`);
+    }
+  } catch (err) {
     console.error("Subscription process error", err);
 
     return {
       message: err.message,
       status: "error",
     };
+  } finally {
+    if (client) {
+      try {
+        await client.close();
+      } catch (err) {
+        console.error("Error closing MongoDB connection", err);
+      }
+    }
   }
 }

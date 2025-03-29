@@ -85,11 +85,6 @@ Advantages of Stateless Architecture
 2. Reliability → If one server fails, another server can handle requests without issues.
 3. Simplicity → Stateless systems are easier to maintain and require less memory.
 
-Common Stateless Examples
-
-- RESTful APIs → Each request contains all necessary data (e.g., authentication token, query parameters).
-- Serverless Functions → These execute tasks without maintaining user session data.
-
 ### **Stateful Architecture**
 
 A stateful architecture means that the server retains information about the client’s session between requests. The system maintains the client’s state across multiple interactions, so requests depend on previous ones.
@@ -98,6 +93,21 @@ Advantages of Stateful Architecture
 
 1. Better User Experience → Users don’t need to repeatedly send all information.
 2. Efficient for Continuous Interactions → Applications requiring real-time data (e.g., messaging, banking) benefit from a stateful design.
+
+---
+
+Being stateful or stateless is not just about the "server-client" level. Your functions can also be stateful or stateless—yes, even your functions!
+
+Let's say you have 2 functions: `Function A` and `Function B`
+
+If `Function A` is not affected by anything from the outside world -outside its own scope-, it is stateless. It is not connected to anything external. If you give it the same input, it will always return the same output because nothing from the outside changes it.
+
+But `Function B` depends on some variables that are defined outside of it. Because of these external variables, it might return different results for the same input. This means `Function B` is not independent; it is connected to something else, so it is stateful.
+
+Common Stateless Examples
+
+- RESTful APIs → Each request contains all necessary data (e.g., authentication token, query parameters).
+- Serverless Functions → These execute tasks without maintaining user session data.
 
 Common Stateful Examples
 
