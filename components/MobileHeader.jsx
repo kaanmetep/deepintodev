@@ -62,7 +62,7 @@ export default function MobileHeader() {
               </ul>
             </div>
             <Link
-              href={"/"}
+              href={"/newsletter"}
               className="sidebar-link !text-[10px] sm:!text-xs sm:mt-1"
               onClick={() => setShowMenu(false)}
             >

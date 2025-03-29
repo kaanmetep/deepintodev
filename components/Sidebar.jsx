@@ -63,7 +63,10 @@ const Sidebar = () => {
             </li>
           </ul>
         </nav>
-        <Link href={"/"} className="sidebar-link !text-[10px] sm:!text-xs mt-1">
+        <Link
+          href={"/newsletter"}
+          className="sidebar-link !text-[10px] sm:!text-xs mt-1"
+        >
           Get Notified When New Blog Drops
         </Link>
         <nav aria-label="Other Posts Navigation" className="mt-6" itemScope>

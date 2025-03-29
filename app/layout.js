@@ -140,7 +140,7 @@ export default function RootLayout({ children }) {
                   Contact
                 </a>
                 <Link
-                  href="/"
+                  href="/newsletter"
                   className="  transition-colors delay-[50ms] hover:text-gray-700 dark:hover:text-gray-500"
                   itemProp="url"
                 >

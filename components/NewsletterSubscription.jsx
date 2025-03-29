@@ -26,7 +26,7 @@ export default function NewsletterSubscription() {
           <button
             disabled={pending}
             type="submit"
-            className={` flex-1 relative text-gray-600 uppercase px-1 lg:px-5 py-2 lg:py-6 font-light 
+            className={`flex flex-1 relative text-gray-600 uppercase px-1 lg:px-5 py-2 lg:py-6 font-light 
               transition-all duration-300 ease-in-out transform
               disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer hover:bg-gray-100/80 dark:hover:bg-gray-100/30 text-[10px] sm:text-xs lg:text-base border-l border-gray-200 dark:border-gray-100
               flex items-center justify-center `}
@@ -47,7 +47,7 @@ export default function NewsletterSubscription() {
         </div>
       </form>
 
-      <p className="text-gray-500 text-center mt-2 text-xs lg:text-base">
+      <p className="text-gray-500 text-center my-2 text-xs lg:text-base">
         <span className="text-gray-950 dark:text-gray-50 font-semibold">
           Be the first to know
         </span>{" "}
@@ -57,7 +57,7 @@ export default function NewsletterSubscription() {
         <p
           className={`${
             state?.status === "success" ? "text-green-600" : "text-red-700"
-          } tracking-wide font-bold text-center mt-2 text-xs lg:text-base`}
+          } tracking-wide font-bold text-center  text-xs lg:text-base`}
         >
           {state?.message}
         </p>
