@@ -67,7 +67,7 @@ export default async function BlogPost({ params }) {
 
   return (
     <div className="flex flex-col items-center w-full ">
-      <article className="w-full max-w-5xl mx-auto px-4 pt-10 ">
+      <article className="w-full max-w-5xl 2xl:max-w-7xl mx-auto px-4 pt-10 ">
         <header className="mb-8 ">
           <h1 className="text-4xl font-bold mb-4 mt-4 lg:mt-0 dark:text-white">
             {frontMatter.title}
