@@ -10,8 +10,8 @@ import { MongoClient } from "mongodb";
 
 const emailSchema = z
   .string()
-  .email("Invalid email format")
-  .max(255, "Email is too long");
+  .email("Invalid email format!")
+  .max(255, "Email is too long!");
 
 async function sendVerificationEmail(email, transporter) {
   if (!process.env.SECRET_KEY) {
@@ -22,23 +22,22 @@ async function sendVerificationEmail(email, transporter) {
     throw new Error("BASE_URL is not defined");
   }
 
-  try {
-    const token = jwt.sign(
-      {
-        email,
-        jti: randomBytes(16).toString("hex"),
-      },
-      process.env.SECRET_KEY,
-      { expiresIn: "10m" }
-    );
+  const token = jwt.sign(
+    {
+      email,
+      jti: randomBytes(16).toString("hex"),
+    },
+    process.env.SECRET_KEY,
+    { expiresIn: "10m" }
+  );
 
-    const verificationLink = `${process.env.BASE_URL}/api/verify?token=${token}`;
+  const verificationLink = `${process.env.BASE_URL}/api/verify?token=${token}`;
 
-    await transporter.sendMail({
-      from: `"DeepIntoDev" <${process.env.EMAIL}>`,
-      to: email,
-      subject: "DeepIntoDev Newsletter - Email Verification",
-      html: `<!DOCTYPE html>
+  await transporter.sendMail({
+    from: `"DeepIntoDev" <${process.env.EMAIL}>`,
+    to: email,
+    subject: "DeepIntoDev Newsletter - Email Verification",
+    html: `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -84,11 +83,7 @@ async function sendVerificationEmail(email, transporter) {
 </body>
 </html>
 `,
-    });
-  } catch (error) {
-    console.error("Email sending failed", error);
-    throw new Error(`Failed to send verification email: ${error.message}`);
-  }
+  });
 }
 
 export async function subscribe(_, formData) {
@@ -109,33 +104,24 @@ export async function subscribe(_, formData) {
     if (!process.env.MONGODB_URI) {
       throw new Error("MongoDB connection string is not defined");
     }
+    client = new MongoClient(process.env.MONGODB_URI);
+    await client.connect();
 
-    try {
-      client = new MongoClient(process.env.MONGODB_URI);
-      await client.connect();
+    const collection = client.db("newsletter").collection("subscribers");
+    const existingUser = await collection.findOne({ email });
 
-      const collection = client.db("newsletter").collection("subscribers");
-      const existingUser = await collection.findOne({ email });
-
-      if (existingUser) {
-        throw new Error("User is already subscribed to DeepIntoDev.");
-      }
-    } catch (err) {
-      throw new Error(`${err.message}`);
+    if (existingUser) {
+      throw new Error("User is already subscribed to DeepIntoDev.");
     }
 
-    try {
-      redis = await createSecureRedisClient();
-    } catch (err) {
-      throw new Error(`Redis connection error: ${err.message}`);
-    }
+    redis = await createSecureRedisClient();
 
     const clientIp =
       headers().get("x-forwarded-for")?.split(",")[0] ||
       headers().get("x-real-ip");
 
     if (!clientIp) {
-      throw new Error("Could not determine client IP");
+      throw new Error("Could not determine client IP. Please try again.");
     }
 
     try {
@@ -154,33 +140,32 @@ export async function subscribe(_, formData) {
       throw err;
     }
 
+    // Check email configuration
     if (!process.env.EMAIL || !process.env.EMAIL_PASSWORD) {
       throw new Error("Email credentials are not configured");
     }
 
-    try {
-      const transporter = nodemailer.createTransport({
-        host: "smtp.zoho.eu",
-        port: 465,
-        secure: true,
-        auth: {
-          user: process.env.EMAIL,
-          pass: process.env.EMAIL_PASSWORD,
-        },
-        timeout: 10000, // 10 seconds timeout
-      });
+    // Set up email transporter
+    const transporter = nodemailer.createTransport({
+      host: "smtp.zoho.eu",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+      timeout: 10000, // 10 seconds timeout
+    });
 
-      await transporter.verify();
+    await transporter.verify();
 
-      await sendVerificationEmail(email, transporter);
+    // Send verification email
+    await sendVerificationEmail(email, transporter);
 
-      return {
-        message: "Invitation email sent. Please check your inbox.",
-        status: "success",
-      };
-    } catch (err) {
-      throw new Error(`Email service error: ${err.message}`);
-    }
+    return {
+      message: "Invitation email sent. Please check your inbox.",
+      status: "success",
+    };
   } catch (err) {
     console.error("Subscription process error", err);
 

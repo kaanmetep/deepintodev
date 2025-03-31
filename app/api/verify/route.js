@@ -14,22 +14,27 @@ async function saveEmailToDatabase(email) {
 
     const existingUser = await collection.findOne({ email });
     if (existingUser) {
+      console.log(`ERROR: User already subscribed: ${email}`);
       throw new Error("User is already subscribed");
     }
 
     await collection.insertOne({ email, verified: true });
   } catch (err) {
+    console.error(`DATABASE ERROR: ${err.message}`);
     throw new Error(err.message);
   } finally {
-    await client.close();
+    if (client) {
+      await client.close();
+    }
   }
 }
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
-  const token = searchParams.get("token");
+  const token = searchParams?.get("token");
 
   if (!token) {
+    console.error("ERROR: Token missing in request");
     return new NextResponse("<h1>Token is required</h1>", {
       status: 400,
       headers: { "Content-Type": "text/html" },
@@ -48,6 +53,7 @@ export async function GET(request) {
     });
 
     await saveEmailToDatabase(email);
+
     return new NextResponse(
       `
        <!DOCTYPE html>
@@ -113,6 +119,7 @@ export async function GET(request) {
     );
   } catch (error) {
     if (error.message === "RateLimitExceeded") {
+      console.error(`RATE LIMIT EXCEEDED: ${request.url}`);
       return new NextResponse(
         `<h1>Rate Limit Exceeded</h1>
         <p>You've made too many verification attempts. Please wait 30 minutes before trying again.</p>
@@ -125,6 +132,7 @@ export async function GET(request) {
     }
 
     if (error instanceof jwt.TokenExpiredError) {
+      console.error(`TOKEN EXPIRED: ${token}`);
       return new NextResponse(
         `<h1>Verification Token Expired</h1>
         <p>The verification link has expired. Please request a new verification email.</p>
@@ -137,6 +145,7 @@ export async function GET(request) {
     }
 
     if (error instanceof jwt.JsonWebTokenError) {
+      console.error(`INVALID TOKEN: ${error.message}`);
       return new NextResponse(
         `<h1>Invalid Verification Token</h1>
         <p>The verification token is not valid. It may have been tampered with or is incorrect.</p>
@@ -148,6 +157,7 @@ export async function GET(request) {
       );
     }
 
+    console.error(`GENERIC ERROR: ${error.message}`);
     return new NextResponse(
       `<h1>Verification Failed</h1>
       <p>An unexpected error occurred during email verification.</p>
