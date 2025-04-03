@@ -1,0 +1,641 @@
+---
+title: "How Data Travels the Globe to Reach Your Screen: A Deep Dive into OSI, TCP/UDP, HTTP, and More"
+description: "Ever wondered how data travels across the network? In this blog, we’ll break down the OSI model, TCP/IP, protocols like TCP, UDP, HTTP, HTTPS, and dive into HTTP versions, exploring how data is transferred efficiently and securely across networks."
+date: "2025-04-03"
+author: "Kaan Peksen"
+category: "Networking and HTTP"
+tags: ["OSI model", "TCP/IP", "TCP", "UDP", "HTTP", "HTTPS"]
+canonicalUrl: "https://deepintodev.com/blog/how-data-travels-the-globe-to-reach-your-screen"
+timeToRead: "20 minutes"
+language: "en"
+noIndex: false
+noFollow: false
+---
+
+Okay, this is the blog where you'll finally understand all the **OSI Model** , **TCP** , **UDP** , **TCP/IP** and **HTTP** concepts without any hesitation. Once and for all! After reading this blog, you'll be able to answer these questions like a pro:
+
+- **What really happens when I click on a web browser and try to access it?**
+- **How is data sent over the network?**
+- **How does data travel from across oceans to your MacBook?**
+- **What is TCP, and UDP? What are the differences between them?**
+- **What is HTTP and how does it work?**
+- **What are HTTP versions, and how are they different from each other?**
+
+And when you can answer all these questions (or at least have a clear idea), you'll confidently say that you understand how the digital world connects us all. Every developer—whether frontend, backend, or both—should understand this process. (Actually, anyone working in tech should know this, at least on a basic level.)
+
+Have you ever wondered how cat videos magically swim across oceans to reach your MacBook? Before we dive into that, we have to start from scratch. So to start from scratch, first we need to invent the world -world of communication in a network-. And it all begins with the legendary **OSI model**!
+
+The OSI model is the building block for communication in a network. So, if you want to send a message to a computer (server, phone, whatever), it all starts with the OSI model.
+
+Now, let's walk through an example step by step. Believe me or not, after you finish this blog, you will understand how things actually work behind the scenes.
+
+## Example Scenario
+
+![System Image](/system.png)
+
+Let's assume we have a system like this at home. We have a router, and three devices are connected to it via Wi-Fi.
+
+> **Note**: Don't worry about IP addresses right now. If you’re not familiar with them, think of IP addresses as identifiers assigned to devices so that data knows where it's headed. (There are also MAC addresses for devices, which can also be seen as identifiers.)
+
+Let's say the PC with the IP address `10.0.0.3` is hosting a web server, and that web server (on port 80) has a web app. (Remember, servers are just computers too, so it's the same thing.) Now, we want to access that web page from our computer, which has the IP address `10.0.0.4`.
+
+![Connection](/wanttoconnect.png)
+
+Okay, now let's break down what happens. So, we’ll type "10.0.0.3:80" (remember, our web app is on port 80) into the browser and hit enter. When we press enter, our browser—whether it's Google Chrome, Firefox, or whatever—will take this "string" and turn it into another "string" starting with `GET / HTTP/1.1 ...`. And that’s what we call a "GET" request.
+
+After our client started to send this "GET" request to the server, the OSI model comes into play, as we’ve started a communication between two devices in a network, which means we’re **activating the OSI model**.
+
+Because somehow, that information—which will eventually turn into 1s and 0s—needs to be transferred through cables as electric signals, right? (Or radio waves if it’s a Wi-Fi connection.) How do those 1s and 0s travel inside a cable? How should they? That’s exactly what the OSI model answers. It's a blueprint that helps us understand how data is transferred.
+
+## Steps of OSI
+
+Before we dive into the OSI steps, let’s first understand why do we need all of these steps one more time.
+
+Basically, we start with "raw data". To transfer this data over the network, we need to add some "extra information"—headers and trailers—so the data knows where it's going, how it's getting there, etc. So, different layers in OSI model (though not every layer) will add some extra info to our data. This data is passed between layers as structured **byte streams** (a sequence of bytes).
+
+> **Note:** We actually call this data the Protocol Data Unit (PDU) after we add some additional info. So, PDU is essentially the unit of data transmitted between network entities—it’s the package of information that gets passed around in a network.
+
+Now, let's go through the seven layers of OSI. Don't worry if it doesn't make sense to you. It will become clearer as you keep reading.
+
+## 7- Application Level -> GET / 10.0.0.3 80 ...
+
+Remember our goal. Our goal is to **PREPARE THE DATA BY ADDING DIFFERENT INFOS** so that it can be transferred through cables in the most efficient, safe, and speedy way possible. The application layer uses the **HTTP protocol** (since we’re dealing with the web) to add those "extra infos" to our data. Then it hands it off to the next layer.
+
+This is the only layer that directly interacts with user data. We don’t always send HTTP requests over the network, but when we send a GET request on web, we use the HTTP protocol. We could also use different protocols for different tasks (e.g., SMTP - Simple Mail Transfer Protocol is used for email communications).
+
+It’s important to understand this: **HTTP is actually a protocol in the OSI model**, specifically at the application layer (Level 7). As we move through the layers, we'll see other protocols used at different steps. (We’ll also dive into the HTTP protocol in more detail later in this blog.)
+
+After HTTP protocol does its job, data will be turned into something like this;
+
+```jsx
+GET /index.html HTTP/1.1
+Host: www.example.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+Accept: text/html,application/xhtml+xml
+Accept-Language: en-US;q=0.8,en;q=0.7
+Accept-Encoding: gzip, deflate, br
+Connection: keep-alive
+Cookie: session=abc123; user=jack
+```
+
+## Level 6 - Presentation
+
+The main responsibility of this layer is to provide or define the data format and encryption. If it's HTTPS, it takes the byte streams that came from previous layer, and encrypts them. The presentation layer is responsible for translating, encrypting, and compressing data.
+
+Okay, so we’ve prepared the byte streams in a structured and secure way. Now, we move on to the next steps.
+
+## Level 5 - Session
+
+This level establishes a session tag for those byte streams. This way, we know who is sending data to our server through that **session tag**. For example, if multiple requests come through, we know that the data belongs to a specific session.
+
+In formal terms, this layer establishes, maintains, and terminates communication sessions between two network devices. It also handles functions like authentication, authorization, and session management during data exchange. Additionally, it ensures that data flow continues smoothly by allowing the session to resume if there's a disruption in communication.
+
+## Level 4 - Transport
+
+Now, we have these huge byte streams, which are too big to send. The transport layer breaks these byte streams into chunks called `segments`, and each segment gets tagged with the port number (source port). This layer is responsible for end-to-end communication between the two devices.
+
+The transport layer on the receiving device is responsible for reassembling the segments into data that the session layer can process.
+
+> Don’t forget that this communication needs to happen in both directions. Here’s the flow:\
+> **Request (Sending) Flow:** Application → Presentation → Session → Transport → Network → Data Link → Physical Layer\
+> **Response (Receiving) Flow:** Physical → Data Link → Network → Transport → Session → Presentation → Application Layer
+
+So, how is this all managed in the transport layer? Just like at the application level, there are protocols for handling communication here too. These protocols are called `TCP` or `UDP`. We’ll explore these protocols in detail later in this blog.
+
+## Level 3 - Network
+
+Now, the segments are passed to the network layer. This layer adds the source and destination IP addresses to the byte streams with segments. Now, these segments are called `packets`.
+
+This layer breaks segments from the transport layer into smaller units (packets) on the sender's device and reassembles them on the receiving device. It also determines the best physical path for the data to reach its destination, a process known as routing.
+
+And yes, there are protocols here too. How we handle this process may vary depending on the protocol. Examples include ICMP (Internet Control Message Protocol) or IGMP.
+
+## Level 2 - Data Link
+
+The data link layer takes the packets from the network layer, breaks them down into `frames`, and adds the target’s MAC address to each frame. Now, every frame has a target MAC address.
+
+The data link layer is similar to the network layer, but it facilitates data transfer between devices **on the same network**.
+
+Like the network layer, the data link layer is also responsible for flow control and error control in intra-network communication (the transport layer only handles flow control and error control for inter-network communications).
+
+> **Note:** Intra-network communication refers to data exchange between devices within the **same** network.
+
+## Level 1 - Physical
+
+This layer involves the physical equipment used in data transfer, like cables and switches. This is where the data gets converted into a bit stream (bunch of 1s and 0s). It then sends these bits to all connected users on the same local network. But only the PC with the matching MAC address will receive and process the data. This task is handled by the **network card**!
+
+> **Note:** That’s why connecting to public Wi-Fi is risky! Why? Because everyone on that Wi-Fi network can access your frames that is sent from physical layer! Using tools like Wireshark, anyone can monitor frames, even if the MAC address doesn’t match. If the data isn’t encrypted, it can be stolen.
+
+All these steps, and their order, were for **sending a request**. Now, our server has the data, and it will go through all the steps but in **reverse**. So, when a device—our server in this case— receives data it starts with the physical layer and goes up to the application layer.
+
+When it finally reaches the application layer, it will have the request that we tried to send.
+
+```jsx
+GET /index.html HTTP/1.1
+Host: www.example.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+Accept: text/html,application/xhtml+xml
+Accept-Language: en-US;q=0.8,en;q=0.7
+Accept-Encoding: gzip, deflate, br
+Connection: keep-alive
+Cookie: session=abc123; user=jack
+```
+
+It was something like this, right? Now, our web server has some _special software_\* to understand this message clearly and return the correct response. Both our server and client use the HTTP protocol at the application layer, which is universal. This way, they both know what kind of data they will be dealing with. If everyone didn’t use the same protocol, the shape of the sent and received data would be completely different, and we’d be in a huge mess!
+
+> **Note:** \*This 'special software' might be one of those that can process HTTP requests: Node.js, PHP, Python (Flask, Django), Java (Spring Boot) ...
+
+The communication has finally finished. When you send data over the network, all these steps happen again and again. But don't worry, it happens really FAST!
+
+Now, we are going to dive deeper into the protocols we've discussed at different levels. But before that, let's take a look at one more important concept you may have heard of before: `TCP/IP`!
+
+The OSI and TCP/IP models are both layered frameworks used to organize computer network communications. While the TCP/IP model forms the foundation of the internet we use daily, the OSI model is a more theoretical framework designed to help understand and study network systems.
+
+So, while the OSI model is primarily theoretical and used for educational purposes, **TCP/IP is the practical implementation that powers the internet.**
+
+The OSI model consists of seven layers, as we saw earlier, whereas TCP/IP has only four layers:
+
+- Network Interface
+- Internet
+- Transport
+- Application
+
+Here's how these layers correspond:
+
+- TCP/IP's Network Interface layer corresponds to the OSI model's Physical and Data Link layers.
+
+- TCP/IP's Internet layer corresponds to the OSI model's Network layer.
+
+- TCP/IP's Transport layer corresponds to the OSI model's Transport layer.
+
+- TCP/IP's Application layer encompasses the OSI model's Session, Presentation, and Application layers.
+
+In summary, while the OSI model provides a theoretical foundation for understanding network communications with its seven distinct layers, **TCP/IP is the practical implementation that enables the internet as we know it today.** However, all the protocols we have discussed—and the ones we will explore in more detail—remain the same across both models.
+
+---
+
+Okay, now we know what the OSI (and also TCP/IP) model is. It was the foundation for how data is transferred in a network. We've seen some "protocols" that handle specific layers. In layer 4, the transport layer, we talked about the UDP and TCP protocols. But how do they really work? It's really important to understand these two protocols to learn HTTP as well. Also, since they are the building blocks of communication, we should at least have an idea of how they work.
+
+## What Are TCP and UDP?
+
+Before we dive into the differences, let's first understand what TCP and UDP are in the simplest way possible.
+
+Imagine you're sending a message to a friend. You have two ways to do it:
+
+1. **Carefully written letter (TCP):** You make sure the letter is complete, properly addressed, and that your friend actually receives it. If a page goes missing, you resend it until they get the full message.
+2. **Quick text message (UDP):** You just send a quick text without worrying if it gets lost. If your friend misses it, you don’t resend it—you just move on.
+
+That’s basically how TCP and UDP work in a network.
+
+Now, let's see more in detail.
+
+## TCP (Transmission Control Protocol)
+
+TCP is designed for sending information reliably from one computer to another by specifying the **IP address** and **port**. It’s used in things like databases and web browsers, where accuracy is more important than speed.
+
+### Why use TCP?
+
+- **Reliable (Acknowledgment system)** – The internet is huge, with data traveling across oceans and through millions of devices. There’s always a chance something gets lost, so TCP has built-in checks to make sure everything arrives safely.
+- **Guaranteed delivery** – If a message is lost, TCP automatically resends it.
+- **Connection-based** – Before sending anything, the server and client must establish a connection (like shaking hands before talking). (being connection-based might actually be a downside too. it depends on the thing you are building.)
+- **Ordered packets** – Messages arrive in the correct order, even if they get scrambled along the way.
+- **Congestion control** – If the network is too busy, TCP slows things down to prevent overload.
+
+![TCP Example](/images/tcp.png)
+
+TCP uses a **three-way handshake method** to establish a reliable connection. This process consists of the following steps:
+
+1. First Step (SYN): The client sends a connection request to the server. This request has the SYN (Synchronize) bit (Flag) set to 1.
+2. Second Step (SYN-ACK): The server receives the SYN request from the client and responds with a SYN+ACK (Acknowledge) segment.
+   SYN = 1 (Indicating acceptance of the connection)
+   ACK = 1 (Indicating the request was received)
+3. Third Step (ACK): The client sends an ACK (Acknowledge) packet back to the server after receiving the SYN-ACK response. At this point, the connection is established, and data transfer can begin.
+
+> **Note:** When we talked about the OSI Model, we said that different layers add different types of information—headers, to be more specific—to our data. The SYN and ACK flags are part of that 'extra added information'. They are used to initiate a connection during the three-way handshake process. The header section contains control information like the SYN and ACK flags, while the data section carries the actual content you're sending.
+
+### Where is TCP used?
+
+- **Web browsing** – Ensures secure and reliable data transfer.
+- **Emails** – Makes sure emails arrive completely and in order.
+- **Databases (MySQL, PostgreSQL, etc.)** – Ensures accurate and consistent data retrieval.
+
+### Downsides of TCP
+
+- **Slower than UDP** – All these extra checks add delay.
+- **Larger packets** – More reliability means more data added to each message.
+- **Stateful** – The server remembers connections, which takes up memory. If too many people try to connect, the server can run out of resources (which is how DDoS attacks work).
+
+[If you want to see the difference between stateful app and stateless app, click here](https://www.deepintodev.com/blog/what-is-stateless-and-stateful)
+
+## UDP (User Datagram Protocol)
+
+UDP is like sending a quick message without worrying about delivery. It’s **faster** but **less reliable** than TCP.
+
+### Why use UDP?
+
+- **Smaller packets** – Less data per message, so it’s great for low-bandwidth situations. (2G, 3G connections)
+- **Faster than TCP** – No extra steps like connection setup or acknowledgment.
+- **Stateless** – The server doesn’t keep track of who’s connected, making it lightweight.
+
+![UDP Example](/images/udp.png)
+
+Unlike TCP, UDP is a connectionless protocol, meaning it does not establish a connection before sending data.
+There is no handshake or initial connection setup between the sender and the receiver. UDP simply sends packets (datagrams) to the destination address without ensuring the destination is ready or available to receive them.
+
+### Where is UDP used?
+
+If **low latency** (fast delivery) is more important than 100% accuracy, UDP is the way to go.
+
+### Downsides of UDP
+
+- **No acknowledgment** – You send the data and hope it arrives, but there’s no confirmation.
+- **No guaranteed delivery** – If a packet is lost, it’s gone forever.
+- **No order** – Packets might arrive in the wrong order or not at all.
+- **No congestion control** – If the network is busy, packets might be dropped.
+
+### Example: Online gaming (FPS games)
+
+1. Player presses **shoot**
+2. The game sends a UDP packet to the server with:
+   - Player ID
+   - Position & direction
+   - Weapon info
+   - Timestamp
+3. The server receives the packet and processes it
+4. It calculates the bullet trajectory and checks for a hit
+5. The server sends updates to all players:
+   - "Player X fired at Y position"
+   - "Player Z took 20 damage"
+
+- Speed is critical – Players can’t wait for slow confirmations.
+- Losing a packet doesn’t really matter – The game keeps updating every second. A new, more current update will arrive almost immediately anyway.
+  The lost packet only contained a "snapshot" of the game state that's already outdated. It's better to send the latest information than waste time resending old data
+
+## When to Choose TCP vs. UDP?
+
+- **Need reliability & security?** → **Use TCP** (websites, emails, banking apps).
+- **Need speed & low latency?** → **Use UDP** (gaming, video calls, live streaming).
+
+Now you know the basics of TCP and UDP!
+
+---
+
+# Understanding the HTTP Protocol
+
+It's finally time to deep dive into another protocol that you've always heard of but maybe never truly understood. It's called the `HTTP` protocol! Let's learn what HTTP protocol is TRULY.
+
+## Hypertext Transfer Protocol (HTTP)
+
+HTTP is an **application-layer protocol** for transmitting hypermedia documents, such as HTML.
+
+> **Note:** Hypermedia documents are digital files that contain not only text but also images, videos, audio, and hyperlinks for interactive navigation.
+
+As we know, everything we do on the internet follows a request-response cycle when communication happens. Request-response means that the client sends a request, and the server returns a response.
+
+Anything can be a client. Our browser, or any JavaScript or Python app that makes an HTTP request, can be considered a client. (They don't have to send an HTTP request to be considered a client; any kind of request is fine too, but we will only talk about HTTP requests from now on.)
+
+And we need a server that can read that HTTP request and also send an HTTP response. When we say server, in simple terms, we mean a computer running web server software such as Apache, IIS, Nginx, or Node.js...
+
+First, let's see what an **HTTP request** is in detail. (When we say HTTP request, we mean we are making a request using the HTTP protocol! It's the same meaning.)
+
+An HTTP request consists of four fundamental parts:
+
+- Method Type
+- URL
+- Headers
+- Body
+
+Let's remember what an HTTP request looks like and dive into these four parts:
+
+If it's a GET request:
+
+```jsx
+GET /api/users/123 HTTP/1.1
+Host: example.com
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+If it's a POST request:
+
+```jsx
+POST /api/articles HTTP/1.1
+Host: example.com
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+{
+  "title": "Understanding HTTP Requests",
+  "content": "HTTP requests are fundamental to web communication...",
+  "authorId": 42
+}
+```
+
+### 1. Request Line
+
+Contains the HTTP method (GET, POST, PUT, DELETE, etc.) followed by the URL path.
+
+The first line of an HTTP request defines the method we are going to use. If it's a GET request, we simply want to see a page. If it's a POST request, we not only want to see a page but also send some data to the server. The server can then perform operations with that data.
+
+### 2. Headers
+
+Key-value pairs providing metadata about the request, such as content type, authentication tokens, etc.
+
+Some pages are not accessible to everyone. For example, if you are not logged into a website, that website might not allow you to see specific pages reserved for logged-in users. But how do we tell the server that we are logged in? One way is by sending an authorization key on the header part with our HTTP request, allowing the server to verify our login status.
+
+Headers can include:
+
+- **User-Agent:** Client information (browser/application type and version)
+- **Accept-Language:** Preferred language (e.g., "en-US")
+- **X-Forwarded-For:** IP address of the client making the request (useful for managing rate limits)
+  ... and many more
+
+### 3. Body
+
+Optional data sent with the request (for methods like POST or PUT).
+
+If we send a GET request, there is usually no body. However, with a POST or PUT request, we often include data in the request body to send to the server.
+
+Now that we've sent our request to the server, it's time for the server to send a response back. But what parts does an **HTTP response** have? Is it any different from an HTTP request?
+
+An HTTP response looks something like this:
+
+```jsx
+HTTP/1.1 200 OK
+Date: Wed, 02 Apr 2025 14:25:31 GMT
+Content-Type: application/json; charset=utf-8
+Content-Length: 234
+Connection: keep-alive
+Cache-Control: max-age=3600
+Server: nginx/1.18.0
+{
+  "id": 123,
+  "name": "John Doe",
+  "email": "john@example.com",
+  "role": "admin",
+  "created_at": "2025-01-15T08:30:00Z",
+  "last_login": "2025-04-01T12:45:22Z"
+}
+```
+
+If we request something that doesn't exist on the server, we might receive a response like this:
+
+```jsx
+HTTP/1.1 404 Not Found
+Date: Wed, 02 Apr 2025 14:26:10 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 156
+Connection: keep-alive
+Server: nginx/1.18.0
+
+<html>
+<head><title>404 Not Found</title></head>
+<body>
+<h1>404 Not Found</h1>
+<p>The requested resource could not be found on this server.</p>
+</body>
+</html>
+```
+
+Let's analyze an actual HTTP request.
+
+Type `www.deepintodev.com` into your favourite browser and refresh the page once. (Otherwise, you might not see anything in the network tab on your first try.)
+
+Then, right-click anywhere on the page > Inspect > Network Tab.
+
+![Network Tab](/images/networktab.png)
+
+As we see in the network tab, the first request made is to `www.deepintodev.com`. Click on that request to see more details. (If you don't see anything, refresh the page once.)
+
+![General](/images/general.png)
+
+Here, we can clearly see that it was a GET request, and we can also check the status code.
+
+![Headers](/images/headers.png)
+
+If you scroll down, you will see the headers for both the request and the response.
+
+![Other Requests](/images/otherrequests.png)
+
+When we request `www.deepintodev.com`, we also receive other responses. If you look at the network tab, you'll see requests not only to `www.deepintodev.com` but also to images, fonts, etc. The reason for this is:
+
+1. The browser first requests the main HTML page (sends a GET request to an address like `www.deepintodev.com`).
+2. When the HTML file arrives, the browser parses it and finds references to other resources within it: CSS files, JavaScript files, images, custom fonts, etc.
+3. The browser automatically makes additional requests for these resources.
+
+## Making an HTTP Request in JavaScript
+
+Not only browsers act as clients; our JavaScript app can be a client too. That means we can also make an HTTP request from our JavaScript app.
+
+Right-click anywhere on the page > Inspect > Console Tab.
+
+This is where you can write JavaScript code directly in the browser. Let's make an HTTP request.
+
+![Fetch Request](/images/fetchrequest.png)
+
+As we see in the image, it returns the HTML page just as expected. So, not just browsers but also JavaScript apps can act as clients.
+
+---
+
+# HTTP and HTTPS Over TCP
+
+Okay, now let's remember the TCP that we saw earlier. It was the transport layer (Layer 4) protocol of the OSI model, and it's responsible for establishing and maintaining connections to ensure reliable delivery. HTTP usually works with TCP. (There is also a case where it can work with UDP—another transport layer protocol—and we will see that too. So hang tight!)
+
+But how does HTTP work with TCP?
+
+## HTTP Over TCP
+
+To make an HTTP request over TCP, first we have to establish a TCP connection between the server and client. Here is how HTTP and TCP work together step by step:
+
+![HTTP Over TCP](/images/HTTPOVERTCP.png)
+
+1. **Connection Establishment**: Client initiates a TCP connection to the server (typically port 80 for HTTP).
+2. **HTTP Request**: Client sends an HTTP request over the established TCP connection.
+3. **Data Segmentation**: TCP breaks the HTTP request into segments.
+4. **Transport**: TCP handles reliable delivery of all segments.
+5. **Reassembly**: Server's TCP stack reassembles the complete HTTP request.
+6. **Processing**: Server processes the HTTP request.
+7. **Response**: Server sends an HTTP response through the same TCP connection.
+8. **Connection Handling**: Connection may be closed or kept alive for additional requests.
+
+> **Note**: Remember! As we saw in the Network tab before in the example, we don't make just one request. We also make requests for images, fonts, JavaScript files... That's why I put "..." after "Headers+index.html."
+
+## HTTPS Over TCP
+
+Most of the time, in the real world, you wouldn't make an HTTP request but an HTTPS request. What's the difference?
+
+- **HTTP** sends data in plain text that anyone can see if they intercept it. It's like sending a postcard that anyone handling it can read.
+- **HTTPS** (Hypertext Transfer Protocol Secure) encrypts the data before sending it. It's like putting your message in a locked box that only the recipient can open. This makes HTTPS much safer for sending sensitive information like passwords or credit card numbers.
+
+Here is how HTTPS and TCP work together step by step:
+
+![HTTPS Over TCP](/images/HTTPSOVERTCP.png)
+
+1. **Connection Establishment**: Client initiates a TCP connection to the server (typically port 443 for HTTPS).
+2. **TLS Handshake**: After the TCP connection is established, a TLS (Transport Layer Security) handshake begins (you will see how this works in detail below).
+3. **Secure Tunnel**: An encrypted channel is now established over the TCP connection.
+4. **HTTP Request**: Client sends an HTTP request through the encrypted TLS tunnel.
+5. **Data Encryption**: The HTTP data is encrypted using the negotiated session keys.
+6. **Data Segmentation**: TCP breaks the encrypted data into segments.
+7. **Transport**: TCP handles reliable delivery of all segments.
+8. **Reassembly**: Server's TCP stack reassembles the complete encrypted data.
+9. **Decryption**: Server decrypts the data using the session keys.
+10. **Processing**: Server processes the decrypted HTTP request.
+11. **Response**: Server encrypts its HTTP response and sends it through the same secure channel.
+12. **Connection Handling**: Connection may be closed or kept alive for additional requests.
+
+### How the TLS Handshake Works
+
+The TLS handshake happens after the TCP connection is established but before any actual HTTP data is sent. It's how the client and server set up their secure connection:
+
+1. **Hello Messages**:
+   - Client says, _"I want to talk securely; here are the encryption methods I can use."_
+   - Server responds, _"OK, let's use this specific encryption method."_
+2. **Certificate Exchange**:
+   - Server sends its digital certificate (like an ID card).
+   - Client checks if the certificate is trustworthy (issued by a known authority, e.g., Let's Encrypt, DigiCert, GlobalSign...).
+3. **Key Exchange**:
+   - They don't directly share their secret keys.
+   - Instead, they use clever math (often called _"public key cryptography"_).
+   - Client generates information that only the real server can use to derive a shared secret.
+   - This happens without ever sending the actual secret key across the internet.
+4. **Session Keys Creation**:
+   - Both sides independently create identical session keys using the shared secret.
+   - These session keys will encrypt and decrypt all the data they send to each other.
+5. **Handshake Complete**:
+   - Both sides confirm they're ready to start encrypting their communications.
+   - All further communication will be encrypted with these session keys.
+
+The beauty of this system is that even if someone is listening to the entire conversation, they still can't figure out the keys being used to encrypt the data.
+
+---
+
+Okay, so now we know how HTTP and HTTPS work over TCP. Now, let's learn one last and very important thing about HTTP. When a server responds using HTTP, it starts with something like this:
+
+```jsx
+HTTP/1.1 200 OK
+```
+
+What is this "1.1" exactly? The "1.1" refers to the version of the HTTP protocol being used in the server's response. HTTP/1.1 is the second major version of the Hypertext Transfer Protocol, standardized in RFC 2068 in 1997 and later updated in RFC 2616 in 1999.
+
+Before that, we used HTTP/1.0.
+
+Let's learn all the versions and understand the differences. But before we dive into the versions, let's see it in our browser.
+
+Go to `www.deepintodev.com`, then right-click anywhere on the page > **Inspect** > **Network Tab**. (Refresh the page once afterward.)
+
+You will see all the columns open in the Network tab (**Name**, **Status**, **Type**, **Initiator**, **Size**...).
+
+Then, right-click any of the columns and choose **Protocol**.
+
+![Protocol Tab](/images/protocol.png)
+
+The **Protocol** column will now be added.
+
+![Protocols Tab](/images/protocols.png)
+
+As you see here, different requests use different HTTP versions. If it says:
+
+- `http/1.0` → **HTTP 1.0** (You won't see this in real-world websites anymore since it's outdated.)
+- `http/1.1` → **HTTP 1.1**
+- `h2` → **HTTP/2**
+- `h3` → **HTTP/3**
+
+Now, let's understand what these versions are and how they differ from each other.
+
+## HTTP 1.0
+
+At first, we thought that after receiving "index.html," we should close the TCP connection immediately. This was to save server RAM since, as you might guess, TCP connections stay in memory.
+
+But the problem was, as the internet grew, we didn't just have basic text-only pages. We started including images, videos, and other files. For every file requested from the server, we had to initiate another TCP connection.
+
+And as you know, TCP has a slow start—too many steps are needed to establish a connection. You can clearly see the problem with HTTP/1.0 in the image below:
+
+![HTTP 1.0](/images/http10.png)
+
+As you can guess, this didn't last long.
+
+## HTTP 1.1
+
+Once we establish a TCP connection, we ensure it stays alive as long as needed. How? By adding a `Keep-Alive` header to our request. With this header, the TCP connection remains open.
+
+![HTTP 1.1](/images/http11.png)
+
+> **Note**: In HTTP/1.1, `Connection: keep-alive` is the default behavior, so it doesn't need to be explicitly sent with every request. Some clients may still include it to explicitly indicate their intention to keep the connection open.
+
+Connections automatically close after some time. Here's how:
+
+1. **Timeout Period**:
+   - The server closes a connection if it doesn't receive requests for a certain period.
+   - Timeout values depend on server configuration:
+     - **Apache**: `KeepAliveTimeout` (default: 5 seconds).
+     - **Nginx**: `keepalive_timeout` (default: 75 seconds).
+     - **IIS**: `connectionTimeout`.
+2. **Maximum Request Count**:
+   - Many servers limit the number of requests per connection:
+     - **Apache**: `MaxKeepAliveRequests` (default: 100 requests).
+     - **Nginx**: `keepalive_requests` (default: 100 requests).
+
+## HTTP/2
+
+When we looked at the Network tab's **Protocol** column, we saw versions like `h2` or `h3` (HTTP/2 or HTTP/3). These are the versions used on the modern internet. Now, let's see why HTTP/2 is preferred over HTTP/1.1 and what the differences are.
+
+The most important feature of HTTP/2 is **Multiplexing**!
+
+In HTTP/2, multiple requests and responses can be sent simultaneously over a single TCP connection. Think of it like multiple cars driving side-by-side in the same highway lane—no waiting in line!
+
+In HTTP/1.1, only one request can be processed at a time per connection. For example:
+
+1. The browser requests `style.css`, `script.js`, and `image.jpg`.
+2. They load one by one: First `style.css`, then `script.js`, and finally `image.jpg`.
+   - If `style.css` is slow, the others must wait!
+
+With HTTP/2 in the same scenario:
+
+1. The browser sends all requests at once (`style.css`, `script.js`, `image.jpg`) over a single connection.
+2. The server processes them in parallel and sends back responses as soon as they're ready.
+   - If `script.js` finishes first, the browser gets it immediately—even if `style.css` is still loading.
+   - As a result, pages load faster, and resources are used efficiently.
+
+Another benefit of HTTP/2 is **Header Compression**.
+
+In HTTP/1.1, each request sends the same header information repeatedly. For example, your browser sends details like user-agent, language preferences, and cookies with every single image or file request.
+
+HTTP/2 uses **HPACK compression** to fix this by:
+
+1. **Using a dictionary for common values**:
+   - Instead of sending `"user-agent: Mozilla/5.0"` (39 bytes), it might send `"reference #42"` (3 bytes).
+   - The server already knows `#42` means `"Mozilla/5.0"`.
+2. **Only sending what changed between requests**:
+   - First request: `"GET /index.html, Host: example.com, User-Agent: Chrome"`.
+   - Second request: Just `"GET /image.jpg"` (since `Host` and `User-Agent` are unchanged).
+3. **Using reference numbers instead of repeating text**:
+   - First request: `"Cookie: session=abc123"` (stored as `reference #7`).
+   - Next request: `"Reference #7"` (instead of sending the entire cookie string again).
+
+This approach significantly reduces data transfer, especially on sites requiring dozens of file requests.
+
+There are other important improvements in HTTP/2, but let's not get lost in the details. Now, at least you have a clear idea of the improvements between HTTP/1.1 and HTTP/2.
+
+## HTTP/3
+
+Another version used in the real world is HTTP/3.
+
+Until HTTP/3, all versions used TCP. But HTTP/3 uses a different protocol called **QUIC** (built on UDP).
+
+- **With HTTP/2**, if one packet is lost, all other communications wait.
+- **With HTTP/3**, other parts continue loading even if one packet is lost (since it uses UDP).
+
+Another difference is **connection establishment**:
+
+- **HTTP/2**: Requires multiple round trips ("Hello" → "Hello back" → "Let's talk" → "Okay" → data flows).
+- **HTTP/3**: Needs just one round trip ("Hello with encryption details" → immediately starts sending data).
+
+Also, **HTTP/3 has encryption built-in from the start**:
+
+- Older HTTP: _"Let me add encryption on top."_
+- HTTP/3: _"I'm already encrypted from the first byte."_
+
+Like HTTP/2, HTTP/3 has additional details, but the key takeaway is that it uses a different protocol than previous versions.
+
+Now, you have a solid understanding of how data transfers over a network and how protocols like TCP, UDP, and HTTP work.

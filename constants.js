@@ -27,4 +27,12 @@ export const blogPosts = [
     slug: "what-is-stateless-and-stateful",
     date: "March 28, 2025",
   },
+  {
+    id: 4,
+    title:
+      "How Data Travels the Globe to Reach Your Screen: A Deep Dive into OSI, TCP/UDP, HTTP, and More",
+    readTime: 20,
+    slug: "how-data-travels-the-globe-to-reach-your-screen",
+    date: "April 3, 2025",
+  },
 ];
