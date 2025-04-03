@@ -30,9 +30,9 @@ export const blogPosts = [
   {
     id: 4,
     title:
-      "How Data Travels the Globe to Reach Your Screen: A Deep Dive into OSI, TCP/UDP, HTTP, and More",
+      "How Data Travels the World to Reach Your Screen: A Deep Dive into OSI, TCP/UDP, HTTP, and More",
     readTime: 20,
-    slug: "how-data-travels-the-globe-to-reach-your-screen",
+    slug: "how-data-travels-the-world-to-reach-your-screen",
     date: "April 3, 2025",
   },
 ];
