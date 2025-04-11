@@ -28,7 +28,7 @@ async function sendVerificationEmail(email, transporter) {
       jti: randomBytes(16).toString("hex"),
     },
     process.env.SECRET_KEY,
-    { expiresIn: "10m" }
+    { expiresIn: "60m" }
   );
 
   const verificationLink = `${process.env.BASE_URL}/api/verify?token=${token}`;
