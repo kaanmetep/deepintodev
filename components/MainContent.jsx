@@ -6,11 +6,7 @@ const MainContent = () => {
   return (
     <>
       <main className="px-6 pt-16 overflow-y-auto pb-6 md:pb-10 max-w-[2000px] dark:text-white ">
-        <article
-          itemScope
-          itemType="https://schema.org/Article"
-          className="h-screen sm:h-fit"
-        >
+        <article itemScope itemType="https://schema.org/Article">
           <header>
             <div className="flex items-start gap-1">
               <Shell className="shrink-0 size-5 md:size-6 mt-[4.2px]" />
