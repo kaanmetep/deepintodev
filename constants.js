@@ -35,4 +35,11 @@ export const blogPosts = [
     slug: "how-data-travels-the-world-to-reach-your-screen",
     date: "April 3, 2025",
   },
+  {
+    id: 5,
+    title: "How JavaScript Works Behind the Scenes",
+    readTime: 12,
+    slug: "how-javascript-works-behind-the-scenes",
+    date: "April 14, 2025",
+  },
 ];
