@@ -26,7 +26,7 @@ const H3 = ({ children }) => (
 
 // Paragraf
 const P = ({ children }) => (
-  <p className="mb-4 text-[rgb(26,26,26)] dark:text-gray-100 leading-[32px] font-normal text-[16px] lg:text-[18px] tracking-[-.06px]">
+  <p className="mb-4 text-[rgb(26,26,26)] dark:text-gray-200 leading-[32px] font-normal text-[16px] lg:text-[18px] tracking-[-.06px]">
     {children}
   </p>
 );
@@ -113,7 +113,7 @@ const Ol = ({ children }) => (
 );
 
 const Li = ({ children }) => (
-  <li className="mb-1 text-[rgb(26,26,26)] dark:text-gray-100 leading-[32px] font-normal text-[16px] lg:text-[18px] tracking-[-.06px]">
+  <li className="mb-1 text-[rgb(26,26,26)] dark:text-gray-200 leading-[32px] font-normal text-[16px] lg:text-[18px] tracking-[-.06px]">
     {children}
   </li>
 );
