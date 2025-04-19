@@ -49,7 +49,7 @@ async function sendVerificationEmail(email, transporter) {
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
         <tr>
             <td align="center">
-                <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="background-color: #fff; padding: 30px; border-radius: 6px; box-shadow: 0px 2px 4px rgba(0,0,0,0.1); text-align: left;">
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="background-color: #fff; padding: 30px; border-radius: 6px; box-shadow: 0px 2px 4px rgba(0,0,0,0.1); text-align: left; max-width: 100%;">
                     <tr>
                         <td style="font-size: 18px; font-weight: bold; color: #000;">
                             DeepIntoDev Newsletter
@@ -62,17 +62,33 @@ async function sendVerificationEmail(email, transporter) {
                     </tr>
                     <tr>
                         <td align="center">
-                            <a href="${verificationLink}" style="background-color: #000; color: white; padding: 12px 24px; text-decoration: none; font-size: 16px; border-radius: 4px; display: inline-block;">Verify Email</a>
+                            <!-- Main Verification Button -->
+                            <a href="${verificationLink}" style="background-color: #000; color: white !important; padding: 12px 24px; text-decoration: none; font-size: 16px; border-radius: 4px; display: inline-block; margin: 10px 0; border: 2px solid #000; font-weight: bold;">Verify Email</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="padding-top: 10px;">
+                            <!-- Alternative Text Link -->
+                            <p style="font-size: 14px; color: #666;">
+                                If you can't see the button above, <a href="${verificationLink}" style="color: #0066cc; text-decoration: underline; font-weight: bold;">click here to verify your email</a>.
+                            </p>
                         </td>
                     </tr>
                     <tr>
                         <td style="color: #666; font-size: 14px; padding-top: 20px;">
-                            Link expires in 10 minutes.
+                            Link expires in 60 minutes.
                         </td>
                     </tr>
                     <tr>
                         <td style="color: #666; font-size: 14px; padding-top: 10px;">
                             Every ~one week, you'll get something good to read after completing your subscription.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="color: #666; font-size: 14px; padding-top: 20px; border-top: 1px solid #eee; margin-top: 20px;">
+                            <p style="margin-top: 20px;">
+                                Has your link expired? <a href="https://www.deepintodev.com/newsletter" style="color: #0066cc; text-decoration: underline; font-weight: bold;">Click here to request a new verification email</a>.
+                            </p>
                         </td>
                     </tr>
                 </table>
