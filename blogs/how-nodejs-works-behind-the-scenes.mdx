@@ -2,6 +2,7 @@
 title: "How Node.js Works Behind the Scenes"
 description: "Ever wondered what really happens under the hood in Node.js? Dive deep into the Node.js Event Loop, its phases, process.nextTick, and how Node handles asynchronous operations with a single thread."
 date: "2025-04-25"
+dateModified: "2025-04-25"
 author: "Kaan Peksen"
 category: "Backend Development"
 tags:
@@ -35,7 +36,7 @@ In the browser, JavaScript only needs to handle basic things like user interacti
 
 > **Note:** If you are not familiar with task queue and microtask queue, as I said before - and promise will say for the last time - [you can check this 15-minute explanation about how JavaScript works](https://www.deepintodev.com/blog/how-javascript-works-behind-the-scenes)
 
-But Node.js is not just JavaScript - it's a full runtime that needs to work everywhere! There is nothing like Web APIs that can help it. That runtime has to work on our servers so it also deals with files, network requests, and low-level system tasks. Because of this, Node.js needs a more complex event loop with multiple phases **to handle all these different types of operations properly**.
+But Node.js is not just JavaScript - it's a full runtime designed to run JavaScript anywhere! There is nothing like Web APIs that can help it. That runtime has to work on our servers so it also deals with files, network requests, and low-level system tasks. Because of this, Node.js needs a more complex event loop with multiple phases **to handle all these different types of operations properly**.
 
 Node.js has to make JavaScript work everywhere with good performance. So it has to handle what browsers handle for us plus some extra server-side events that are very important to be handled properly!
 
@@ -58,6 +59,7 @@ libuv in Node.js:
 - An independent component that comes with Node.js.
 
 Key difference: While Web API works within the browser, libuv directly accesses operating system resources. Both manage asynchronous operations but work in different environments.
+
 In terms of request handling:
 
 - In Web API: Requests wait in the browser's own subsystems.
@@ -69,68 +71,9 @@ And again in both cases, the operating system is the main mechanism that monitor
 
 Now, you have some idea about how Node.js actually handles things differently from JavaScript. If you didn't completely get it, that's all fine! We will go step by step from the very basic concepts, to understand everything clearly.
 
-## What is Node Runtime, and why do we need it?
-
-Let's take a step back for right now, and understand why do we even need **Node**, or in other words, the **Node Runtime** in the first place? Because as you might know, not every language has a "runtime", right? What makes JavaScript different from others so it needs a runtime?
-
-We will start with some basics, but they are must-know computer science knowledge. Don't get bored, this will be quick. You probably already know things that I'm going to talk about, but just keep reading to make everything clearer as we go through this blog.
-
-First, we need to understand what "interpreted language" means and what are the differences between interpreted languages vs. compiled languages.
-
-As we all know, down below at the food chain, we have the "machine code". Machine code is just a bunch of 1s and 0s and each CPU (MacBook M3, Intel X86, ARM...) has a different instruction set to run this machine code. It can have different approaches. For example, it can only have "addition" and "subtraction" in its architecture and for multiplication, it can just do a bunch of additions. That's how RISC architecture works. (Reduced...) or it can have different instruction sets for different operations. Then we can say it's CISC (Complex...). So different CPUs have different instruction sets, and these instruction sets are how CPUs run the machine code (1s and 0s).
-
-Right above machine code, we have assembly. Very close to machine code, it can still be CPU-specific. (mov r0, #1...)
-
-Above those steps, we have High Level Languages, they are so much more convenient. But we need to TRANSLATE this code to something CPUs can understand. Especially, THIS CURRENT CPU we have, because like we said, every CPU has a different instruction set, so they understand things differently. We can't translate for M3 and run it on Intel. This is what we call **compiling**.
-
-But compiled programs don't work everywhere because that compiled code must match with the CPU/OS (operating system). That problem brings the question, can I write my code once and run it everywhere?
-
-Yes. That's what we call "interpreted languages." Languages like Python or JavaScript...
-
-There is no magic happening with interpreted languages, we still need a CPU to run our code. But this time we write "runtimes". Our index.js file is just an input. We give that input to the runtime and let the runtime do the job. We really need that runtime installed on our computer. It adds an extra layer, and it understands our file and interprets it to machine code. (It actually interprets the byte code, not the string code. JavaScript byte code refers to an intermediate representation of JavaScript code created by JavaScript engines (like V8, SpiderMonkey, or JavaScriptCore). But let's not get lost in the details.)
-
-It adds another problem though. It actually makes everything slower, because each line is interpreted. So we come up with another solution.
-
-**JIT (Just in Time Compilation)**
-
-Just-in-Time (JIT) Compilation is a technique in programming languages that compiles code during runtime. As the name suggests, it compiles the code "just in time" when it's needed.
-Let's think about a real-life example:
-
-A cookbook with recipes is similar to a program's source code.
-With an interpreted language: Every time you want to cook, you read and follow the recipe line by line.
-With JIT compilation: The first time you make a recipe, you create a "summary card" for frequently used recipes. In subsequent uses, you directly use this summary card.
-
-So for interpretation -> code is translated line by line.
-
-JIT -> frequently used code segments are compiled to machine code.
-
-JIT usage in JavaScript:
-
-```jsx
-// This function will be called many times
-function add(a, b) {
-  return a + b;
-}
-
-// When the loop first starts, the JavaScript engine interprets this function
-for (let i = 0; i < 100000; i++) {
-  add(i, i + 1);
-}
-```
-
-1. For the first few calls, it interprets the add() function
-2. It notices the function is called many times
-3. It compiles the function to machine code and stores it
-4. For subsequent calls, it uses the faster machine code
-   This way, the program gradually gets faster. That's the beauty of JIT!
-
----
-
 ## Node Execution
 
-Now you know why we even need something like a "node runtime". It's here for a reason.
-
-So, the Node runtime is just a C++ program that takes an input, and the input is a JavaScript file. Node reads that file and interprets that JavaScript. JS Code is executed line by line serially until it's done.
+**The Node runtime** is just a C++ program that takes an input, and the input is a JavaScript file. Node reads that file and interprets that JavaScript. JS Code is executed line by line serially until it's done.
 
 But the real world isn't all sunshine and rainbows. Our JavaScript code is not just read line by line and finishes. There are some situations that may, and will happen. For example, we can say execute this part of code after X milliseconds. So until those milliseconds have passed, we need to wait. Or we may read a file from the external world, and after reading a file is done, only then we might want to execute some code. Or let's say our JavaScript code is listening on a port, and someone is connected to us. So we can't just terminate the program, right? We need to **wait**. When a user is connected to us, we don't even know when they're going to send a request. But when they do, we immediately need to take action, right? So serial execution - executed line by line serially - does not work anymore.
 
