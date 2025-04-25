@@ -42,4 +42,11 @@ export const blogPosts = [
     slug: "how-javascript-works-behind-the-scenes",
     date: "April 14, 2025",
   },
+  {
+    id: 6,
+    title: "How Node.js Works Behind the Scenes",
+    readTime: 19,
+    slug: "how-nodejs-works-behind-the-scenes",
+    date: "April 25, 2025",
+  },
 ];
