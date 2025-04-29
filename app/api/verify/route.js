@@ -29,37 +29,13 @@ async function saveEmailToDatabase(email) {
   }
 }
 
-export async function GET(request) {
-  const { searchParams } = new URL(request.url);
-  const token = searchParams?.get("token");
-
-  if (!token) {
-    console.error("ERROR: Token missing in request");
-    return new NextResponse("<h1>Token is required</h1>", {
-      status: 400,
-      headers: { "Content-Type": "text/html" },
-    });
-  }
-
-  try {
-    const redis = await createSecureRedisClient();
-    const decoded = jwt.verify(token, process.env.SECRET_KEY);
-    const { email } = decoded;
-
-    await checkRateLimit(redis, `ratelimit:verify:${email}`, {
-      limit: 5,
-      duration: 300,
-      blockDuration: 1800,
-    });
-
-    await saveEmailToDatabase(email);
-
-    return new NextResponse(
-      `
-       <!DOCTYPE html>
+// Shared HTML template for all pages
+function generateHtmlTemplate(title, description, isError = false) {
+  return `
+<!DOCTYPE html>
 <html>
 <head>
-    <title>Email Verified - DeepIntoDev</title>
+    <title>${title} - DeepIntoDev</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -81,11 +57,6 @@ export async function GET(request) {
             margin-bottom: 20px;
             font-size: 24px;
         }
-        .success-icon {
-            color: #34D399;
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
         .description {
             color: #6B7280;
             margin-bottom: 30px;
@@ -96,22 +67,78 @@ export async function GET(request) {
             text-align: center;
             margin-top: 20px;
         }
+        .action-button {
+            display: inline-block;
+            background-color: ${isError ? "#3B82F6" : "#34D399"};
+            color: white;
+            padding: 10px 16px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+        .action-button:hover {
+            background-color: ${isError ? "#2563EB" : "#10B981"};
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Email Verified Successfully</h1>
-        <p class="description">
-            You've been succesfully subscribed to DeepIntoDev's blog. 
-            every ~one week you'll get something good to read.
-        </p>
+        <h1>${title}</h1>
+        <div class="description">
+            ${description}
+        </div>
+        ${
+          isError
+            ? `<a href="https://www.deepintodev.com/newsletter" class="action-button">Get a New Verification Link</a>`
+            : ""
+        }
         <div class="footer">
-         2025 DeepIntoDev. You can now close this page.
+            &copy; 2025 DeepIntoDev
         </div>
     </div>
 </body>
 </html>
-       `,
+  `;
+}
+
+export async function GET(request) {
+  const { searchParams } = new URL(request.url);
+  const token = searchParams?.get("token");
+
+  if (!token) {
+    console.error("ERROR: Token missing in request");
+    return new NextResponse(
+      generateHtmlTemplate(
+        "Token Required",
+        "No verification token was provided. Please use the link sent to your email or request a new verification email.",
+        true
+      ),
+      {
+        status: 400,
+        headers: { "Content-Type": "text/html" },
+      }
+    );
+  }
+
+  try {
+    const redis = await createSecureRedisClient();
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    const { email } = decoded;
+
+    await checkRateLimit(redis, `ratelimit:verify:${email}`, {
+      limit: 5,
+      duration: 300,
+      blockDuration: 1800,
+    });
+
+    await saveEmailToDatabase(email);
+
+    return new NextResponse(
+      generateHtmlTemplate(
+        "Email Verified Successfully",
+        "You've been successfully subscribed to DeepIntoDev's blog. Every ~one week you'll get something good to read. You can now close this page."
+      ),
       {
         status: 200,
         headers: { "Content-Type": "text/html" },
@@ -121,9 +148,11 @@ export async function GET(request) {
     if (error.message === "RateLimitExceeded") {
       console.error(`RATE LIMIT EXCEEDED: ${request.url}`);
       return new NextResponse(
-        `<h1>Rate Limit Exceeded</h1>
-        <p>You've made too many verification attempts. Please wait 30 minutes before trying again.</p>
-        <small>Error: ${error.message}</small>`,
+        generateHtmlTemplate(
+          "Rate Limit Exceeded",
+          "You've made too many verification attempts. Please wait 30 minutes before trying again.",
+          true
+        ),
         {
           status: 429,
           headers: { "Content-Type": "text/html" },
@@ -134,9 +163,11 @@ export async function GET(request) {
     if (error instanceof jwt.TokenExpiredError) {
       console.error(`TOKEN EXPIRED: ${token}`);
       return new NextResponse(
-        `<h1>Verification Token Expired</h1>
-        <p>The verification link has expired. Please request a new verification email.</p>
-        <small>Error: Token has expired</small>`,
+        generateHtmlTemplate(
+          "Verification Token Expired",
+          "The verification link has expired. Please request a new verification email using the button below.",
+          true
+        ),
         {
           status: 400,
           headers: { "Content-Type": "text/html" },
@@ -147,9 +178,11 @@ export async function GET(request) {
     if (error instanceof jwt.JsonWebTokenError) {
       console.error(`INVALID TOKEN: ${error.message}`);
       return new NextResponse(
-        `<h1>Invalid Verification Token</h1>
-        <p>The verification token is not valid. It may have been tampered with or is incorrect.</p>
-        <small>Error: ${error.message}</small>`,
+        generateHtmlTemplate(
+          "Invalid Verification Token",
+          "The verification token is not valid. It may have been tampered with or is incorrect. Please request a new verification email using the button below.",
+          true
+        ),
         {
           status: 400,
           headers: { "Content-Type": "text/html" },
@@ -157,11 +190,28 @@ export async function GET(request) {
       );
     }
 
+    if (error.message === "User is already subscribed") {
+      console.error(`USER ALREADY SUBSCRIBED`);
+      return new NextResponse(
+        generateHtmlTemplate(
+          "Already Subscribed",
+          "This email address is already subscribed to DeepIntoDev's newsletter. No further action is needed.",
+          false
+        ),
+        {
+          status: 200,
+          headers: { "Content-Type": "text/html" },
+        }
+      );
+    }
+
     console.error(`GENERIC ERROR: ${error.message}`);
     return new NextResponse(
-      `<h1>Verification Failed</h1>
-      <p>An unexpected error occurred during email verification.</p>
-      <small>Details: ${error.message}</small>`,
+      generateHtmlTemplate(
+        "Verification Failed",
+        "An unexpected error occurred during email verification. Please try again by requesting a new verification email using the button below.",
+        true
+      ),
       {
         status: 400,
         headers: { "Content-Type": "text/html" },
