@@ -57,9 +57,17 @@ export default function NewsletterSubscription() {
         <p
           className={`${
             state?.status === "success" ? "text-green-600" : "text-red-700"
-          } tracking-wide font-bold text-center  text-xs lg:text-base`}
+          } tracking-wide font-bold text-center text-xs lg:text-base`}
         >
-          {state?.message}
+          {state?.status === "success" ? (
+            <>
+              Invitation email sent. Please check your inbox.
+              <br />
+              Don't forget to check your spam folder.
+            </>
+          ) : (
+            state.message
+          )}
         </p>
       )}
     </>

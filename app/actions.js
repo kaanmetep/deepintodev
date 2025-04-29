@@ -133,8 +133,8 @@ export async function subscribe(_, formData) {
     redis = await createSecureRedisClient();
 
     const clientIp =
-      headers().get("x-forwarded-for")?.split(",")[0] ||
-      headers().get("x-real-ip");
+      (await headers()).get("x-forwarded-for")?.split(",")[0] ||
+      (await headers()).get("x-real-ip");
 
     if (!clientIp) {
       throw new Error("Could not determine client IP. Please try again.");
@@ -179,7 +179,8 @@ export async function subscribe(_, formData) {
     await sendVerificationEmail(email, transporter);
 
     return {
-      message: "Invitation email sent. Please check your inbox.",
+      message:
+        "Invitation email sent. Please check your inbox. (Don't forget to check your spam folder)",
       status: "success",
     };
   } catch (err) {
