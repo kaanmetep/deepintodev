@@ -84,13 +84,6 @@ async function sendVerificationEmail(email, transporter) {
                             Every ~one week, you'll get something good to read after completing your subscription.
                         </td>
                     </tr>
-                    <tr>
-                        <td style="color: #666; font-size: 14px; padding-top: 20px; border-top: 1px solid #eee; margin-top: 20px;">
-                            <p style="margin-top: 20px;">
-                                Has your link expired? <a href="https://www.deepintodev.com/newsletter" style="color: #0066cc; text-decoration: underline; font-weight: bold;">Click here to request a new verification email</a>.
-                            </p>
-                        </td>
-                    </tr>
                 </table>
             </td>
         </tr>
