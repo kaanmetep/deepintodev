@@ -1,0 +1,210 @@
+---
+title: "How Promises Work in JavaScript"
+description: "Understand the inner workings of JavaScript Promises with a step-by-step explanation."
+date: "2025-05-03"
+author: "Kaan Peksen"
+category: "JavaScript"
+tags:
+  [
+    "javascript",
+    "promises",
+    "async-javascript",
+    "promise-chaining",
+    "then-method",
+    "promise-object",
+  ]
+canonicalUrl: "https://deepintodev.com/blog/how-promises-work-in-javascript"
+timeToRead: "10 minutes"
+language: "en"
+noIndex: false
+noFollow: false
+---
+
+After you complete this article, you will have a solid understanding of:
+
+- **How JavaScript Promises work behind the scenes**
+- **How the Promise Object manages its internal state and reactions**
+- **How Promise chaining works**
+- **How JavaScript handles asynchronous operations using Promises**
+
+Promises in JavaScript may feel like an abstract or magical thing that handles the async work for us. Once you get into them, they're relatively easy to use, but not that easy to understand what's really happening. Once you understand how promises actually work behind the scenes, you will have no doubts or questions while using them. So they will stop being magical things, but just everyday-use functions. It's also very important to understand the entire process, since it can be very helpful when you try to write efficient or error-free code. - I'm not sure if error-free code even exists in the real world but anyway, you get me. -
+
+We will go step by step in detail, so don't worry if you don't get it the first time. I'll keep repeating the important concepts throughout this blog, so that you can have a clear understanding at the end of this article.
+
+One way to create a promise in JavaScript is using the `new Promise` constructor.
+
+```js
+new Promise((resolve, reject) => {
+  // Will do some async work here
+});
+```
+
+`new Promise` will also get executor functions as parameters (resolve and reject).
+
+> **Note:** Resolve and Reject are special functions created by the Promise class constructor and passed as parameters to the executor function.
+> These functions are created by the JavaScript engine for each new Promise instance and are specific to that Promise instance.
+
+When this `new Promise` constructor is executed, a new **Promise Object** is created in memory. It's just an object that you use every day. This newly created object, though, has some internal slots. Let's see how this object looks like in memory:
+
+![Promise Object in Memory](/images/how-promises-work-in-javascript/promiseobject.png)
+
+As we see in the image, that promise object contains PromiseState, PromiseResult, PromiseFullfillReactions, PromiseRejectReactions, and PromiseIsHandled.
+
+We also get some additional functionality that is added to every Promise Object by JavaScript, and they are Resolve and Reject functions.
+
+PromiseState value will get "pending" as a default value, and PromiseIsHandled will get false. Other values are empty for now, because we didn't do anything with our promise yet. We just called the constructor, and so created the Promise Object in memory.
+
+Now, we can resolve our promise by calling the `resolve` function (which is made available to us by the executor function).
+
+```jsx
+new Promise((resolve, reject) => {
+  resolve("Resolved!");
+});
+```
+
+When we call the resolve function, our promise object will look different than the previous case in memory:
+
+![Promise Resolved](/images/how-promises-work-in-javascript/promiseresolved.png)
+
+Now, our PromiseState is "fulfilled", and our PromiseResult is "Resolved!" (the value we pass in to the resolve function). So with the help of executor functions, we can change the internal values of our Promise Object by resolving the promise.
+
+Similarly, we could reject our promise too.
+
+```jsx
+new Promise((resolve, reject) => {
+  reject("Rejected!");
+});
+```
+
+In that case, the promise object would look like this:
+![Promise Rejected](/images/how-promises-work-in-javascript/promiserejected.png)
+
+In this case, our PromiseState is "rejected", and our PromiseResult is "Rejected!" (the value we pass in to the reject function).
+
+But there is nothing cool about that. So far, we just called functions to change an object's properties and that is it. What is so special about promises?
+
+Now, we will look into the other 2 properties that we didn't interact with yet. They are **PromiseFulfillReactions** and **PromiseRejectReactions**.
+
+These fields contain something called **Promise Reaction Records**. We can create a promise reaction record by chaining a `then` method or `catch` method to our promise.
+
+```jsx
+new Promise((resolve, reject) => {
+  // Will do some async work here
+}).then((result) => console.log(result));
+```
+
+Whenever we chain a `then` method on our promise, that method will be responsible for creating a promise reaction record. This reaction record (among many other fields) contains a `handler`. And that handler field has the callback function that we passed into `then`. Let's see in the picture:
+
+![Promise Reactions](/images/how-promises-work-in-javascript/PromiseFulfillReactions.png)
+
+Now if we resolve our promise, it will make more sense because we chained a then method to it. And that's why our promise has some reaction records. Let's resolve this time too, and see what happens:
+
+```jsx
+new Promise((resolve, reject) => {
+  resolve("Resolved!");
+}).then((result) => console.log(result));
+```
+
+When we resolve the promise, the resolve function will be added to the callstack, PromiseState is set to "fulfilled", PromiseResult is set to "Resolved!", and the Promise Reaction Record's handler receives that PromiseResult ("Resolved!" in this case). So the final properties will look like:
+
+![Promise Reaction Record](/images/how-promises-work-in-javascript/PromiseReactionRecord.png)
+
+And now, the Promise Reaction's handler will be added to the **Microtask queue**. This is where the async part of promises comes into play.
+
+> **Note:** If you are not familiar with terms like Microtask queue, Task queue, Event Loop, Call Stack, ... [I highly recommend you check this 15-minute read article about How JavaScript Works Behind The Scenes](https://www.deepintodev.com/blog/how-javascript-works-behind-the-scenes). From now on, I will consider you are familiar with these terms.
+
+So far, we've used `resolve` or `reject` functions synchronously to resolve or reject our promise. But in the real world, you would 99% of the time initiate some kind of asynchronous task in this `new Promise` constructor. Reading a file, setting a timer, making a fetch request, ... any kind of operation that is off the main thread.
+
+Let's start with a simple example.
+
+```jsx
+new Promise((resolve) => {
+  setTimeout(() => resolve("Resolved!"), 100);
+}).then((result) => console.log(result));
+```
+
+Let's try to understand what's happening here step by step.
+
+First, the `new Promise` constructor is added to the call stack and this creates a **Promise Object**.
+
+Then, the executor function is called (resolve in this case), and the executor function has `setTimeout()` in the first line. `setTimeout()` is added to the call stack, but not executed! It just schedules the timer, which will wait in Web APIs until the time comes. After that, `setTimeout` will be popped out from the call stack.
+
+Now, in the next line, we have the `then` handler. `then` will be added to the call stack, and this function is responsible for creating the Promise Reaction Record. This record will be created with the callback function that we provided to the `then` handler.
+
+Now, our **Promise Object**'s PromiseFulfillReaction property holds this reaction and its handler.
+
+After that, `then` will be popped off from the call stack.
+
+Let's imagine 100ms has passed, so `setTimeout`'s callback function will be added to the Task Queue. Since there is nothing in the call stack and the script has finished, the event loop finally can go to the Task Queue and take the first function to the call stack (setTimeout's callback).
+
+`setTimeout`'s callback has the `resolve` function, so once it's executed in the callstack, it will change the properties of our **Promise Object**. (PromiseState will be **fulfilled**, PromiseResult will be **"Resolved!"**.) Also, the most important part is, it will schedule the PromiseReaction's handler to the microtask queue. Now, we have `(result) => console.log(result)` in the microtask queue, waiting to be executed (waiting for the callstack to be available).
+
+The `resolve` function is finally done, now it will be popped out from the call stack. When the call stack is empty, the event loop will first check the microtask queue, it will see there is a callback waiting. It will take that callback function to the callstack and finally execute it.
+
+The trick is, our promise never blocked the call stack. After we resolve our promise, its callback is added to the microtask queue and waits for the call stack to be available. That's how JavaScript handles asynchronous work with only one thread. **We handled the promise in a non-blocking way**.
+
+Another cool thing about the `then` function is that it returns a promise too! So besides creating the promise reaction record, it also creates a promise object. And this allows us to chain those `then` functions one after another.
+
+```js
+new Promise((resolve, reject) => {
+  resolve(1);
+})
+  .then((result) => result * 5)
+  .then((result) => result * 10)
+  .then((result) => console.log(result));
+```
+
+Let's see what's happening in this code snippet above.
+
+First, we have the `new Promise` constructor, so it will create a Promise Object. This promise will immediately be resolved with 1 (since it's calling the resolve function inside of it), so the promise object's PromiseState will be set to fulfilled, and PromiseResult will be set to 1. See image below:
+
+![Promise Resolved with value of 1](/images/how-promises-work-in-javascript/promiseresultisone.png)
+
+After that, we call the first `then` handler, this will create a Promise Reaction Record with the `result => result * 5` handler. The result in here will be equal to 1, since PromiseResult is equal to 1.
+
+![Promise Resolved Chaining Then Function - 1](/images/how-promises-work-in-javascript/chainingthen1.png)
+
+But like we said, `then` functions also return promises, so it creates another promise object! See image below:
+
+![Promise Resolved Chaining Then Function - 2](/images/how-promises-work-in-javascript/chainingthen2.png)
+
+In this promise object which is created by the `then` function, since we return `result * 5` in it's function's body, PromiseState will immediately turn to fulfilled, and PromiseResult will be 5 (since 1\*5=5).
+
+Now, it's time to execute the second `then` function. First, it will create a Promise Reaction Record again.
+
+![Promise Resolved Chaining Then Function - 3](/images/how-promises-work-in-javascript/chainingthen3.png)
+
+But it doesn't only create the promise record, it also creates a new Promise Object:
+
+![Promise Resolved Chaining Then Function - 4](/images/how-promises-work-in-javascript/chainingthen4.png)
+
+After that, we chain the third then method. The same story goes on. A Promise Reaction Record and a new Promise Object are created. PromiseState is set to "fulfilled", but this time PromiseResult will be undefined since we don't return any value, but we just log it to the console.
+
+> **Note:** At the beginning of the article, there was also a property inside the Promise object, and it was PromiseIsHandled. I never talked about when it turns from false to true to avoid making it more confusing. PromiseIsHandled turns to true when a handler is attached to the Promise. The JavaScript engine marks the Promise as "handled" right when these methods are attached, without waiting for them to run.
+
+Now, let’s go through one final example to see if you’ve understood everything correctly.
+
+```js
+new Promise((resolve) => {
+  console.log("Deep");
+  resolve("12");
+}).then((result) => console.log(result));
+
+console.log(25);
+```
+
+What will be the console output when we execute the code above?
+
+The answer is:
+
+`Deep 25 12`
+
+Why is that?
+
+First, the `new Promise` constructor will be added to the callstack, a new Promise Object will be created. Then, its body will be executed. First, we see `console.log("Deep")` in the first line, so "Deep" will be printed to the console. After that, we see the resolve function, our promise will be resolved, our PromiseState will be set to fulfilled, and our PromiseResult will be set to "12".
+
+After that, we see the `then` function. After this function is executed, a Promise Reaction Record will be created and its callback will be pushed to the microtask queue. It's not executed yet! It's just added to the microtask queue! After that, we move to the next line which is `console.log(25)`. 25 will be printed to the console. Finally, our script is done, now we can go to the microtask queue and execute the callback function which will print 12 (PromiseResult) to the console.
+
+> **Note:** As a side note, when you make a fetch request, that fetch request will return a promise and the same story will happen. Or when you use async/await, it's just syntactic sugar that does the same thing behind the scenes. They are all promises and act the same way.
+
+Now, you have a solid understanding about how promises work in JavaScript!
