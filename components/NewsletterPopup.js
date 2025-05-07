@@ -15,7 +15,7 @@ export default function NewsletterPopup() {
     const timer = setTimeout(() => {
       setShowPopup(true);
       localStorage.setItem("hasShownNewsletterPopup", "true");
-    }, 3000); // 45 saniye
+    }, 45000); // 45 saniye
 
     return () => clearTimeout(timer);
   }, []);
