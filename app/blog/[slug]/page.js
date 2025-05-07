@@ -6,7 +6,7 @@ import MDXComponents from "@/components/MDXComponents";
 import remarkGfm from "remark-gfm";
 import { notFound } from "next/navigation";
 import NewsletterSubscription from "@/components/NewsletterSubscription";
-
+import NewsletterPopup from "@/components/NewsletterPopup";
 // Blog yazılarının bulunduğu dizin
 const POSTS_PATH = path.join(process.cwd(), "blogs");
 
@@ -66,68 +66,71 @@ export default async function BlogPost({ params }) {
   const { mdxContent, frontMatter } = await getPostBySlug(slug);
 
   return (
-    <div className="flex flex-col items-center w-full ">
-      <article className="w-full max-w-5xl 2xl:max-w-7xl mx-auto px-4 pt-10 ">
-        <header className="mb-8 ">
-          <h1 className="text-4xl font-bold mb-4 mt-4 lg:mt-0 dark:text-white">
-            {frontMatter.title}
-          </h1>
-          {frontMatter.date && (
-            <div className="flex gap-2 items-center justify-between">
-              <div className="flex flex-col gap-1">
-                <time className="text-gray-500 dark:text-gray-400">
-                  {new Date(frontMatter.date).toLocaleDateString("en-EN", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </time>
-                {frontMatter.dateModified && (
-                  <div className="flex gap-1">
-                    <span className="text-gray-500 dark:text-gray-400">
-                      Last updated at:
-                    </span>
-                    <time className="text-gray-500 dark:text-gray-400">
-                      {new Date(frontMatter.dateModified).toLocaleDateString(
-                        "en-EN",
-                        {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        }
-                      )}
-                    </time>
-                  </div>
-                )}
+    <>
+      <div className="flex flex-col items-center w-full ">
+        <article className="w-full max-w-5xl 2xl:max-w-7xl mx-auto px-4 pt-10 ">
+          <header className="mb-8 ">
+            <h1 className="text-4xl font-bold mb-4 mt-4 lg:mt-0 dark:text-white">
+              {frontMatter.title}
+            </h1>
+            {frontMatter.date && (
+              <div className="flex gap-2 items-center justify-between">
+                <div className="flex flex-col gap-1">
+                  <time className="text-gray-500 dark:text-gray-400">
+                    {new Date(frontMatter.date).toLocaleDateString("en-EN", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </time>
+                  {frontMatter.dateModified && (
+                    <div className="flex gap-1">
+                      <span className="text-gray-500 dark:text-gray-400">
+                        Last updated at:
+                      </span>
+                      <time className="text-gray-500 dark:text-gray-400">
+                        {new Date(frontMatter.dateModified).toLocaleDateString(
+                          "en-EN",
+                          {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          }
+                        )}
+                      </time>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
-          {frontMatter.tags && (
-            <div className="mt-3 flex flex-wrap gap-2 dark:text-white">
-              {frontMatter.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="bg-gray-200 dark:bg-gray-500 px-2 py-1 rounded-md text-sm"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
-        </header>
+            )}
+            {frontMatter.tags && (
+              <div className="mt-3 flex flex-wrap gap-2 dark:text-white">
+                {frontMatter.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="bg-gray-200 dark:bg-gray-500 px-2 py-1 rounded-md text-sm"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </header>
 
-        <div className="prose prose-lg dark:prose-invert max-w-none ">
-          {mdxContent}
+          <div className="prose prose-lg dark:prose-invert max-w-none ">
+            {mdxContent}
+          </div>
+          <p className="mb-2 text-[rgb(26,26,26)] dark:text-gray-100 leading-[32px] font-normal text-[16px] lg:text-[18px] tracking-[-.06px]">
+            Was this blog helpful for you? If so,
+          </p>
+        </article>
+
+        <div className="w-full px-4  lg:max-w-3xl mx-auto mt-4 pb-10">
+          <NewsletterSubscription />
         </div>
-        <p className="mb-2 text-[rgb(26,26,26)] dark:text-gray-100 leading-[32px] font-normal text-[16px] lg:text-[18px] tracking-[-.06px]">
-          Was this blog helpful for you? If so,
-        </p>
-      </article>
-
-      <div className="w-full px-4  lg:max-w-3xl mx-auto mt-4 pb-10">
-        <NewsletterSubscription />
       </div>
-    </div>
+      <NewsletterPopup />
+    </>
   );
 }
 
