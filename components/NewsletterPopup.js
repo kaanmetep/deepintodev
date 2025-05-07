@@ -31,7 +31,7 @@ export default function NewsletterPopup() {
         ✕
       </button>
       <h3 className="text-lg font-semibold mb-2 dark:text-white">
-        So, do you like what you're reading?
+        So, do you like what you&apos;re reading?
       </h3>
       <NewsletterSubscription />
     </div>
