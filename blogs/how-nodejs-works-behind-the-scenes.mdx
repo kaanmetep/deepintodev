@@ -2,7 +2,7 @@
 title: "How Node.js Works Behind the Scenes"
 description: "Ever wondered what really happens under the hood in Node.js? Dive deep into the Node.js Event Loop, its phases, process.nextTick, and how Node handles asynchronous operations with a single thread."
 date: "2025-04-25"
-dateModified: "2025-04-25"
+dateModified: "2025-05-10"
 author: "Kaan Peksen"
 category: "Backend Development"
 tags:
@@ -155,7 +155,8 @@ How these 6 phases are placed in their own positions is very important. They are
   Node.js:
 
   1. Looks for new I/O events (like incoming network connections or file operations)
-  2. Executes callbacks for those I/O events that are ready 3. May temporarily pause here ("block") to wait for new events if there's nothing else to do.
+  2. Executes callbacks for those I/O events that are ready
+  3. May temporarily pause here ("block") to wait for new events if there's nothing else to do.
 
   The poll phase is essentially where Node.js spends most of its time, waiting for and responding to external events like network requests or file operations.
 
