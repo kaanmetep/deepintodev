@@ -56,4 +56,11 @@ export const blogPosts = [
     slug: "how-promises-work-in-javascript",
     date: "May 3, 2025",
   },
+  {
+    id: 8,
+    title: "How V8 JavaScript Engine Works Behind the Scenes",
+    readTime: 15,
+    slug: "how-v8-javascript-engine-works-behind-the-scenes",
+    date: "May 11, 2025",
+  },
 ];
