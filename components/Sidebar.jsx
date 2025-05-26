@@ -10,9 +10,13 @@ const Sidebar = () => {
   return (
     <aside
       className={`
-        overflow-y-auto dark:bg-gray-900 dark:text-white max-w-[470px] hidden lg:block relative  bg-gray-50 text-gray-700 font-medium 
+         dark:bg-gray-900 dark:text-white max-w-[470px] hidden lg:block relative  bg-gray-50 text-gray-700 font-medium 
         transition-all duration-300 ease-in-out
-        ${isOpen ? "basis-0 grow-[1]" : "w-[50px]"}
+        ${
+          isOpen
+            ? "overflow-y-auto basis-0 grow-[1]"
+            : "overflow-hidden w-[50px]"
+        }
         overflow-hidden py-8 px-3  shadow-lg 
       `}
       aria-label="Blog navigation sidebar"

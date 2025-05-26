@@ -63,4 +63,11 @@ export const blogPosts = [
     slug: "how-v8-javascript-engine-works-behind-the-scenes",
     date: "May 11, 2025",
   },
+  {
+    id: 9,
+    title: "How Databases Store Your Tables on Disk",
+    readTime: 12,
+    slug: "how-databases-store-your-tables-on-disk",
+    date: "May 25, 2025",
+  },
 ];
