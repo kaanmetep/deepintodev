@@ -29,18 +29,14 @@ const MainContent = () => {
             >
               In the world of software development, filled with frameworks,
               libraries, and abstractions, I often felt like I was just{" "}
-              <i>
-                <b>using technologies without truly understanding</b>
-              </i>{" "}
-              them. So, I started digging deeper—reading more, researching, and
-              questioning everything.
+              <b>using technologies without truly understanding</b> them. So, I
+              started digging deeper, reading more, researching, and questioning
+              everything.
               <strong>
-                <i>
-                  {" "}
-                  That’s why I created this blog: to break down complex
-                  programming concepts into simpler, easy-to-understand
-                  explanations.
-                </i>
+                {" "}
+                That’s why I created this blog: to break down complex
+                programming concepts into simpler, easy-to-understand
+                explanations.
               </strong>
             </p>
           </section>

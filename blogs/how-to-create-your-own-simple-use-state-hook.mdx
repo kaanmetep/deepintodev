@@ -1,0 +1,291 @@
+---
+title: "How to Create Your Own Simple useState Hook"
+description: "Create your own simple React useState hook step by step in less than 10 minutes and completely understand why the rules for useState hook actually exist."
+date: "2025-06-10"
+author: "Kaan Peksen"
+category: "React"
+tags: ["react", "use-state", "hooks", "closure"]
+canonicalUrl: "https://deepintodev.com/blog/how-to-create-your-own-simple-use-state-hook"
+timeToRead: "15 minutes"
+language: "en"
+noIndex: false
+noFollow: false
+---
+
+After you complete this article, you will have a solid understanding of:
+
+- **How to create a simplified useState hook from scratch**
+- **Why rules for hooks exist in React**
+
+If you've developed a project with React, you've probably used the `useState` hook million times. When we use it, it's very simple. It's just a function which returns a state and a function that allows us to change that state. But on the inside, is it really that simple? Believe it or not, yes, it is! In this blog, we will create our own simplified `useState` function step by step.
+
+Not only will you learn how to create a simplified version of the `useState` function, but you will also learn why those hook rules that you've always followed exist. (Rules like they can only be defined at the top level, or they can only be defined inside of the react components.) So, after this short blog, you will actually understand the foundation of `useState`, and why you had to follow all those rules that you've always been told.
+
+Now, let's create two buttons (Button A and Button B) and implement the functionality so that when we click each button, its value increments.
+
+```jsx
+import { createRoot } from "react-dom/client";
+
+export const App = () => {
+  return (
+    <div>
+      <button>A : 1</button>
+      <button>B : 2</button>
+    </div>
+  );
+};
+
+createRoot(document.getElementById("root")).render(<App />);
+```
+
+![Buttons](/images/how-to-create-your-own-simple-use-state-hook/buttons.png)
+
+At this point, I assume you know what `useState` is. It's actually just a function that takes an initial value and returns a state and a function to change that state. So, we will start by creating a function that does the same thing.
+
+```jsx
+const useState = (initialValue) => {
+  const setValue = (newValue) => {
+    console.log(newValue);
+  };
+
+  return [initialValue, setValue];
+};
+```
+
+Now, let's use this `useState` function for Button A. (Forget about Button B for now, we'll get back to it soon.)
+
+```jsx
+export const App = () => {
+  const [countA, setCountA] = useState(1);
+  return (
+    <div>
+      <button>A : {countA} </button>
+      <button>B : 2</button>
+    </div>
+  );
+};
+```
+
+But of course, we don't want to return the **initialValue** from the `useState` function, because later on we’ll be changing the value of A. We always need to return the latest value, not the initial value.
+
+So, let's create a different variable called **stateValue**, and return this value instead of **initialValue**. But where should we create this variable? As you can guess, if we create it inside of the `useState` function, we’ll be resetting **stateValue** every time the function is called. So, we need some kind of persistence across renders. In other words, we don't want it to be re-initialized each time `useState` is called. That’s why we’re going to create that variable outside of the scope of the `useState` function.
+
+```jsx
+let stateValue;
+
+const useState = (initialValue) => {
+  if (stateValue === undefined) {
+    stateValue = initialValue;
+  }
+  const setValue = (newValue) => {
+    console.log(newValue);
+  };
+
+  return [stateValue, setValue];
+};
+```
+
+If **stateValue** is undefined, use the **initialValue**; if not, use the most up-to-date state value and return it from the `useState` function. It's quite simple, right?
+
+Now, let's implement the functionality of **setValue**.
+
+```jsx
+const useState = (initialValue) => {
+  if (stateValue === undefined) {
+    stateValue = initialValue;
+  }
+  const setValue = (newValue) => {
+    stateValue = newValue;
+  };
+
+  return [stateValue, setValue];
+};
+```
+
+Now, we take the **newValue** from setValue's parameter and update **stateValue**. Very straightforward. Let's also add the click event to our Button A. (As I said before, forget about Button B for now.)
+
+```jsx
+<button onClick={() => setCountA(countA + 1)}>A : {countA} </button>
+```
+
+But now, when we click the button, nothing will change. **stateValue** is actually changing, but since we don't re-render the app, we don't see the latest value on the screen. So, when we set a new value, let's re-render the app.
+
+Let's create a custom function so that every time we want to re-render the app, we can call that function, which uses the render method provided by `react-dom`.
+
+```jsx
+let root;
+const render = () => {
+  if (!root) {
+    root = createRoot(document.getElementById("root"));
+  }
+  root.render(<App />);
+};
+
+render();
+```
+
+Whenever we call this function, our component will be rendered. We called it first at the top level because when we start our app, we need to render everything initially. (The reason we created a root variable is that we only need to create the root element once, at the first render. We shouldn’t create the root element every time we re-render the app.)
+
+Let’s use this function inside our `useState` function.
+
+```jsx
+const useState = (initialValue) => {
+  if (stateValue === undefined) {
+    stateValue = initialValue;
+  }
+
+  const setValue = (newValue) => {
+    stateValue = newValue;
+    render();
+  };
+
+  return [stateValue, setValue];
+};
+```
+
+Every time we change the state’s value, our app will be re-rendered, and we’ll see the latest value on the screen.
+
+Now, It’s time to make Button B work as well. As you might guess, if we just directly call another useState, it simply won’t work, because we’re only holding one **stateValue**. When we call `useState` for the first time, our global **stateValue** variable gets the initial value (which is 1), and that same value is used for all `useState` calls.
+
+But in React, no matter how many `useState` calls you make, every state has its own separate value. When you change one of them, the others are not affected. So how do we achieve this? By using an array instead.
+
+So, instead of having a single global stateValue, we’ll actually have a **stateValues array**.
+
+```jsx
+let stateValues = [];
+```
+
+Now, with a bit of implementation, we need to store the value for A at index 0, and the value for B at index 1, so that each `useState` call can have its own **stateValue**. How do we achieve this? By creating a global variable to keep track of the current index. Every time we call the `useState` function, we’ll increment the index by 1, so that each `useState` call can store its value at a different position in the **stateValues** array.
+
+Our final code looks like this:
+
+```jsx
+let root;
+let stateValues = [];
+let callIndex = -1;
+
+const useState = (initialValue) => {
+  callIndex++;
+
+  if (stateValues[callIndex] === undefined) {
+    stateValues[callIndex] = initialValue;
+  }
+
+  const setValue = (newValue) => {
+    stateValues[callIndex] = newValue;
+    render();
+  };
+
+  return [stateValues[callIndex], setValue];
+};
+```
+
+When we call the first `useState`, **callIndex** will be 0, and **stateValues[0]** will be equal to the initial value of the first `useState`.
+
+When we call it a second time, callIndex will be 1, and the same thing will happen.
+
+Now, in theory, everything should work perfectly. But there are actually two more things we need to take care of.
+
+First, when we render the component, we have to reset the value of **callIndex**. The reason is obvious: if we don’t reset it, we’ll never be able to access the first and second indexes of the stateValues array correctly. Because it will keep incrementing continuously. So, let’s do that:
+
+```jsx
+const render = () => {
+  if (!root) {
+    root = createRoot(document.getElementById("root"));
+  }
+  callIndex = -1;
+  root.render(<App />);
+};
+```
+
+Now we reset the callIndex to -1 on every re-render. The last problem we're facing is this exact part:
+
+```jsx
+const setValue = (newValue) => {
+  stateValues[callIndex] = newValue;
+  render();
+};
+```
+
+As you can see, we're directly accessing **callIndex** to change the value of our state. Think about it, when we call the `useState` function for the second time, callIndex equals 1. So, every time we access callIndex, we're always accessing index 1. We can never reach the first index of the array, which means we're not able to change the value of Button A.
+
+This is exactly when we need the power of closures in JavaScript. If you don’t know what that is, a closure happens when a function remembers the variables from the scope in which it was defined, even after that scope has finished executing. This allows the function to access and use those variables later, regardless of where or when it's called.
+
+So, when we execute the function, closures help it remember what the index value was at the time it was called. In other words, closures make it possible for a function to have "private" variables.
+
+Now, our final `useState` function looks like this:
+
+```jsx
+const useState = (initialValue) => {
+  callIndex++;
+
+  const currentIndex = callIndex;
+
+  if (stateValues[currentIndex] === undefined) {
+    stateValues[currentIndex] = initialValue;
+  }
+
+  const setValue = (newValue) => {
+    stateValues[currentIndex] = newValue;
+    render();
+  };
+
+  return [stateValues[currentIndex], setValue];
+};
+```
+
+This was actually very important to understand. Because, as you might have heard, React relies on the order in which hooks are called. That’s why we always have to call our hooks at the top level. If we call them, say, inside an if condition, the order of the hooks might change depending on the condition, and this would break everything. The order always has to stay the same across different renders.
+
+Otherwise, how could we keep track of the `useState` values if their order changed on every render? Using indexes wouldn’t solve that, obviously, because when we use indexes, like in our example, we are relying on the fact that every `useState` function will be called in the same order on each render. That’s how we can keep track of them with indexes.
+
+And the second rule of React is that hooks must be called from within React function components only. In our example, we simply defined global variables at the top level, but in React, all these values would actually be attached to and stored in the instance of that component within the React virtual DOM. That’s why calling hooks from regular JavaScript functions wouldn’t work.
+
+Now, you've successfully created your own simple version of the React `useState` hook, and you have a better understanding of why some of the essential rules for hooks actually exist.
+
+Final version of the code:
+
+```jsx
+import { createRoot } from "react-dom/client";
+
+let root;
+let stateValues = [];
+let callIndex = -1;
+
+const useState = (initialValue) => {
+  callIndex++;
+
+  const currentIndex = callIndex;
+
+  if (stateValues[currentIndex] === undefined) {
+    stateValues[currentIndex] = initialValue;
+  }
+
+  const setValue = (newValue) => {
+    stateValues[currentIndex] = newValue;
+    render();
+  };
+
+  return [stateValues[currentIndex], setValue];
+};
+
+export const App = () => {
+  const [countA, setCountA] = useState(1);
+  const [countB, setCountB] = useState(2);
+  return (
+    <div>
+      <button onClick={() => setCountA(countA + 1)}>A : {countA}</button>
+      <button onClick={() => setCountB(countB + 1)}>B : {countB}</button>
+    </div>
+  );
+};
+
+const render = () => {
+  if (!root) {
+    root = createRoot(document.getElementById("root"));
+  }
+  callIndex = -1;
+  root.render(<App />);
+};
+
+render();
+```

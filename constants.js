@@ -70,4 +70,11 @@ export const blogPosts = [
     slug: "how-databases-store-your-tables-on-disk",
     date: "May 25, 2025",
   },
+  {
+    id: 10,
+    title: "How to Create Your Own Simple useState Hook",
+    readTime: 9,
+    slug: "how-to-create-your-own-simple-use-state-hook",
+    date: "June 10, 2025",
+  },
 ];
