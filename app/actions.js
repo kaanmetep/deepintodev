@@ -1,19 +1,21 @@
 "use server";
 import { createSecureRedisClient } from "@/_lib/redis";
 import { checkRateLimit } from "@/_lib/checkRateLimit";
-import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { randomBytes } from "crypto";
 import { headers } from "next/headers";
 import { MongoClient } from "mongodb";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const emailSchema = z
   .string()
   .email("Invalid email format!")
   .max(255, "Email is too long!");
 
-async function sendVerificationEmail(email, transporter) {
+async function sendVerificationEmail(email) {
   if (!process.env.SECRET_KEY) {
     throw new Error("SECRET_KEY is not defined");
   }
@@ -33,27 +35,24 @@ async function sendVerificationEmail(email, transporter) {
 
   const verificationLink = `${process.env.BASE_URL}/api/verify?token=${token}`;
 
-  await transporter.sendMail({
-    from: `"DeepIntoDev" <${process.env.EMAIL}>`,
+  await resend.emails.send({
+    from: `DeepIntoDev <deepintodev@kmpcodes.com>`,
     to: email,
     subject: "DeepIntoDev Newsletter - Email Verification",
     html: `<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Verify Your Subscription</title>
 </head>
 <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; text-align: center;">
-
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
         <tr>
             <td align="center">
                 <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="background-color: #fff; padding: 30px; border-radius: 6px; box-shadow: 0px 2px 4px rgba(0,0,0,0.1); text-align: left; max-width: 100%;">
                     <tr>
-                        <td style="font-size: 18px; font-weight: bold; color: #000;">
-                            DeepIntoDev Newsletter
-                        </td>
+                        <td style="font-size: 18px; font-weight: bold; color: #000;">DeepIntoDev Newsletter</td>
                     </tr>
                     <tr>
                         <td style="font-size: 16px; color: #333; padding: 20px 0;">
@@ -62,22 +61,18 @@ async function sendVerificationEmail(email, transporter) {
                     </tr>
                     <tr>
                         <td align="center">
-                            <!-- Main Verification Button -->
                             <a href="${verificationLink}" style="background-color: #000; color: white !important; padding: 12px 24px; text-decoration: none; font-size: 16px; border-radius: 4px; display: inline-block; margin: 10px 0; border: 2px solid #000; font-weight: bold;">Verify Email</a>
                         </td>
                     </tr>
                     <tr>
                         <td align="center" style="padding-top: 10px;">
-                            <!-- Alternative Text Link -->
                             <p style="font-size: 14px; color: #666;">
                                 If you can't see the button above, <a href="${verificationLink}" style="color: #0066cc; text-decoration: underline; font-weight: bold;">click here to verify your email</a>.
                             </p>
                         </td>
                     </tr>
                     <tr>
-                        <td style="color: #666; font-size: 14px; padding-top: 20px;">
-                            Link expires in 180 minutes.
-                        </td>
+                        <td style="color: #666; font-size: 14px; padding-top: 20px;">Link expires in 180 minutes.</td>
                     </tr>
                     <tr>
                         <td style="color: #666; font-size: 14px; padding-top: 10px;">
@@ -88,10 +83,8 @@ async function sendVerificationEmail(email, transporter) {
             </td>
         </tr>
     </table>
-
 </body>
-</html>
-`,
+</html>`,
   });
 }
 
@@ -149,27 +142,8 @@ export async function subscribe(_, formData) {
       throw err;
     }
 
-    // Check email configuration
-    if (!process.env.EMAIL || !process.env.EMAIL_PASSWORD) {
-      throw new Error("Email credentials are not configured");
-    }
-
-    // Set up email transporter
-    const transporter = nodemailer.createTransport({
-      host: "smtp.zoho.eu",
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.EMAIL,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-      timeout: 10000, // 10 seconds timeout
-    });
-
-    await transporter.verify();
-
-    // Send verification email
-    await sendVerificationEmail(email, transporter);
+    // Send verification email with Resend
+    await sendVerificationEmail(email);
 
     return {
       message:
