@@ -1,0 +1,176 @@
+---
+title: "How WebSockets Work"
+description: "Understand what WebSockets are, why they were invented, how the handshake works, and where real-time communication truly matters. Learn use cases, pros & cons, and when NOT to use WebSockets."
+date: "2025-11-26"
+author: "Kaan Peksen"
+category: "Networking"
+tags: ["websockets", "real-time communication", "networking", "web-development"]
+canonicalUrl: "https://deepintodev.com/blog/how-websockets-work"
+timeToRead: "16 minutes"
+language: "en"
+noIndex: false
+noFollow: false
+---
+
+After you complete this article, you will have a solid understanding of:
+
+- **What WebSockets are**
+- **Why WebSockets were invented**
+- **The main use cases of WebSockets, their pros and cons**
+- **Optimization techniques and real-world usage of WebSockets**
+
+To understand WebSockets, first, we have to understand why WebSockets were invented. And for that, we need to talk about an old friend: HTTP.
+
+So basically, when HTTP 1.0 was invented, it was designed as a simple request–response system: the client makes a request, and the server sends back a response. In this setup, the client is always the one that has to initiate the request–response cycle.
+
+But there was a small problem with this architecture. Once the client made a request and received the response, the TCP connection was closed immediately. That meant for every single request, we had to establish a brand-new TCP connection from scratch.
+
+![HTTP 1.0](/images/http10.png)
+
+> **Note:** I also have a detailed blog where I explain the HTTP protocol, HTTPS, TCP/UDP, and more. It’s not necessary to read it for this article, but if you’re curious, it’ll give you a solid understanding of these protocols and how communication works. [How Data Travels the World to Reach Your Screen: A Deep Dive into OSI, TCP/UDP, HTTP, and More](https://www.deepintodev.com/blog/how-data-travels-the-world-to-reach-your-screen).
+
+Imagine if our website had 5 pages and 30 images. For every single one of those requests, we had to start a new TCP connection. That was inefficient, so we introduced HTTP 1.1.
+
+This time, with HTTP 1.1, we kept the connection open after the first request.
+
+![HTTP 1.1](/images/http11.png)
+
+This architecture still works fine today, but there are some use cases that require real-time action. Sometimes, we need the server to send us information even when we, as clients, haven’t made a request. And that’s exactly why another technology was invented.
+
+WebSockets essentially use HTTP/1.1 to initiate a persistent connection. In other words, they start as a regular HTTP/1.1 connection and then upgrade to a persistent WebSocket connection.
+
+To start a WebSocket connection, first, the client sends an HTTP/1.1 request with some special headers attached. Our request would look like this:
+
+```jsx
+GET /chat HTTP/1.1
+Host: example.com
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw==
+Sec-WebSocket-Version: 13
+```
+
+Let's see what do they mean.
+
+**Upgrade: websocket** -> this means, “let’s upgrade the HTTP protocol to WebSocket.”
+
+**Connection: Upgrade** -> this means, “the connection type will change for this communication.”
+
+**Sec-WebSocket-Key** -> this is a unique key sent by the client during the handshake, so the server can verify and confirm that it’s a real WebSocket connection.
+
+Then, the server takes this request and, if it supports WebSockets, responds like this:
+
+```jsx
+HTTP/1.1 101 Switching Protocols
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Accept: HSmrc0sMlYUkAGmm5OPpG2HaGWk=
+```
+
+**101 Switching Protocols** -> 101 is the HTTP status code indicating that the server agrees to switch to a different protocol requested by the client (e.g., WebSocket), just like other HTTP status codes such as 200 or 404.
+
+**Sec-WebSocket-Accept** -> with this key, the server tells the client, “I am a legitimate WebSocket server.”
+
+So, the client sends a key (_Sec-WebSocket-Key_), and the server responds with _Sec-WebSocket-Accept_. (The server takes the client’s key, appends a fixed GUID, hashes it with SHA-1, and encodes it in Base64. For example: Sec-WebSocket-Accept: HSmrc0sMlYUkAGmm5OPpG2HaGWk=.)
+
+Then the client verifies it by performing the same operation on its original key and comparing it to the server’s Sec-WebSocket-Accept. If they match, the handshake is valid and secure. If not, the connection is rejected. Pretty straightforward process, right?
+
+After this point, we don’t use HTTP anymore. Over the same TCP connection, we start using the WebSocket protocol. So we didn’t even close the TCP connection that was opened for the HTTP request, and yet we changed the protocol. I guess that’s something pretty cool.
+
+And now, it’s the wild west. The server and client can exchange messages freely over the persistent connection, because they are aware of each other. There is no strict request and response cycle like in HTTP. The client doesn’t have to ask for data, the server can send it anytime, even without a client request.
+
+You can always run your own WebSocket server if you want, or you can use something like Socket.IO, which gives you a ready-made server with extra features.
+
+Now that we know what WebSockets are, it’s time to look at their use cases.
+
+## WebSocket Use Cases
+
+**Online chatting** -> Anyone can send a message to anyone else without the other person requesting it. You don’t want to keep asking the server, “Is there a message for me? Is there a message for me?” That’s unnecessary and inefficient. This is where a persistent connection comes in, allowing data to be sent freely. Live chatting is a perfect example of WebSockets in action.
+
+**Multiplayer gaming** -> Players can send their actions or game state updates to each other instantly, without waiting for the server to ask for them. There’s no need for constant polling like “Did anything happen?” Everything flows in real time. WebSockets make this fast and smooth.
+
+> **Note:** Polling: Sending repeated requests to the server at regular intervals to ask, “Is there anything new?"
+
+**Showing client progress / logging** -> The server can push updates, logs, or progress information to the client as it happens. There’s no need for the client to keep asking, “What’s the status?” over and over. WebSockets make it instant and efficient.
+
+## Websocket Cons
+
+Even though WebSockets seem like an amazing technology, nothing is perfect. They also come with a few downsides. So before we jump in and start using them everywhere, let’s take a look at the cons. It’s always better to know what you’re dealing with from the beginning.
+
+**Proxing is tricky** -> Handling WebSocket connections through proxies can be tricky, because many proxies are built for standard HTTP traffic and may not fully support WebSocket’s persistent connections.
+
+> **Note:** Proxying is the act of routing network requests through an intermediary server that forwards them between the client and the destination server. It’s commonly used in corporate networks for security and content filtering, in CDNs for caching, and in VPNs for privacy and controlling geographic access.
+
+**Stateful and hard to scale horizontally** -> WebSocket connections are stateful, meaning the server has to keep track of each client’s connection. This makes it more difficult to distribute the load across multiple servers (horizontal scaling) compared to stateless protocols like HTTP.
+
+> **Note:** If you want to learn more about stateful architectures, check this one out. [Understanding Stateless vs Stateful Architectures](https://www.deepintodev.com/blog/what-is-stateless-and-stateful)
+
+So, now that we have a pretty good idea of what WebSockets are, the real question is: do we actually need to use them?
+
+Our scenario is really important. Let’s say we want to push live updates from the server to the client, like notifications, live scores, or news feed updates. That means we only need one-way communication from server to client. You might think WebSockets would be useful here, but actually, they would be unnecessary and inefficient. There are approaches like **EventSource** designed specifically for this kind of scenario. With EventSource, the server can push data to the client over a single HTTP connection. The connection stays open, and updates are sent as they happen, without the client constantly asking for new data.
+
+So, EventSource can be a better choice than WebSockets for server-to-client communication because it’s simpler, works well with HTTP, and handles automatic reconnections without the overhead of full-duplex connections.
+
+Or if your application only requires simple request and response interactions, you probably don’t need a WebSocket connection at all.
+
+We just need to make smart choices. Keeping things simple should be our ally.
+
+## Optimization techniques when using web sockets
+
+From the outside, WebSockets can look like a perfect technology. But in the real world, let's say in a multiplayer game with live communication, there are many details you need to consider before using WebSockets.
+
+For example, in a multiplayer game, if you want to send each player’s state as a JSON object to the server and then broadcast it to all other players, a simple JSON for a single player might look like this:
+
+```jsx
+{
+  "id": 123,
+  "x": 345.5,
+  "y": 678.2,
+  "health": 100,
+  "mana": 50,
+  "status": "running"
+}
+```
+
+If you have 100 players in a multiplayer game, and each of them needs to be aware of every other player’s current position, health, mana, and other in-game states, you essentially need to broadcast all relevant game state updates to everyone every frame (or at a fixed tick rate, usually 30–60 times per second).
+
+For example, if you naively send a full JSON object for each player to all other players every frame, the data quickly adds up:
+
+100 players × 100 JSON objects × ~100 bytes each = ~1 MB per frame.
+At 60 FPS, that’s ~60 MB/s of raw network data.
+
+![JSON Size](/images/jsonbytes.png)
+_Check: https://www.javainuse.com/bytesizejson_
+
+Clearly, this is extremely inefficient and would cause HUGE bandwidth usage and latency issues.
+
+The problem isn’t WebSockets themselves, it’s how we send data. Sending full JSON for every player every frame is very heavy. We have to send the data in a much smarter way.
+
+JSON is easy to read, but it’s big. For example, instead of sending JSON data, we can use **binary data** to send the same information in just 12 bytes. This is much smaller (nearly 10 times) and faster.
+
+Here’s how to do it with JavaScript:
+
+```jsx
+// Step 1: Create a 12-byte buffer
+// id -> 4 bytes (Uint32), x -> 4 bytes (Float32), y -> 4 bytes (Float32)
+const buffer = new ArrayBuffer(12);
+const view = new DataView(buffer);
+
+// Step 2: Write the data into the buffer
+view.setUint32(0, 123); // player id
+view.setFloat32(4, 345.5); // x coordinate
+view.setFloat32(8, 678.2); // y coordinate
+
+// Step 3: Send the buffer over WebSocket
+ws.send(buffer);
+```
+
+How This Works:
+
+1. ArrayBuffer(12) creates 12 bytes of memory.
+2. DataView lets you write numbers into that memory in different types (like integers or floats).
+3. setUint32 writes a 4-byte integer for the player ID.
+4. setFloat32 writes a 4-byte float for the x and y coordinates.
+5. ws.send(buffer) sends the binary data directly to the server.
+
+In the end, WebSockets may look very handy and seem to give us a lot of freedom. But no matter how magical they appear, we still need to keep other engineering problems in mind when using them.

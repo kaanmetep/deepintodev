@@ -77,4 +77,11 @@ export const blogPosts = [
     slug: "how-to-create-your-own-simple-use-state-hook",
     date: "June 10, 2025",
   },
+  {
+    id: 11,
+    title: "How WebSockets Work",
+    readTime: 10,
+    slug: "how-websockets-work",
+    date: "November 26, 2025",
+  },
 ];
