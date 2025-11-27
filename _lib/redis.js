@@ -1,39 +1,33 @@
-import { createClient } from "redis";
+import { Redis } from "@upstash/redis";
 
 let redisClient;
-let connectionFailed = false;
 
 export const createSecureRedisClient = async () => {
-  // If connection previously failed, don't retry immediately
-  if (connectionFailed) {
-    throw new Error("Redis connection previously failed");
-  }
-
   if (!redisClient) {
-    if (!process.env.REDIS_URL) {
-      console.warn("REDIS_URL environment variable is not set");
-      connectionFailed = true;
-      throw new Error("REDIS_URL is not configured");
+    // Check if Upstash Redis credentials are configured
+    if (
+      !process.env.UPSTASH_REDIS_REST_URL ||
+      !process.env.UPSTASH_REDIS_REST_TOKEN
+    ) {
+      console.warn("Upstash Redis credentials not configured");
+      throw new Error(
+        "UPSTASH_REDIS_REST_URL or UPSTASH_REDIS_REST_TOKEN is not configured"
+      );
     }
 
-    redisClient = createClient({
-      url: process.env.REDIS_URL,
-      socket: {
-        connectTimeout: 5000,
-      },
-    });
-
-    redisClient.on("error", (err) => {
-      console.error("Redis Client Error:", err);
-    });
-
     try {
-      await redisClient.connect();
-      connectionFailed = false;
+      // Upstash Redis doesn't require async connection - it's HTTP-based
+      redisClient = new Redis({
+        url: process.env.UPSTASH_REDIS_REST_URL,
+        token: process.env.UPSTASH_REDIS_REST_TOKEN,
+      });
+
+      // Test the connection with a simple ping
+      await redisClient.ping();
+      console.log("Upstash Redis connected successfully");
     } catch (error) {
-      console.error("Failed to connect to Redis:", error);
+      console.error("Failed to connect to Upstash Redis:", error);
       redisClient = null;
-      connectionFailed = true;
       throw error;
     }
   }

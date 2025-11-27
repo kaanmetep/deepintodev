@@ -14,7 +14,7 @@ export async function checkRateLimit(redis, key, options = {}) {
 
     if (currentAttempts > limit) {
       // Block the key for an extended period
-      await redis.set(`${key}:blocked`, "1", "EX", blockDuration);
+      await redis.set(`${key}:blocked`, "1", { ex: blockDuration });
       throw new Error("RateLimitExceeded");
     }
   } catch (error) {
