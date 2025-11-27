@@ -116,30 +116,39 @@ export async function subscribe(_, formData) {
       throw new Error("User is already subscribed to DeepIntoDev.");
     }
 
-    redis = await createSecureRedisClient();
-
-    const clientIp =
-      (await headers()).get("x-forwarded-for")?.split(",")[0] ||
-      (await headers()).get("x-real-ip");
-
-    if (!clientIp) {
-      throw new Error("Could not determine client IP. Please try again.");
-    }
-
+    // Try to apply rate limiting with Redis (optional)
     try {
-      await checkRateLimit(redis, `ratelimit:subscribe:${clientIp}`, {
-        limit: 3,
-        duration: 300, // 5 minutes window
-        blockDuration: 1800, // 30 mins block if exceeded
-      });
-    } catch (err) {
-      if (err.message === "RateLimitExceeded") {
-        return {
-          message: "Too many requests. Please try again later.",
-          status: "rate_limited",
-        };
+      redis = await createSecureRedisClient();
+
+      const clientIp =
+        (await headers()).get("x-forwarded-for")?.split(",")[0] ||
+        (await headers()).get("x-real-ip");
+
+      if (clientIp) {
+        try {
+          await checkRateLimit(redis, `ratelimit:subscribe:${clientIp}`, {
+            limit: 3,
+            duration: 300, // 5 minutes window
+            blockDuration: 1800, // 30 mins block if exceeded
+          });
+        } catch (err) {
+          if (err.message === "RateLimitExceeded") {
+            return {
+              message: "Too many requests. Please try again later.",
+              status: "rate_limited",
+            };
+          }
+          // Re-throw other rate limit errors
+          throw err;
+        }
       }
-      throw err;
+    } catch (redisError) {
+      // Redis connection failed, continue without rate limiting
+      console.warn(
+        "Redis connection failed, skipping rate limit:",
+        redisError.message
+      );
+      redis = null;
     }
 
     // Send verification email with Resend
