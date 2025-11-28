@@ -14,6 +14,18 @@ export default function MobileHeader() {
     setIsDark(isDarkMode);
   }, []);
 
+  useEffect(() => {
+    if (showMenu) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [showMenu]);
+
   const toggleTheme = () => {
     if (isDark) {
       document.documentElement.classList.remove("dark");
@@ -25,7 +37,7 @@ export default function MobileHeader() {
   return (
     <>
       {showMenu && (
-        <div className=" fixed inset-0 z-[999] bg-gray-50 dark:bg-gray-900">
+        <div className=" fixed inset-0 z-[999] bg-gray-50 dark:bg-gray-900 overscroll-contain">
           <button
             className="bg-gray-100 dark:bg-gray-500 dark:text-white p-3 rounded-full h-4 w-4 flex justify-center items-center text-xs right-4 absolute top-4 cursor-pointer"
             onClick={() => setShowMenu(false)}
@@ -35,7 +47,7 @@ export default function MobileHeader() {
           </button>
 
           <nav
-            className="dark:bg-gray-950 dark:text-white bg-gray-50 text-gray-700 font-medium py-8 px-3 h-full"
+            className="dark:bg-gray-950 dark:text-white bg-gray-50 text-gray-700 font-medium py-8 px-3 h-full overflow-y-auto"
             aria-label="Site Navigation"
           >
             <header>
