@@ -6,8 +6,110 @@ author: "Kaan Peksen"
 category: "Networking"
 tags: ["CORS", "cross-origin requests", "HTTP", "web-development"]
 canonicalUrl: "https://deepintodev.com/blog/everything-you-need-to-know-about-CORS"
-timeToRead: "12 minutes"
+timeToRead: "5 minutes"
 language: "en"
 noIndex: false
 noFollow: false
 ---
+
+After you complete this article, you will have a solid understanding of:
+
+- **What CORS is**
+- **Why CORS is necessary**
+- **What a preflight request is**
+
+If you've ever even touched a keyboard in your life, you've probably encountered CORS at least once before. It might be a little annoying, but when you Google it or ask ChatGPT, it's usually fixed after a couple of tries. But in this blog, let's finally understand what CORS truly is once and for all.
+
+As you might know, when we send an HTTP request over the network, we send it with some headers. For example, a typical HTTP request from your frontend might look like this:
+
+```jsx
+GET /data HTTP/1.1
+Host: api.example.com
+Origin: https://myfrontend.com
+Accept: application/json
+```
+
+> **Note:** While it's not necessary, if you want to learn everything about HTTP starting from TCP (basically everything from scratch), you can check out this blog: https://www.deepintodev.com/blog/how-data-travels-the-world-to-reach-your-screen
+
+Here, in the HTTP headers, the **Origin** header is crucial. It tells the server where the request is coming from. If the request comes from the same domain, same protocol, and same port, we (our browser) call it a same-origin request. But if any of these are different -like the domain, the protocol (http vs. https), or even the port number- then we call it a cross-origin request.
+
+These cross-origin requests can be potentially dangerous because a malicious website could try to trick your browser into sending sensitive data -like cookies, tokens, or login information- to another server without you knowing. If the browser didn’t have some rules or protections, one site could quietly read data from another site you’re logged into, or even perform actions on your behalf, like changing settings or submitting forms.
+
+Let’s say you’re on a malicious website:
+
+```jsx
+https://evil-website.com
+```
+
+and this site tries to secretly fetch your private Facebook data:
+
+```jsx
+// evil-website.com
+fetch("https://facebook.com/api/private-data", {
+  credentials: "include", // sends your cookies automatically
+})
+  .then((res) => res.json())
+  .then((data) => console.log("Got it:", data))
+  .catch((err) => console.error("Blocked:", err));
+```
+
+(this code, running on evil-website.com, is trying to send a request to Facebook using your own logged-in session. Since you’re already logged into Facebook in another tab, the browser automatically attaches your Facebook cookies to this request. And yes - the request does get sent to Facebook successfully.)
+
+But here’s where the magic (and those rules or protections we talked about) kicks in:
+
+Browser checks the **CORS (Cross-Origin Resource Sharing)** rules. Even though the request actually reaches Facebook, and Facebook does send back a response, your JavaScript code still can’t see it. Because browser looks at the server’s response headers to see if your origin is allowed. Since Facebook didn’t include `Access-Control-Allow-Origin: https://evil-website.com`, the browser blocks your code from reading the response. It specifically checks for headers like:
+
+```jsx
+Access - Control - Allow - Origin;
+Access - Control - Allow - Methods;
+Access - Control - Allow - Headers;
+```
+
+If the headers match the origin and method of your request, the browser lets your JavaScript read the response. If not, the browser blocks the response, even though the server actually sent it.
+
+## Preflight Requests
+
+Not every cross-origin request triggers CORS checks in the same way. Sometimes, the browser sends what we call a **preflight** request. Before we dive into what a preflight request is, let’s first see when it’s actually sent. This happens if we use any of the following in our HTTP request:
+
+- HTTP methods other than GET, POST, HEAD (like PUT, DELETE, PATCH),
+
+- Custom headers like Authorization, X-API-Key,
+
+- A non-simple Content-Type like application/json,
+
+- Include credentials like cookies, tokens,
+
+then a preflight request is sent first. By “preflight request”, we actually mean the browser sending an `OPTIONS` request to the server:
+
+```jsx
+OPTIONS /endpoint
+Origin: https://yourfrontend.com
+Access-Control-Request-Method: POST
+Access-Control-Request-Headers: Authorization
+```
+
+Then, the server responds with the allowed origins, methods, and headers:
+
+```jsx
+Access-Control-Allow-Origin: https://yourfrontend.com
+Access-Control-Allow-Methods: POST
+Access-Control-Allow-Headers: Authorization
+```
+
+If the headers match the origin and method of your request, the browser lets your JavaScript read the response. So when we say a “preflight request”, we actually mean the browser sending an `OPTIONS` request. That’s it. The idea is to use the `OPTIONS` method to ask the server for permission first. The actual data request (GET, POST, PUT, etc.) is only sent after the preflight check. If the server doesn’t give permission, the main request never gets sent.
+
+But as we said, we don’t always send preflight requests. Some conditions need to be met. So why is that?
+
+There are simply two types of requests for the browser: **simple requests** and **non-simple requests** (we talked about the conditions for a request to be considered non-simple above, when we discussed when the browser sends a preflight request).
+
+For simple requests (GET/POST with safelisted Content-Type and headers), the browser considers them low-risk. So we don’t need to send a preflight request. The CORS check will still happen, but the browser skips the preflight step since it treats simple requests as low-risk.
+
+But when we talk about non-simple requests (PUT, DELETE, PATCH, or any request with custom headers / JSON POST), the browser thinks: “This request could change data on the server or includes special headers/credentials. It looks risky. Let me check first with a preflight request.”
+
+So, basically;
+
+Simple Request -> low risk -> no preflight. (CORS check still applies!)
+
+Non-simple request -> high risk -> preflight required.
+
+Now you know everything you need to know about CORS.

@@ -46,13 +46,16 @@ export default function NewsletterSubscription() {
           </button>
         </div>
       </form>
-
-      <p className="text-gray-500 text-center my-2 text-xs lg:text-base">
+      <p className="text-center mt-3 text-gray-950">
+        Join <b>1000+</b> developers
+      </p>
+      <p className="text-gray-500 text-center my-1 text-xs lg:text-base">
         <span className="text-gray-950 dark:text-gray-50 font-semibold">
           Be the first to know
         </span>{" "}
         when new blog drop. No ads, no BS. ~once a week.
       </p>
+
       {state.message && (
         <p
           className={`${

@@ -84,4 +84,12 @@ export const blogPosts = [
     slug: "how-websockets-work",
     date: "November 26, 2025",
   },
+  {
+    id: 12,
+    title:
+      "Everything You Need To Know About CORS (Cross-Origin Resource Sharing)",
+    readTime: 5,
+    slug: "everything-you-need-to-know-about-cors",
+    date: "December 3, 2025",
+  },
 ];

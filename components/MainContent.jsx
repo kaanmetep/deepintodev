@@ -30,8 +30,7 @@ const MainContent = () => {
               In the world of software development, filled with frameworks,
               libraries, and abstractions, I often felt like I was just{" "}
               <b>using technologies without truly understanding</b> them. So, I
-              started digging deeper, reading more, researching, and questioning
-              everything.
+              started digging deeper, reading more, and researching.
               <strong>
                 {" "}
                 That’s why I created this blog: to break down complex
@@ -39,8 +38,15 @@ const MainContent = () => {
                 explanations.
               </strong>
             </p>
+            <p className="mt-4 text-base md:text-lg" itemProp="description">
+              DeepIntoDev is the place where you can understand any software
+              engineering concept without any confusion. Trust me, everything
+              becomes simple when it’s explained well.
+            </p>
           </section>
-
+          <section className="w-full  lg:max-w-3xl mx-auto mt-8">
+            <NewsletterSubscription />
+          </section>
           <section className="mt-8">
             <h2 className="text-base md:text-lg font-medium">
               Explore the Most Popular Software Development Blogs
@@ -72,9 +78,6 @@ const MainContent = () => {
                   </li>
                 ))}
             </ul>
-          </section>
-          <section className="w-full  lg:max-w-3xl mx-auto mt-12">
-            <NewsletterSubscription />
           </section>
         </article>
       </main>
