@@ -29,7 +29,7 @@ export default function NewsletterSubscription() {
             className={`flex flex-1 relative text-gray-600 uppercase px-1 lg:px-5 py-2 lg:py-6 font-light 
               transition-all duration-300 ease-in-out transform
               disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer hover:bg-gray-100/80 dark:hover:bg-gray-100/30 text-[10px] sm:text-xs lg:text-base border-l border-gray-200 dark:border-gray-100
-              flex items-center justify-center `}
+               items-center justify-center `}
           >
             {pending ? (
               <>
