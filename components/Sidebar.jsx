@@ -107,7 +107,7 @@ const Sidebar = () => {
                           : post.title}
                       </span>
                     </Link>
-                    <div className="flex justify-between  ">
+                    <div className="flex xl:flex-row flex-col justify-between ">
                       <span className="text-[11px] dark:text-gray-400 text-gray-500 flex items-center gap-2">
                         <span>{post.date}</span>
                         {post.dateModified && (

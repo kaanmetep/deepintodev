@@ -12,6 +12,28 @@ import { RefreshCcw } from "lucide-react";
 // Blog yazılarının bulunduğu dizin
 const POSTS_PATH = path.join(process.cwd(), "blogs");
 
+// Tarihi güvenli bir şekilde ISO formatına çevir
+function toISOString(dateString) {
+  if (!dateString) return undefined;
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) {
+    console.warn(`Invalid date: ${dateString}`);
+    return undefined;
+  }
+  return date.toISOString();
+}
+
+// Tarihi güvenli bir şekilde formatla
+function formatDate(dateString, options) {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) {
+    console.warn(`Invalid date: ${dateString}`);
+    return "";
+  }
+  return date.toLocaleDateString("en-EN", options);
+}
+
 // Tüm blog yazılarını getir
 export const getAllPosts = () => {
   const files = fs.readdirSync(POSTS_PATH);
@@ -85,10 +107,8 @@ export default async function BlogPost({ params }) {
       name: authorName,
       url: frontMatter.authorUrl || siteUrl,
     },
-    datePublished: new Date(frontMatter.date).toISOString(),
-    dateModified: new Date(
-      frontMatter.dateModified || frontMatter.date
-    ).toISOString(),
+    datePublished: toISOString(frontMatter.date),
+    dateModified: toISOString(frontMatter.dateModified || frontMatter.date),
 
     publisher: {
       "@type": "Organization",
@@ -123,7 +143,7 @@ export default async function BlogPost({ params }) {
               <div className="flex gap-2 items-center justify-between">
                 <div className="flex flex-col gap-1">
                   <time className="text-gray-500 dark:text-gray-400">
-                    {new Date(frontMatter.date).toLocaleDateString("en-EN", {
+                    {formatDate(frontMatter.date, {
                       year: "numeric",
                       month: "long",
                       day: "numeric",
@@ -136,9 +156,7 @@ export default async function BlogPost({ params }) {
                           Last updated at:{" "}
                         </span>
                         <time className="text-gray-500 dark:text-gray-400">
-                          {new Date(
-                            frontMatter.dateModified
-                          ).toLocaleDateString("en-EN", {
+                          {formatDate(frontMatter.dateModified, {
                             year: "numeric",
                             month: "long",
                             day: "numeric",
@@ -209,8 +227,8 @@ export async function generateMetadata({ params }) {
         siteName: "DeepIntoDev",
         locale: "en_US",
         type: "article",
-        publishedTime: frontMatter.date,
-        modifiedTime: frontMatter.dateModified,
+        publishedTime: toISOString(frontMatter.date),
+        modifiedTime: toISOString(frontMatter.dateModified || frontMatter.date),
         authors: [authorName],
         tags: frontMatter.tags || [],
       },

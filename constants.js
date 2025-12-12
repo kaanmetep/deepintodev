@@ -39,9 +39,10 @@ export const blogPosts = [
   {
     id: 5,
     title: "How JavaScript Works Behind the Scenes",
-    readTime: 12,
+    readTime: 14,
     slug: "how-javascript-works-behind-the-scenes",
     date: "April 14, 2025",
+    dateModified: "December 12, 2025",
   },
   {
     id: 6,
@@ -59,10 +60,12 @@ export const blogPosts = [
   },
   {
     id: 8,
-    title: "How V8 JavaScript Engine Works Behind the Scenes",
+    title:
+      "How V8 JavaScript Engine Transforms Your Code: From Human-Readable to Machine Code",
     readTime: 15,
     slug: "how-v8-javascript-engine-works-behind-the-scenes",
     date: "May 11, 2025",
+    dateModified: "December 12, 2025",
   },
   {
     id: 9,
