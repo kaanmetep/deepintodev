@@ -38,7 +38,8 @@ export const blogPosts = [
   },
   {
     id: 5,
-    title: "How JavaScript Works Behind the Scenes",
+    title:
+      "How JavaScript Works Behind the Scenes: A Visual Step-by-Step Guide to the Engine (2025)",
     readTime: 14,
     slug: "how-javascript-works-behind-the-scenes",
     date: "April 14, 2025",
