@@ -71,6 +71,7 @@ export default async function BlogPost({ params }) {
   const postUrl = `${siteUrl}/blog/${slug}`;
   const authorName = frontMatter.author || "DeepIntoDev";
 
+  // Schema Objesini Burada Oluşturuyoruz
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "TechArticle",
@@ -82,8 +83,11 @@ export default async function BlogPost({ params }) {
       name: authorName,
       url: frontMatter.authorUrl || siteUrl,
     },
-    datePublished: frontMatter.date,
-    dateModified: frontMatter.dateModified || frontMatter.date,
+    datePublished: new Date(frontMatter.date).toISOString(),
+    dateModified: new Date(
+      frontMatter.dateModified || frontMatter.date
+    ).toISOString(),
+
     publisher: {
       "@type": "Organization",
       name: "DeepIntoDev",
