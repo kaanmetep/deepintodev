@@ -21,7 +21,7 @@ export const viewport = {
   viewportFit: "cover",
 };
 export const metadata = {
-  metadataBase: new URL("https://deepintodev.com"),
+  metadataBase: new URL("https://www.deepintodev.com"),
   alternates: {
     canonical: "/",
   },
@@ -41,7 +41,7 @@ export const metadata = {
     shortcut: "/favicon-16x16.png",
     apple: "/apple-touch-icon.png",
   },
-  authors: [{ name: "Kaan Peksen", url: "https://deepintodev.com" }],
+  authors: [{ name: "Kaan Peksen", url: "https://www.deepintodev.com" }],
   generator: "Next.js",
   applicationName: "DeepIntoDev",
   referrer: "origin-when-cross-origin",
@@ -55,7 +55,7 @@ export const metadata = {
   openGraph: {
     title: "DeepIntoDev",
     description: "Your go-to source for deep development insights.",
-    url: "https://deepintodev.com",
+    url: "https://www.deepintodev.com",
     siteName: "DeepIntoDev",
     images: [
       {

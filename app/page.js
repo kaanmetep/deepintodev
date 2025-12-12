@@ -17,7 +17,7 @@ export const metadata = {
     title: "DeepIntoDev | In-Depth Software Development Insights",
     description:
       "Deep technical insights and comprehensive guides about software development, architecture, and modern programming practices.",
-    url: "https://deepintodev.com",
+    url: "https://www.deepintodev.com",
     siteName: "DeepIntoDev",
     locale: "en_US",
     type: "website",
