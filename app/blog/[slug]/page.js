@@ -89,7 +89,7 @@ export default async function BlogPost({ params }) {
   const slug = (await params)?.slug;
   const { mdxContent, frontMatter } = await getPostBySlug(slug);
 
-  const siteUrl = "https://deepintodev.com";
+  const siteUrl = "https://www.deepintodev.com";
   const postUrl = `${siteUrl}/blog/${slug}`;
   const authorName = frontMatter.author || "DeepIntoDev";
 
@@ -208,7 +208,7 @@ export async function generateMetadata({ params }) {
     const slug = (await params)?.slug;
     const { frontMatter } = await getPostBySlug(slug);
 
-    const siteUrl = "https://deepintodev.com";
+    const siteUrl = "https://www.deepintodev.com";
     const authorName = frontMatter.author || "DeepIntoDev";
     const postUrl = `${siteUrl}/blog/${slug}`;
 
