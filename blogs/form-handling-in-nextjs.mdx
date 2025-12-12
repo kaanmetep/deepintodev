@@ -1,10 +1,10 @@
 ---
-title: "Complete Guide to Form Handling in NextJS"
-description: "Learn how to create, validate, and manage forms in NextJS applications with server actions and client components."
+title: "The Only Guide You Need for Next.js Forms: Server Actions, Zod & Validation (2025)"
+description: "Master Next.js forms using Server Actions and Zod validation. A complete guide to handling form state, errors, and type-safety in your Next.js apps."
 date: "2025-03-15"
 author: "Kaan Peksen"
 category: "Web Development"
-dateModified: "2025-03-19"
+dateModified: "2025-12-12"
 tags:
   [
     "nextjs",
@@ -31,17 +31,13 @@ After you complete this article, you will have a solid understanding of:
 
 If you are building any kind of app, you will definitely need forms in your project. At first, it might seem easy to create. Just create some labels, some input elements, and let users fill them out. Once they click the button, it's all done! Well, it actually gets a bit complicated and hard to keep up with all kinds of features that forms can/should do...
 
-First, you need to validate inputs on both the frontend and backend to prevent users from entering data in the wrong format. Then, you should display errors for specific fields when the user provides incorrect input. Finally, you need to retain the data in input fields even after form submission, so users don’t lose everything just because one field contains an error.
+First, you need to validate inputs on both the frontend and backend to prevent users from entering data in the wrong format. Then, you should display errors for specific fields when the user provides incorrect input. Finally, you need to retain the data in input fields even after form submission, so users don’t lose everything just because one field contains an error. And that's just the beginning, there’s even more to it!
 
-And that's just the beginning—there’s even more to it!
+There are so many libraries, best practices, and different approaches when it comes to forms. React Hook Form, Next.js forms, TanStack Form, Zod, Yup, various hooks… and the list keeps growing every day. At some point, it can start to feel overwhelming, and it's easy to get lost in all of it. But don’t worry! We’ll go through everything together, and you’ll gain the confidence you need to handle forms like a pro! We will start from the simplest form code and walk through the steps you need to follow to build production-ready code. Follow how the code evolves, and even better, you can try testing it yourself as we go.
 
-There are many libraries, best practices, and different approaches when it comes to forms—React Hook Form, Next.js forms, TanStack Form, Zod, Yup, various hooks, and more. At some point, it can start to feel overwhelming, and it's easy to get lost in all of it. But don’t worry—we’ll go through everything together, and you’ll gain the confidence you need to handle forms like a pro! This is the only blog you will need to create real-world, error-free, customer-friendly, and safe form inputs.
+**This blog is updated regularly with the latest changes and updates in Next.js (Last updated at: December 12, 2025)**. But even if it weren’t updated, once you understand the underlying logic, you won’t have any trouble adapting to the small changes that come along.
 
-In this blog, you will completely understand how forms work, especially in Next.js apps—how to validate them, control them, manipulate them, throw errors, and more.
-
-You will also learn how to retain input values even after submitting the form.
-
-> **Note:** I will be using NextJS to explain forms in the real world, but some of the concepts you will see are valid for other frameworks and libraries too.
+> **Note:** Even though I’m using Next.js and Zod to explain things to you, many of the concepts we discuss follow pretty much the same logic in other popular frameworks and form-validation tools as well.
 
 ## Creating a Basic Form in NextJS
 
@@ -60,13 +56,14 @@ First, let's start with creating a basic form in NextJS.
 
 ![Basic Form](/images/form-handling-in-nextjs/basicform.png)
 
-Right now, our form elements are "uncontrolled elements," which means we don't control or store the values that are given by users. First, we will need to control the values because we're going to do some server-side actions with those values—let's say we need to save them to a database.
+Right now, our form elements are **uncontrolled elements**, which means we don't control or store the values that are given by users. First, we will need to control the values because eventually we're going to do some server-side actions with those values(let's say we need to save them to a database.)
 
 The first thing we can think of to control uncontrolled elements might be using our good old friend `useState`.
 
-Let's convert this component to a client component (since we can't use React hooks in server components) and control fields.
+Let's convert this component to a client component (since we can't use React hooks in server components in Next.js) and control fields.
 
 ```jsx
+"use client";
 const [firstName, setFirstName] = useState("");
 const [email, setEmail] = useState("");
 const [password, setPassword] = useState("");
@@ -134,17 +131,19 @@ const handleChange = (e) => {
 </form>;
 ```
 
+Now, the way we control our elements looks a bit cooler.
+
 ## Understanding Form States and Server Actions
 
 Now we control our form elements. But did we actually need to create states, and connect them with input elements? Well, not really. But first, let's learn something else. Then we'll get back to this.
 
-99% of the time, you will need to use this form data in a "server-side action," like saving to a database. And if you want to do POST server actions in NextJS, you use "server actions." If you don't know what server actions are, they're just regular functions. The good part is, you write them as regular JavaScript functions, but they're turned into "POST" HTTP methods.
+99% of the time, you will need to use this form data in a "server-side action", like saving to a database. And if you need to save data to your database with a POST request, the way to do it in Next.js is through **Server Actions.** If you don't know what server actions are, they're just regular functions. The good part is, you write them as regular JavaScript functions, but they're turned into **POST HTTP methods**.
 
-Typically, to write server actions in NextJS, you would create a separate file called "actions.js". To convert functions to POST endpoints, you add "use server" to the top of the file.
+Typically, to write Server Actions in Next.js, you create a separate `actions.js` file inside your /app directory, and you would add `use server` directive to the top of the file. From now on, every function you write and export from this file will essentially act like an HTTP POST endpoint. This lets you run server-side logic directly from your UI, making things like database writes, form handling, and other secure operations much easier.
 
-> **Note:** Adding "use server" doesn't turn a component into a "server component." To make a component a server component, you basically don't write anything since every component is a server component by default. You only add "use client" to convert a component to a client component, and add "use server" to convert a function to a "server action."
+> **Note:** If you’re not very familiar with Next.js, here’s something important to avoid confusion: Adding "use server" doesn't turn a component into a "server component." To make a component a server component, you basically don't write anything since every component is a server component by default. You only add "use client" to convert a component to a client component, and add "use server" to convert a function to a "server action."
 
-So let's create an actions.js file and then create our function that will be turned into an HTTP POST method. This method is just to mimic saving the form data to our database.
+So, let's create an `actions.js` file inside our /app directory and then create our function. This function is just to mimic saving the form data to our database.
 
 Inside actions.js file:
 
@@ -158,7 +157,7 @@ export const saveFormDatasToDatabase = async () => {
 
 ## Using Server Actions with Forms
 
-Now, when we submit our form, we need to invoke this HTTP POST endpoint. You might think to add this function to the form tag like this:
+Now, when we submit our form, we need to invoke our server action. You might think to add this function to the form tag like this:
 
 ```jsx
 <form
@@ -177,9 +176,9 @@ const handleSubmit = async (e) => {
 };
 ```
 
-This is not what we want to do in our NextJS project. Instead, we want to use the "action" attribute. With NextJS 13+, the action attribute can take JavaScript functions. And this function can work on the server side with the "use server" directive (just like we did above).
+This is not what we want to do in our NextJS project. Instead, we want to use the **action** attribute. With NextJS 13+, the action attribute can take JavaScript functions. And, thanks to server actions, this function can work on the server side with the "use server" directive (just like we did above).
 
-The action attribute will work even if JavaScript is disabled because it's not something that works on the client—it works on the server and gives us the chance to make a "POST" request to our server by default.
+The action attribute will work even if JavaScript is disabled because it's not something that works on the client, it works on the server and gives us the chance to make a "POST" request to our server by default.
 
 > **Note:** So we could actually use both the action and onSubmit attributes on a form element. Action would be to make a POST request, and onSubmit would be for client-side validations or other work that will operate on the client. However, if you use both action and onSubmit, do not call e.preventDefault() inside onSubmit, as it will prevent the form from making a POST request.
 
@@ -197,13 +196,13 @@ When we look at the headers of the request, we can clearly see we made a POST re
 
 ![Headers](/images/form-handling-in-nextjs/headers.png)
 
-Also, if we check the payload, we sent all the form data as the payload with our request inside a formData object.
+Also, when we inspect the payload section, we can see that all the form data is sent as the **request’s payload** inside a `FormData` object. (To see this payload, you don’t need to make your form elements controlled, but you do need to make sure every form element has a `name` attribute.)
 
 ![Payload](/images/form-handling-in-nextjs/payload.png)
 
-So now, we can easily get this formData object to control our values. This means we didn't actually need to use `useState` hook, and create states for form inputs as we did before. Because when we submit the form, we send input values anyway.
+Now, we can easily get this `formData` object to control our values. This means we didn't actually need to use `useState` hook, and create states for form inputs as we did before. Because when we submit the form, we send input values anyway.
 
-Let's remove all the state that we defined, and let's take the formData parameter from our server action so that we can access all the data when the form is submitted.
+Let's remove all the state that we defined, and let's take the `formData` parameter from our server action so that we can access all the data when the form is submitted.
 
 ```jsx
 <form action={saveFormDatasToDatabase}>
@@ -240,17 +239,15 @@ As we can see, we have our data coming from "frontend" to "backend" successfully
 
 ## Adding Form Validations
 
-Now we need to have more control over our inputs. We will definitely want to put some validations before we save data to our database. For example, email has to be in the right format, firstName can't be longer than 50 characters, password should at least include a letter, etc.
+Now, we need to have more control over our inputs. We will definitely want to put some validations before we save data to our database. For example, email has to be in the right format, firstName can't be longer than 50 characters, password should at least include a letter, etc.
 
 We ideally want this control to be in both our frontend and backend, but never only on the frontend! Client-side validations can always be manipulated, so we never trust the data coming from users.
 
 We also want to show errors to the users if they put invalid input. And a loading state would be cool too when we're validating the data on our backend (in our server action).
 
-There is a great hook for all this job, and it's called `useActionState`.
+There is a great hook for all this job in Next.JS, and it's called **`useActionState`**.
 
-`useActionState` is a React hook and therefore must be used in a Client Component! So first, make sure that your form elements are inside a client component.
-
-`useActionState` will take our server action and an initial state as parameters and will return the state that came from our backend, formAction that we pass to the action attribute on our form element, and a pending state while the form is submitting.
+`useActionState` will take our server action and an initial state as parameters, and will return **the state that came from our backend**, `formAction` that we pass to the action attribute on our form element, and a pending state while the form is submitting. (If that sounded a bit confusing, don’t worry, just take a look at the code below to see what parameters it takes and what it returns.)
 
 Then, our final code will look like this:
 
@@ -306,11 +303,15 @@ export const saveFormDatasToDatabase = async (_, formData) => {
 };
 ```
 
-> **Note:** By passing the action to useActionState, the action's function signature changes to receive a new initialState parameter as its first argument. But since we don't need that first argument for right now, we simply pass nothing as the first argument, and formData as the second argument.
+> **Note:** By passing the server action to useActionState hook, the server action's function signature changes to receive a new initialState parameter as its first argument. But since we don't need that first argument for right now, we simply pass nothing as the first argument, and formData as the second argument.
 
 Thanks to `useActionState`, now we are able to pass the "state" of the form between frontend and backend. Now we can throw some errors from our backend and receive them on our frontend. It also provides us a pending state, so that while the form is submitting, we can disable the button or even show some kind of a "loading" message to the user.
 
+So `useActionState` is just a React hook that lets you run a server action and automatically keep track of its returned state. It gives you the current state, a special formAction function to trigger the server action, and a pending value while the action is being submitted.
+
 ![First Name Input Error](/images/form-handling-in-nextjs/firstnameerror.png)
+
+We’ve successfully added validation to our form, and we’re able to return an error message when that validation fails. Before we move on to adding more detailed, real-world validation with Zod, let’s first solve a problem we’re currently facing.
 
 ## Preserving Form Input Values
 
@@ -396,13 +397,13 @@ const Page = () => {
 export default Page;
 ```
 
-We've added "defaultValue" attributes to every input element so that they will not reset when the form is submitted—unless a specific error occurs in that input field.
+We've added `defaultValue` attributes to every input element so that they will not reset when the form is submitted—unless a specific error occurs in that input field.
 
 ## Proper Form Validation
 
 So far, we haven't implemented proper form validation in our form. Validation is essential for both the frontend and backend, but as we mentioned before, it should never rely solely on the frontend! This is because client-side validations can be easily bypassed.
 
-For the client side, we could use simple, built-in form validation attributes such as required, minlength, email, etc.
+For the client side, we could use simple, built-in form validation attributes such as `required`, `minlength`, `email`, etc.
 
 ```jsx
 <!-- Email Input -->
@@ -451,7 +452,7 @@ export const saveFormDatasToDatabase = async (_, formData) => {
 
 > **Note:** When there was an error before, we didn’t send the faulty data on the client side, and that field was removed from input element. But now, we’re sending all the data directly. So for example, even if there’s an error in the email field, the input will still keep its value. This is up to your design choice. You can choose either.
 
-However, there are a few issues with this approach:
+However, there are a few issues with this validation approach:
 
 1. Limited frontend validation – Relying on basic HTML attributes may not be sufficient for complex validation.
 2. Messy backend code – Our current validation logic is difficult to manage.
@@ -459,9 +460,9 @@ However, there are a few issues with this approach:
 
 ## A Better Solution: Using Zod
 
-One of the best ways to solve these issues is by using a validation library like Zod. With Zod, we can define a single validation schema and reuse it on both the frontend and backend. This ensures we have one source of truth for our validation rules.
+One of the best ways to solve these issues is by using a validation library like **Zod**. With Zod, we can define a single validation schema and reuse it on both the frontend and backend. This ensures we have one source of truth for our validation rules.
 
-Zod also provides built-in validation methods, so we don't need to manually write regex patterns to check if an email is valid, for example.
+Zod also provides **built-in validation methods**, so we don't need to manually write regex patterns to check if an email is valid, for example.
 
 By implementing Zod, we can make our validation stronger, cleaner, and more consistent across our application.
 
@@ -495,16 +496,43 @@ export const signUpSchema = z.object({
 });
 ```
 
-You can clearly see how easy it is. Now we have created our "Zod schema." With this schema, we have a single source of truth. Let’s now use this schema on both the frontend and the backend.
+You can clearly see how easy it is. We just have created our **Zod schema**. Now, we can actually use this Zod schema in both our frontend and backend. To verify that the data is reaching the backend as expected, let’s first update our server action like this:
 
-Our final form element will look like this:
+```jsx
+"use server";
+import { signUpSchema } from "@/lib/types";
+
+export const saveFormDatasToDatabase = async (_, formData) => {
+  const rawData = {
+    email: formData.get("email"),
+    firstName: formData.get("firstName"),
+    password: formData.get("password"),
+  };
+
+  const result = signUpSchema.safeParse(rawData);
+
+  if (!result.success) {
+    const firstError = result.error.issues[0];
+    return {
+      success: false,
+      message: firstError.message,
+      inputs: rawData,
+    };
+  }
+  return { success: true, message: "Data saved successfully", inputs: rawData };
+};
+```
+
+We can also perform client-side validation using the same Zod schema. The important point is that we need to validate the form before it's submitted. So the `action` attribute doesn't work well here because when we use `action={formAction}`, the form submits immediately on submit, so we can't validate on the client first.
+
+To validate before submission, we have to use `onSubmit` handler, and call `e.preventDefault()` to stop the default submission. That's how we can validate the data, and only call the server action if validation passes.
 
 ```jsx
 "use client";
 import { useState } from "react";
-import { saveFormDatasToDatabase } from "../actions";
+import { saveFormDatasToDatabase } from "./actions";
 import { useActionState } from "react";
-import { signUpSchema } from "../../lib/types";
+import { signUpSchema } from "@/lib/types";
 
 const initialState = {
   success: false,
@@ -529,22 +557,21 @@ const Page = () => {
       password: formData.get("password"),
     };
 
-    try {
-      // Valite with zod schema
-      signUpSchema.parse(data);
+    // Validate with zod schema using safeParse
+    const result = signUpSchema.safeParse(data);
+
+    if (!result.success) {
+      // If there are errors
+      const formattedErrors = {};
+      result.error.issues.forEach((err) => {
+        formattedErrors[err.path[0]] = err.message;
+      });
+      setErrors(formattedErrors);
+    } else {
       // If validation is correct
       setErrors({});
       // Call formAction with formData
       formAction(formData);
-    } catch (error) {
-      // If there are errors
-      if (error.errors) {
-        const formattedErrors = {};
-        error.errors.forEach((err) => {
-          formattedErrors[err.path[0]] = err.message;
-        });
-        setErrors(formattedErrors);
-      }
     }
   };
 
@@ -591,53 +618,6 @@ const Page = () => {
 };
 
 export default Page;
-```
-
-Now, let’s use the same validation schema for our backend (server action) as well.
-
-```jsx
-"use server";
-import { signUpSchema } from "../lib/types";
-
-export const saveFormDatasToDatabase = async (_, formData) => {
-  const rawData = {
-    email: formData.get("email"),
-    firstName: formData.get("firstName"),
-    password: formData.get("password"),
-  };
-
-  try {
-    // Validate with zod schema
-    signUpSchema.parse(rawData);
-    // If there is no error return a success message
-    return {
-      success: true,
-      message: "Signed up successfully!",
-    };
-  } catch (error) {
-    // If there are errors with zod validation
-    if (error.errors && error.errors.length > 0) {
-      // Find the error and find where did it happen
-      const firstError = error.errors[0];
-      const fieldName = firstError.path[0];
-
-      // Return except the faulty input
-      const { [fieldName]: _, ...inputsWithoutErrorField } = rawData;
-
-      return {
-        success: false,
-        message: firstError.message,
-        inputs: inputsWithoutErrorField,
-      };
-    }
-
-    return {
-      success: false,
-      message: "Unexpected error happened.",
-      inputs: rawData,
-    };
-  }
-};
 ```
 
 Now you fully understand how to handle forms in your Next.js application!
