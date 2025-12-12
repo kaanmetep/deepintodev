@@ -8,7 +8,8 @@ export const blogPosts = [
   },
   {
     id: 1,
-    title: "Complete Guide to Form Handling in NextJS",
+    title:
+      "The Only Guide You Need for Next.js Forms: Server Actions, Zod & Validation (2025)",
     readTime: 16,
     slug: "form-handling-in-nextjs",
     date: "March 13, 2025",
