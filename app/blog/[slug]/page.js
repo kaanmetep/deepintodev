@@ -154,7 +154,7 @@ export default async function BlogPost({ params }) {
             )}
             {frontMatter.tags && (
               <div className="mt-3 flex flex-wrap gap-2 dark:text-white">
-                {frontMatter.tags.map((tag) => (
+                {frontMatter.tags.slice(0, 7).map((tag) => (
                   <span
                     key={tag}
                     className="bg-gray-200 dark:bg-gray-500 px-2 py-1 rounded-md text-sm"
