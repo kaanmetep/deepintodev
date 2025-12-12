@@ -7,6 +7,8 @@ import remarkGfm from "remark-gfm";
 import { notFound } from "next/navigation";
 import NewsletterSubscription from "@/components/NewsletterSubscription";
 import NewsletterPopup from "@/components/NewsletterPopup";
+import { RefreshCcw } from "lucide-react";
+
 // Blog yazılarının bulunduğu dizin
 const POSTS_PATH = path.join(process.cwd(), "blogs");
 
@@ -65,8 +67,46 @@ export default async function BlogPost({ params }) {
   const slug = (await params)?.slug;
   const { mdxContent, frontMatter } = await getPostBySlug(slug);
 
+  const siteUrl = "https://deepintodev.com";
+  const postUrl = `${siteUrl}/blog/${slug}`;
+  const authorName = frontMatter.author || "DeepIntoDev";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    headline: frontMatter.title,
+    description: frontMatter.description || "",
+    image: frontMatter.image ? `${siteUrl}${frontMatter.image}` : undefined,
+    author: {
+      "@type": "Person",
+      name: authorName,
+      url: frontMatter.authorUrl || siteUrl,
+    },
+    datePublished: frontMatter.date,
+    dateModified: frontMatter.dateModified || frontMatter.date,
+    publisher: {
+      "@type": "Organization",
+      name: "DeepIntoDev",
+      logo: {
+        "@type": "ImageObject",
+        url: `${siteUrl}/logo.png`,
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": postUrl,
+    },
+    keywords: frontMatter.tags?.join(", ") || "",
+    articleSection: frontMatter.category || "Software Development",
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <div className="flex flex-col items-center w-full ">
         <article className="w-full max-w-5xl 2xl:max-w-7xl mx-auto px-4 pt-10 ">
           <header className="mb-8 ">
@@ -84,20 +124,25 @@ export default async function BlogPost({ params }) {
                     })}
                   </time>
                   {frontMatter.dateModified && (
-                    <div className="flex gap-1">
-                      <span className="text-gray-500 dark:text-gray-400">
-                        Last updated at:
-                      </span>
-                      <time className="text-gray-500 dark:text-gray-400">
-                        {new Date(frontMatter.dateModified).toLocaleDateString(
-                          "en-EN",
-                          {
+                    <div className="flex gap-1 items-center">
+                      <b className="flex items-center gap-1">
+                        <span className="text-gray-500 dark:text-gray-400">
+                          Last updated at:{" "}
+                        </span>
+                        <time className="text-gray-500 dark:text-gray-400">
+                          {new Date(
+                            frontMatter.dateModified
+                          ).toLocaleDateString("en-EN", {
                             year: "numeric",
                             month: "long",
                             day: "numeric",
-                          }
-                        )}
-                      </time>
+                          })}
+                        </time>
+                        <RefreshCcw
+                          size={15}
+                          className="text-gray-800 dark:text-gray-300 mt-[1px]"
+                        />
+                      </b>
                     </div>
                   )}
                 </div>
@@ -143,31 +188,6 @@ export async function generateMetadata({ params }) {
     const authorName = frontMatter.author || "DeepIntoDev";
     const postUrl = `${siteUrl}/blog/${slug}`;
 
-    // JSON-LD Schema
-    const jsonLd = {
-      "@context": "https://schema.org",
-      "@type": "TechArticle",
-      headline: frontMatter.title,
-      description: frontMatter.description || "",
-      author: {
-        "@type": "Person",
-        name: authorName,
-        url: frontMatter.authorUrl || siteUrl,
-      },
-      datePublished: frontMatter.date,
-      dateModified: frontMatter.dateModified || frontMatter.date,
-      publisher: {
-        "@type": "Organization",
-        name: "DeepIntoDev",
-      },
-      mainEntityOfPage: {
-        "@type": "WebPage",
-        "@id": postUrl,
-      },
-      keywords: frontMatter.tags?.join(", ") || "",
-      articleSection: frontMatter.category || "Software Development",
-    };
-
     return {
       title: frontMatter.title,
       description: frontMatter.description || "",
@@ -199,9 +219,6 @@ export async function generateMetadata({ params }) {
         },
       ],
       category: frontMatter.category || "Software Development",
-      other: {
-        "script:ld+json": [JSON.stringify(jsonLd)],
-      },
     };
   } catch (error) {
     console.error("Error in generateMetadata:", error);

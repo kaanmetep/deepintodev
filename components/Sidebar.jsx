@@ -12,7 +12,7 @@ const Sidebar = () => {
   return (
     <aside
       className={`
-         dark:bg-gray-900 dark:text-white max-w-[470px] hidden lg:block relative  bg-gray-50 text-gray-700 font-medium 
+         dark:bg-gray-950 dark:text-white max-w-[470px] hidden lg:block relative  bg-gray-50 text-gray-700 font-medium 
         transition-all duration-300 ease-in-out
         ${
           isOpen
@@ -108,8 +108,13 @@ const Sidebar = () => {
                       </span>
                     </Link>
                     <div className="flex justify-between  ">
-                      <span className="text-[11px] dark:text-gray-400 text-gray-500 ">
-                        {post.date}
+                      <span className="text-[11px] dark:text-gray-400 text-gray-500 flex items-center gap-2">
+                        <span>{post.date}</span>
+                        {post.dateModified && (
+                          <span className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-900/40 px-2 py-[2px] rounded-full">
+                            Updated {post.dateModified}
+                          </span>
+                        )}
                       </span>
                       <span className="text-[11px] dark:text-gray-400 text-gray-500 ">
                         {post.readTime} min. read

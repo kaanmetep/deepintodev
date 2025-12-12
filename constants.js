@@ -12,6 +12,7 @@ export const blogPosts = [
     readTime: 16,
     slug: "form-handling-in-nextjs",
     date: "March 13, 2025",
+    dateModified: "December 12, 2025",
   },
   {
     id: 2,
