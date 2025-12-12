@@ -131,7 +131,7 @@ export default async function BlogPost({ params }) {
                   </time>
                   {frontMatter.dateModified && (
                     <div className="flex gap-1 items-center">
-                      <b className="flex items-center gap-1">
+                      <b className="flex items-center gap-1 text-lg">
                         <span className="text-gray-500 dark:text-gray-400">
                           Last updated at:{" "}
                         </span>
