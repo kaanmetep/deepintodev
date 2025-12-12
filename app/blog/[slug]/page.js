@@ -77,7 +77,9 @@ export default async function BlogPost({ params }) {
     "@type": "TechArticle",
     headline: frontMatter.title,
     description: frontMatter.description || "",
-    image: frontMatter.image ? `${siteUrl}${frontMatter.image}` : undefined,
+    image: frontMatter.image
+      ? `${siteUrl}${frontMatter.image}`
+      : `${siteUrl}/images/default-blog-cover.png`,
     author: {
       "@type": "Person",
       name: authorName,
