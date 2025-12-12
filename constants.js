@@ -44,7 +44,6 @@ export const blogPosts = [
     readTime: 14,
     slug: "how-javascript-works-behind-the-scenes",
     date: "April 14, 2025",
-    dateModified: "December 12, 2025",
   },
   {
     id: 6,
@@ -67,7 +66,6 @@ export const blogPosts = [
     readTime: 15,
     slug: "how-v8-javascript-engine-works-behind-the-scenes",
     date: "May 11, 2025",
-    dateModified: "December 12, 2025",
   },
   {
     id: 9,
