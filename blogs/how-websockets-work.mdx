@@ -1,13 +1,22 @@
 ---
-title: "How WebSockets Work"
+title: "How WebSockets Work: A Deep Dive into Real-Time Communication"
 description: "Understand what WebSockets are, why they were invented, how the handshake works, and where real-time communication truly matters. Learn use cases, pros & cons, and when NOT to use WebSockets."
 date: "2025-11-26"
-dateModified: "2025-11-29"
+dateModified: "2025-12-20"
 author: "Kaan Peksen"
 category: "Networking"
-tags: ["websockets", "real-time communication", "networking", "web-development"]
+tags:
+  [
+    "websockets",
+    "http-vs-websockets",
+    "real-time communication",
+    "networking",
+    "web-development",
+    "network-protocols",
+    "full-duplex",
+  ]
 canonicalUrl: "https://www.deepintodev.com/blog/how-websockets-work"
-timeToRead: "16 minutes"
+timeToRead: "10 minutes"
 language: "en"
 noIndex: false
 noFollow: false
@@ -22,15 +31,15 @@ After you complete this article, you will have a solid understanding of:
 
 To understand WebSockets, first, we have to understand why WebSockets were invented. And for that, we need to talk about an old friend: HTTP.
 
-So basically, when HTTP 1.0 was invented, it was designed as a simple request–response system: the client makes a request, and the server sends back a response. In this setup, the client is always the one that has to initiate the request–response cycle.
+When **HTTP 1.0** was invented, it was designed as a simple request–response system: the client makes a request, and the server sends back a response. In this setup, the client is always the one that has to initiate the _request–response cycle._
 
-But there was a small problem with this architecture. Once the client made a request and received the response, the TCP connection was closed immediately. That meant for every single request, we had to establish a brand-new TCP connection from scratch.
+But there was a small problem with this architecture. Once the client made a request and received the response, **the TCP connection was closed immediately.** That meant for every single request, we had to establish a brand-new TCP connection from scratch.
 
 ![HTTP 1.0](/images/http10.png)
 
 > **Note:** I also have a detailed blog where I explain the HTTP protocol, HTTPS, TCP/UDP, and more. It’s not necessary to read it for this article, but if you’re curious, it’ll give you a solid understanding of these protocols and how communication works. [How Data Travels the World to Reach Your Screen: A Deep Dive into OSI, TCP/UDP, HTTP, and More](https://www.deepintodev.com/blog/how-data-travels-the-world-to-reach-your-screen).
 
-Imagine if our website had 5 pages and 30 images. For every single one of those requests, we had to start a new TCP connection. That was inefficient, so we introduced HTTP 1.1.
+Imagine if our website had 5 pages and 30 images. For every single one of those requests, we had to start a new TCP connection. That was inefficient, so we introduced **HTTP 1.1.**
 
 This time, with HTTP 1.1, we kept the connection open after the first request.
 
@@ -38,9 +47,9 @@ This time, with HTTP 1.1, we kept the connection open after the first request.
 
 This architecture still works fine today, but there are some use cases that require real-time action. Sometimes, we need the server to send us information even when we, as clients, haven’t made a request. And that’s exactly why another technology was invented.
 
-WebSockets essentially use HTTP/1.1 to initiate a persistent connection. In other words, they start as a regular HTTP/1.1 connection and then upgrade to a persistent WebSocket connection.
+**WebSockets** essentially use HTTP/1.1 to initiate a persistent connection. In other words, they start as a regular HTTP/1.1 connection and then upgrade to a persistent WebSocket connection.
 
-To start a WebSocket connection, first, the client sends an HTTP/1.1 request with some special headers attached. Our request would look like this:
+To start a WebSocket connection, first, the client sends an HTTP/1.1 request with **some special headers attached**. Our request would look like this:
 
 ```jsx
 GET /chat HTTP/1.1
@@ -53,11 +62,11 @@ Sec-WebSocket-Version: 13
 
 Let's see what do they mean.
 
-**Upgrade: websocket** -> this means, “let’s upgrade the HTTP protocol to WebSocket.”
+**_Upgrade: websocket_** -> this means, “let’s upgrade the HTTP protocol to WebSocket.”
 
-**Connection: Upgrade** -> this means, “the connection type will change for this communication.”
+**_Connection: Upgrade_** -> this means, “the connection type will change for this communication.”
 
-**Sec-WebSocket-Key** -> this is a unique key sent by the client during the handshake, so the server can verify and confirm that it’s a real WebSocket connection.
+**_Sec-WebSocket-Key_** -> this is a unique key sent by the client during the handshake, so the server can verify and confirm that it’s a real WebSocket connection.
 
 Then, the server takes this request and, if it supports WebSockets, responds like this:
 
@@ -68,15 +77,15 @@ Connection: Upgrade
 Sec-WebSocket-Accept: HSmrc0sMlYUkAGmm5OPpG2HaGWk=
 ```
 
-**101 Switching Protocols** -> 101 is the HTTP status code indicating that the server agrees to switch to a different protocol requested by the client (e.g., WebSocket), just like other HTTP status codes such as 200 or 404.
+**_101 Switching Protocols_** -> 101 is the HTTP status code indicating that the server agrees to switch to a different protocol requested by the client (e.g., WebSocket), just like other HTTP status codes such as 200 or 404.
 
-**Sec-WebSocket-Accept** -> with this key, the server tells the client, “I am a legitimate WebSocket server.”
+**_Sec-WebSocket-Accept_** -> with this key, the server tells the client, “I am a legitimate WebSocket server.”
 
-So, the client sends a key (_Sec-WebSocket-Key_), and the server responds with _Sec-WebSocket-Accept_. (The server takes the client’s key, appends a fixed GUID, hashes it with SHA-1, and encodes it in Base64. For example: Sec-WebSocket-Accept: HSmrc0sMlYUkAGmm5OPpG2HaGWk=.)
+So basically, the client sends a key (`Sec-WebSocket-Key`), and the server responds with another key called `Sec-WebSocket-Accept`. This key, which is sent by the server, is created by taking the client’s key, appending a fixed GUID, hashing it with SHA-1, and encoding it in Base64.
 
-Then the client verifies it by performing the same operation on its original key and comparing it to the server’s Sec-WebSocket-Accept. If they match, the handshake is valid and secure. If not, the connection is rejected. Pretty straightforward process, right?
+Then the client verifies it by performing the same operation on its original key and comparing it to the server’s `Sec-WebSocket-Accept`. If they match, the handshake is valid and secure. If not, the connection is rejected. Pretty straightforward process, right?
 
-After this point, we don’t use HTTP anymore. Over the same TCP connection, we start using the WebSocket protocol. So we didn’t even close the TCP connection that was opened for the HTTP request, and yet we changed the protocol. I guess that’s something pretty cool.
+After this point, we don’t use HTTP anymore. Over the same TCP connection, we start using the **WebSocket protocol**. So we didn’t even close the TCP connection that was opened for the HTTP request, and yet we changed the protocol. I guess that’s something pretty cool.
 
 And now, it’s the wild west. The server and client can exchange messages freely over the persistent connection, because they are aware of each other. There is no strict request and response cycle like in HTTP. The client doesn’t have to ask for data, the server can send it anytime, even without a client request.
 
