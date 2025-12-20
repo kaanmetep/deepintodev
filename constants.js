@@ -76,22 +76,21 @@ export const blogPosts = [
   },
   {
     id: 10,
-    title: "How to Create Your Own Simple useState Hook",
+    title: "Building a Simple React useState Hook from Scratch",
     readTime: 9,
     slug: "how-to-create-your-own-simple-use-state-hook",
     date: "June 10, 2025",
   },
   {
     id: 11,
-    title: "How WebSockets Work",
+    title: "How WebSockets Work: A Deep Dive into Real-Time Communication",
     readTime: 10,
     slug: "how-websockets-work",
     date: "November 26, 2025",
   },
   {
     id: 12,
-    title:
-      "Everything You Need To Know About CORS (Cross-Origin Resource Sharing)",
+    title: "CORS: A Deep Dive into Cross-Origin Resource Sharing",
     readTime: 5,
     slug: "everything-you-need-to-know-about-cors",
     date: "December 3, 2025",

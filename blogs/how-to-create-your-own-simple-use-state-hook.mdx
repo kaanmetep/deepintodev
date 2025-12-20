@@ -1,12 +1,13 @@
 ---
-title: "How to Create Your Own Simple useState Hook"
-description: "Create your own simple React useState hook step by step in less than 10 minutes and completely understand why the rules for useState hook actually exist."
+title: "Building a Simple React useState Hook from Scratch"
+description: "Learn how React hooks work under the hood by building a simplified useState. This guide explains closures, state persistence, and exactly why the 'Rules of Hooks' are strictly enforced."
 date: "2025-06-10"
+dateModified: "2025-12-20"
 author: "Kaan Peksen"
 category: "React"
-tags: ["react", "use-state", "hooks", "closure"]
+tags: ["react", "how-react-works", "use-state", "hooks", "closure"]
 canonicalUrl: "https://www.deepintodev.com/blog/how-to-create-your-own-simple-use-state-hook"
-timeToRead: "15 minutes"
+timeToRead: "9 minutes"
 language: "en"
 noIndex: false
 noFollow: false
@@ -19,9 +20,9 @@ After you complete this article, you will have a solid understanding of:
 
 If you've developed a project with React, you've probably used the `useState` hook million times. When we use it, it's very simple. It's just a function which returns a state and a function that allows us to change that state. But on the inside, is it really that simple? Believe it or not, yes, it is! In this blog, we will create our own simplified `useState` function step by step.
 
-Not only will you learn how to create a simplified version of the `useState` function, but you will also learn why those hook rules that you've always followed exist. (Rules like they can only be defined at the top level, or they can only be defined inside of the react components.) So, after this short blog, you will actually understand the foundation of `useState`, and why you had to follow all those rules that you've always been told.
+Not only will you learn how to create a simplified version of the `useState` function, but you will also learn why those hook rules that you've always followed exist. (_Rules like they can only be defined at the top level, or they can only be defined inside of the react components_.) So, after this short blog, you will actually understand the foundation of `useState`, and why you had to follow all those rules that you've always been told.
 
-Now, let's create two buttons (Button A and Button B) and implement the functionality so that when we click each button, its value increments.
+Now, let’s create two buttons (_Button A and Button B_) and implement the increment logic using our own custom useState hook instead of React’s built-in one. Basically, clicking these buttons should increase the value inside them.
 
 ```jsx
 import { createRoot } from "react-dom/client";
@@ -40,7 +41,7 @@ createRoot(document.getElementById("root")).render(<App />);
 
 ![Buttons](/images/how-to-create-your-own-simple-use-state-hook/buttons.png)
 
-At this point, I assume you know what `useState` is. It's actually just a function that takes an initial value and returns a state and a function to change that state. So, we will start by creating a function that does the same thing.
+At this point, I assume you already know what the `useState` hook does. It's actually **just a function** that takes an initial value and returns a state and a function to change that state. So, we’ll start by creating a function that behaves the same way, since our goal is to create our own `useState` hook.
 
 ```jsx
 const useState = (initialValue) => {
@@ -51,6 +52,8 @@ const useState = (initialValue) => {
   return [initialValue, setValue];
 };
 ```
+
+Right now, our `useState` just takes an initial value and returns that value along with a function. This function will be used to update the state, exactly like you know from React's built-in `useState`.
 
 Now, let's use this `useState` function for Button A. (Forget about Button B for now, we'll get back to it soon.)
 
@@ -66,9 +69,9 @@ export const App = () => {
 };
 ```
 
-But of course, we don't want to return the **initialValue** from the `useState` function, because later on we’ll be changing the value of A. We always need to return the latest value, not the initial value.
+But of course, we don't want to return the _**initialValue**_ from our `useState` function, because later on we’ll be changing the value of A. We always need to return the latest value, not the initial value.
 
-So, let's create a different variable called **stateValue**, and return this value instead of **initialValue**. But where should we create this variable? As you can guess, if we create it inside of the `useState` function, we’ll be resetting **stateValue** every time the function is called. So, we need some kind of persistence across renders. In other words, we don't want it to be re-initialized each time `useState` is called. That’s why we’re going to create that variable outside of the scope of the `useState` function.
+So, let's create a different variable called _**stateValue**_, and return this value instead of _initialValue_. But where should we create this variable? As you can guess, if we create it inside of the `useState` function, we’ll be resetting _stateValue_ every time the function is called. So, we need some kind of persistence across renders. In other words, we don't want it to be re-initialized each time `useState` is called. That’s why we’re going to create that variable outside of the scope of the `useState` function.
 
 ```jsx
 let stateValue;
@@ -85,7 +88,7 @@ const useState = (initialValue) => {
 };
 ```
 
-If **stateValue** is undefined, use the **initialValue**; if not, use the most up-to-date state value and return it from the `useState` function. It's quite simple, right?
+We basically say: If _**stateValue**_ is undefined, use the _**initialValue**_; if not, use the most up-to-date state value and return it from the `useState` function. It's quite simple, right?
 
 Now, let's implement the functionality of **setValue**.
 
@@ -180,9 +183,7 @@ const useState = (initialValue) => {
 };
 ```
 
-When we call the first `useState`, **callIndex** will be 0, and **stateValues[0]** will be equal to the initial value of the first `useState`.
-
-When we call it a second time, callIndex will be 1, and the same thing will happen.
+When we call the first `useState`, **callIndex** will be 0, and **stateValues[0]** will be equal to the initial value of the first `useState`. When we call it a second time, callIndex will be 1, and the same thing will happen.
 
 Now, in theory, everything should work perfectly. But there are actually two more things we need to take care of.
 
@@ -207,9 +208,9 @@ const setValue = (newValue) => {
 };
 ```
 
-As you can see, we're directly accessing **callIndex** to change the value of our state. Think about it, when we call the `useState` function for the second time, callIndex equals 1. So, every time we access callIndex, we're always accessing index 1. We can never reach the first index of the array, which means we're not able to change the value of Button A.
+As you can see, we're directly accessing callIndex to change the value of our state. Think about it, when we call the useState function for the second time, callIndex will be equal to 1. **So, every time we access callIndex, we're always accessing index 1**. We can never reach the 0th index of the array, which means we're not able to change the value of Button A.
 
-This is exactly when we need the power of closures in JavaScript. If you don’t know what that is, a closure happens when a function remembers the variables from the scope in which it was defined, even after that scope has finished executing. This allows the function to access and use those variables later, regardless of where or when it's called.
+This is exactly when we need the power of **closures** in JavaScript. If you don’t know what that is, a closure happens when a function remembers the variables from the scope in which it was defined, even after that scope has finished executing. **This allows the function to access and use those variables later, regardless of where or when it's called.**
 
 So, when we execute the function, closures help it remember what the index value was at the time it was called. In other words, closures make it possible for a function to have "private" variables.
 
@@ -234,11 +235,11 @@ const useState = (initialValue) => {
 };
 ```
 
-This was actually very important to understand. Because, as you might have heard, React relies on the order in which hooks are called. That’s why we always have to call our hooks at the top level. If we call them, say, inside an if condition, the order of the hooks might change depending on the condition, and this would break everything. The order always has to stay the same across different renders.
+This was actually very important to understand. Because, as you might have heard, React relies on the order in which hooks are called. **That’s why we always have to call our hooks at the top level**. If we call them, say, inside an if condition, the order of the hooks might change depending on the condition, and this would break everything. The order always has to stay the same across different renders.
 
 Otherwise, how could we keep track of the `useState` values if their order changed on every render? Using indexes wouldn’t solve that, obviously, because when we use indexes, like in our example, we are relying on the fact that every `useState` function will be called in the same order on each render. That’s how we can keep track of them with indexes.
 
-And the second rule of React is that hooks must be called from within React function components only. In our example, we simply defined global variables at the top level, but in React, all these values would actually be attached to and stored in the instance of that component within the React virtual DOM. That’s why calling hooks from regular JavaScript functions wouldn’t work.
+And the second rule of React is that **hooks must be called from within React function components only**. In our example, we simply defined global variables at the top level, but in React, all these values would actually be attached to and stored in the instance of that component within the React virtual DOM. That’s why calling hooks from regular JavaScript functions wouldn’t work.
 
 Now, you've successfully created your own simple version of the React `useState` hook, and you have a better understanding of why some of the essential rules for hooks actually exist.
 
