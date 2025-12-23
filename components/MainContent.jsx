@@ -43,6 +43,18 @@ const MainContent = () => {
               engineering concept without any confusion. Trust me, everything
               becomes simple when it’s explained well.
             </p>
+            <p className="mt-4 text-base md:text-lg">
+              I also wrote a book:{" "}
+              <Link
+                href="https://www.amazon.com/dp/B0GBTG13JX"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-800 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:decoration-white transition-all delay-[50ms] underline underline-offset-4 decoration-gray-600 dark:decoration-gray-300"
+              >
+                How JavaScript Works Behind the Scenes: Inside the JavaScript
+                Execution Engine
+              </Link>
+            </p>
           </section>
           <section className="w-full  lg:max-w-3xl mx-auto mt-8">
             <NewsletterSubscription />
