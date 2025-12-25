@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { blogPosts } from "@/constants";
 import { Shell, FileText, ChevronLeft } from "lucide-react";
-import BookPromoBanner from "./BookPromoBanner";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -76,7 +75,6 @@ const Sidebar = () => {
         >
           Get Notified When New Blog Drops
         </Link>
-        <BookPromoBanner />
         <nav aria-label="Other Posts Navigation" className="mt-6" itemScope>
           <ul role="list" className="flex flex-col gap-4">
             {blogPosts

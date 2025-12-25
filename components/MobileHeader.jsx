@@ -4,7 +4,6 @@ import { Moon, Sun, Menu, Shell, FileText, X } from "lucide-react";
 import Link from "next/link";
 import { blogPosts } from "@/constants";
 import React from "react";
-import BookPromoBanner from "./BookPromoBanner";
 
 export default function MobileHeader() {
   const [isDark, setIsDark] = useState(true);
@@ -81,9 +80,6 @@ export default function MobileHeader() {
             >
               Get Notified When New Blog Drops
             </Link>
-            <div className="mt-4">
-              <BookPromoBanner />
-            </div>
             <section className="mt-8">
               <h3 className="sr-only">Blog Posts</h3>
               <ul role="list" className="flex flex-col gap-4">
