@@ -48,6 +48,7 @@ export async function generateMetadata({ params }) {
   return {
     title: frontmatter.title,
     description: frontmatter.subtitle || frontmatter.description || "",
+    keywords: frontmatter.keywords?.join(", ") || "",
     metadataBase: new URL(siteUrl),
     alternates: {
       canonical: `/books/${slug}`,
@@ -112,6 +113,7 @@ async function BookJsonLd({ params }) {
     "@type": "Book",
     name: frontmatter.title,
     description: frontmatter.subtitle || frontmatter.description || "",
+    keywords: frontmatter.keywords?.join(", ") || "",
     author: {
       "@type": "Person",
       name: frontmatter.author || "DeepIntoDev",

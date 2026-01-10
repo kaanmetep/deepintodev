@@ -2,6 +2,24 @@
 title: "How JavaScript Works Behind the Scenes"
 subtitle: "Moving past the abstraction and hidden layers of JavaScript to understand the brilliant system working in the background"
 author: "Kaan Peksen"
+description: "Learn how JavaScript works behind the scenes. Understand V8 engine, parsing, compilation, execution, call stack, event loop, and the inner workings of JavaScript."
+keywords:
+  [
+    "javascript",
+    "javascript-engine",
+    "v8-engine",
+    "how-javascript-works",
+    "javascript-fundamentals",
+    "programming",
+    "web-development",
+    "js-interview",
+    "call-stack",
+    "event-loop",
+    "javascript-internals",
+    "compilation",
+    "parsing",
+    "execution",
+  ]
 ---
 
 ## Introduction
