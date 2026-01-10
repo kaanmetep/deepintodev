@@ -405,7 +405,7 @@ const BookPage = ({ params }) => {
       {/* Dark Mode Toggle */}
       <button
         onClick={toggleDarkMode}
-        className="fixed sm:top-4 sm:right-4 top-1 right-1 z-50 sm:p-2 p-1.5 rounded-full shadow-lg transition-colors bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 cursor-pointer"
+        className="fixed sm:top-4 sm:right-4 top-2 right-8 z-50 sm:p-2 p-1.5 rounded-full shadow-lg transition-colors bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 cursor-pointer"
         aria-label={isDark ? "Light mode" : "Dark mode"}
       >
         {isDark ? (
