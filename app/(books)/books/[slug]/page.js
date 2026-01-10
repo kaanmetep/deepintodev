@@ -543,7 +543,7 @@ const BookPage = ({ params }) => {
         </div>
 
         {/* Navigation Links */}
-        <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm flex-wrap justify-center mt-4 sm:mt-0">
+        <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm flex-wrap justify-center my-4 sm:my-0">
           <Link
             href="/"
             className="hover:underline transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
