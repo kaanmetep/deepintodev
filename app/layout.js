@@ -1,10 +1,7 @@
 import "./globals.css";
-import Sidebar from "@/components/Sidebar";
-import Link from "next/link";
 import { Inter } from "next/font/google";
 import { Source_Serif_4 } from "next/font/google";
 import Script from "next/script";
-import MobileHeader from "@/components/MobileHeader";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -20,6 +17,7 @@ export const viewport = {
   themeColor: "#f9fafb",
   viewportFit: "cover",
 };
+
 export const metadata = {
   metadataBase: new URL("https://www.deepintodev.com"),
   alternates: {
@@ -96,60 +94,9 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
       <body
-        className={`${sourceSerif.variable} text-gray-900 dark:bg-gray-950 bg-gray-50 `}
+        className={`${sourceSerif.variable} text-gray-900 dark:bg-gray-950 bg-gray-50`}
       >
-        <div className="flex relative sm:h-screen ">
-          <MobileHeader />
-          <Sidebar />
-          <div className="flex flex-col  overflow-y-auto basis-0 grow-[3]">
-            {children}
-            <footer
-              className="flex flex-col gap-2 items-center mt-auto py-3 border-t border-gray-200 dark:border-gray-600"
-              itemScope
-              itemType="https://schema.org/WPFooter"
-            >
-              <div
-                className="flex items-center gap-2 text-gray-600 dark:text-gray-300"
-                itemScope
-                itemType="https://schema.org/Organization"
-              >
-                <p className="text-sm" itemProp="name">
-                  DeepIntoDev
-                </p>
-                <p className="text-sm">© {new Date().getFullYear()}</p>
-              </div>
-
-              <nav
-                className="flex gap-6 text-gray-500 dark:text-gray-300  text-sm"
-                itemScope
-                itemType="https://schema.org/SiteNavigationElement"
-              >
-                <Link
-                  href="/"
-                  className="  transition-colors delay-[50ms] hover:text-gray-700 dark:hover:text-gray-500"
-                  itemProp="url"
-                >
-                  Home
-                </Link>
-
-                <a
-                  href="mailto:kaan@kmpcodes.com"
-                  className="  transition-colors delay-[50ms] hover:text-gray-700 dark:hover:text-gray-500"
-                  itemProp="email"
-                >
-                  Contact
-                </a>
-                <Link
-                  href="/newsletter"
-                  className="  transition-colors delay-[50ms] hover:text-gray-700 dark:hover:text-gray-500"
-                  itemProp="url"
-                >
-                  Get Notified
-                </Link>
-              </nav>
-            </footer>
-          </div>
-        </div>
+        {children}
       </body>
     </html>
   );

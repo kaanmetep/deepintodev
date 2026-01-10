@@ -1,3 +1,14 @@
+export const books = [
+  {
+    id: 1,
+    title: "How JavaScript Works Behind the Scenes",
+    slug: "how-javascript-works-behind-the-scenes",
+    cover: "/images/kindlecover.png",
+    date: "January 2026",
+    pages: 45,
+  },
+];
+
 export const blogPosts = [
   {
     id: 0,

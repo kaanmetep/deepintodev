@@ -19,17 +19,17 @@ export default function NewsletterSubscription() {
               name="email"
               placeholder="your@email.com"
               required
-              className="w-full px-4 py-3 text-black placeholder-gray-400 outline-none font-light text-xs lg:text-base focus:outline-none ring-0"
+              className="w-full px-4 py-3 text-black dark:text-gray-900 placeholder-gray-400 outline-none font-light text-xs lg:text-base focus:outline-none ring-0"
               maxLength={100}
             />
           </div>
           <button
             disabled={pending}
             type="submit"
-            className={`flex flex-1 relative text-gray-600 uppercase px-1 lg:px-5 py-2 lg:py-6 font-light 
+            className="flex flex-1 relative text-gray-600 dark:text-gray-800 uppercase px-1 lg:px-5 py-2 lg:py-6 font-light 
               transition-all duration-300 ease-in-out transform
               disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer hover:bg-gray-100/80 dark:hover:bg-gray-100/30 text-[10px] sm:text-xs lg:text-base border-l border-gray-200 dark:border-gray-100
-               items-center justify-center `}
+               items-center justify-center"
           >
             {pending ? (
               <>
@@ -37,7 +37,7 @@ export default function NewsletterSubscription() {
                   {pending ? "Subscribing..." : "Subscribe To Newsletter"}
                 </span>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-5 h-5 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-5 h-5 border-2 border-gray-600 dark:border-gray-800 border-t-transparent rounded-full animate-spin"></div>
                 </div>
               </>
             ) : (
@@ -46,20 +46,22 @@ export default function NewsletterSubscription() {
           </button>
         </div>
       </form>
-      <p className="text-center mt-3 text-gray-950">
+      <p className="text-center mt-3 text-gray-950 dark:text-gray-100">
         Join <b>1000+</b> developers
       </p>
-      <p className="text-gray-500 text-center my-1 text-xs lg:text-base">
+      <p className="text-gray-500 dark:text-gray-400 text-center my-1 text-xs lg:text-base">
         <span className="text-gray-950 dark:text-gray-50 font-semibold">
           Be the first to know
         </span>{" "}
-        when new blog drop. No ads, no BS. ~once a week.
+        when a new blog post drops. No ads, no BS. Every other week.
       </p>
 
       {state.message && (
         <p
           className={`${
-            state?.status === "success" ? "text-green-600" : "text-red-700"
+            state?.status === "success"
+              ? "text-green-600 dark:text-green-400"
+              : "text-red-700 dark:text-red-400"
           } tracking-wide font-bold text-center text-xs lg:text-base`}
         >
           {state?.status === "success" ? (

@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 
-// Başlıklar
+// Headings
 const H1 = ({ children }) => (
   <h1 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">
     {children}
@@ -24,20 +24,20 @@ const H3 = ({ children }) => (
   </h3>
 );
 
-// Paragraf
+// Paragraph
 const P = ({ children }) => (
   <p className="mb-4 text-[rgb(26,26,26)] dark:text-gray-200 leading-[32px] font-normal text-[16px] lg:text-[18px] tracking-[-.06px]">
     {children}
   </p>
 );
 
-// Kod blokları
+// Code blocks
 const CodeBlock = ({ children, className }) => {
-  // Dil bilgisini className'den çıkar (eğer varsa)
+  // Extract language info from className (if exists)
   const match = /language-(\w+)/.exec(className || "");
-  const language = match ? match[1] : "javascript"; // Varsayılan dil
+  const language = match ? match[1] : "javascript"; // Default language
 
-  // JSX için özel işleme
+  // Special handling for JSX
   const lang = language === "jsx" ? "javascript" : language;
 
   return (
@@ -58,21 +58,21 @@ const CodeBlock = ({ children, className }) => {
   );
 };
 
-// Satır içi kod
+// Inline code
 const InlineCode = ({ children }) => (
   <code className="bg-gray-200 dark:bg-gray-800 rounded px-1 py-0.5 text-sm font-mono">
     {children}
   </code>
 );
 
-// Alıntı
+// Blockquote
 const BlockQuote = ({ children }) => (
   <blockquote className="border-l-4 border-gray-300 dark:border-gray-400 pl-4 italic my-4 text-gray-600 dark:text-gray-400">
     {children}
   </blockquote>
 );
 
-// Bağlantılar
+// Links
 const CustomLink = ({ href, children }) => {
   const isInternal = href && (href.startsWith("/") || href.startsWith("#"));
 
@@ -99,7 +99,7 @@ const CustomLink = ({ href, children }) => {
   );
 };
 
-// Listeler
+// Lists
 const Ul = ({ children }) => (
   <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-200">
     {children}
@@ -118,7 +118,7 @@ const Li = ({ children }) => (
   </li>
 );
 
-// Yatay çizgi
+// Horizontal rule
 const Hr = () => (
   <hr className="my-8 border-t border-gray-300 dark:border-gray-700" />
 );
@@ -128,15 +128,15 @@ const ResponsiveImage = ({ src, alt, ...props }) => {
     <Image
       src={src || "/placeholder.png"}
       alt={alt || ""}
-      className="rounded-lg object-contain border-2 border-gra"
-      width={600}
-      height={600}
+      className="rounded-lg object-contain max-h-[280px] w-auto mx-auto"
+      width={500}
+      height={280}
       priority={props.priority}
     />
   );
 };
 
-// Alert bileşeni
+// Alert component
 const Alert = ({ children, type = "info" }) => {
   const styles = {
     info: "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800",
@@ -155,7 +155,7 @@ const Alert = ({ children, type = "info" }) => {
   );
 };
 
-// MDX bileşenleri export
+// Export MDX components
 const MDXComponents = {
   h1: H1,
   h2: H2,
@@ -163,15 +163,15 @@ const MDXComponents = {
   p: P,
   code: (props) => {
     const { children, className } = props;
-    // Eğer blok kodu ise (pre içinde)
+    // If block code (inside pre)
     if (className) {
       return <CodeBlock {...props} />;
     }
-    // Eğer satır içi kod ise
+    // If inline code
     return <InlineCode {...props} />;
   },
   pre: ({ children }) => children,
-  // MDX'te kod blokları genellikle pre > code yapısındadır
+  // In MDX, code blocks are usually pre > code structure
   "pre.code": CodeBlock,
   blockquote: BlockQuote,
   a: CustomLink,

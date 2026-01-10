@@ -9,10 +9,10 @@ import NewsletterSubscription from "@/components/NewsletterSubscription";
 import NewsletterPopup from "@/components/NewsletterPopup";
 import { RefreshCcw } from "lucide-react";
 
-// Blog yazılarının bulunduğu dizin
+// Directory where blog posts are located
 const POSTS_PATH = path.join(process.cwd(), "blogs");
 
-// Tarihi güvenli bir şekilde ISO formatına çevir
+// Convert date to ISO format safely
 function toISOString(dateString) {
   if (!dateString) return undefined;
   const date = new Date(dateString);
@@ -23,7 +23,7 @@ function toISOString(dateString) {
   return date.toISOString();
 }
 
-// Tarihi güvenli bir şekilde formatla
+// Format date safely
 function formatDate(dateString, options) {
   if (!dateString) return "";
   const date = new Date(dateString);
@@ -34,7 +34,7 @@ function formatDate(dateString, options) {
   return date.toLocaleDateString("en-EN", options);
 }
 
-// Tüm blog yazılarını getir
+// Get all blog posts
 export const getAllPosts = () => {
   const files = fs.readdirSync(POSTS_PATH);
 
@@ -43,7 +43,7 @@ export const getAllPosts = () => {
     .map((file) => file.replace(/\.mdx?$/, ""));
 };
 
-// Belirli bir blog yazısını getir
+// Get specific blog post
 async function getPostBySlug(slug) {
   try {
     const filePath = path.join(POSTS_PATH, `${slug}.mdx`);
@@ -93,7 +93,7 @@ export default async function BlogPost({ params }) {
   const postUrl = `${siteUrl}/blog/${slug}`;
   const authorName = frontMatter.author || "DeepIntoDev";
 
-  // Schema Objesini Burada Oluşturuyoruz
+  // Create Schema object here
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "TechArticle",

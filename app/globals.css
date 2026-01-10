@@ -11,7 +11,7 @@ body {
   padding-right: env(safe-area-inset-right);
   padding-bottom: env(safe-area-inset-bottom);
 }
-/* Özellikle o üst alan için */
+/* For 'top' area */
 @supports (padding-top: env(safe-area-inset-top)) {
   html,
   body {
@@ -29,4 +29,58 @@ body {
 
 .sidebar-link {
   @apply text-xs sm:text-sm dark:text-gray-300 text-gray-700 hover:text-gray-400 dark:hover:text-gray-500 transition-all delay-[50ms] cursor-pointer text-center block w-fit mx-auto;
+}
+
+/* Scrollbar hide - scroll works but scrollbar is not visible */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Custom Scrollbar */
+.scrollbar-custom {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent; /* Firefox - thumb and track color */
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+.scrollbar-custom::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+  margin: 8px 0;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.4);
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.7);
+}
+
+.scrollbar-custom::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Dark mode scrollbar */
+.dark .scrollbar-custom {
+  scrollbar-color: rgba(107, 114, 128, 0.5) transparent; /* Firefox */
+}
+
+.dark .scrollbar-custom::-webkit-scrollbar-thumb {
+  background: rgba(107, 114, 128, 0.4);
+}
+
+.dark .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.7);
 }

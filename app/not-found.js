@@ -33,7 +33,9 @@ export default function NotFound() {
               Home
             </Link>
             <a
-              href="mailto:kaan@kmpcodes.com"
+              href="https://mail.google.com/mail/?view=cm&to=kaan@kmpcodes.com"
+              target="_blank"
+              rel="noopener noreferrer"
               className="px-5 py-2 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-50 dark:hover:bg-gray-900 transition"
               aria-label="Contact"
             >

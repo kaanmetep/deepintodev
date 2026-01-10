@@ -2,7 +2,8 @@
 import { useState, useEffect } from "react";
 import { Moon, Sun, Menu, Shell, FileText, X } from "lucide-react";
 import Link from "next/link";
-import { blogPosts } from "@/constants";
+import Image from "next/image";
+import { blogPosts, books } from "@/constants";
 import React from "react";
 
 export default function MobileHeader() {
@@ -69,7 +70,23 @@ export default function MobileHeader() {
                 </li>
                 <li className="text-black dark:text-white">|</li>
                 <li className="sidebar-link">
-                  <a href="mailto:kaan@kmpcodes.com">Contact</a>
+                  <a
+                    href="https://buymeacoffee.com/kaanmetep"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Support Me
+                  </a>
+                </li>
+                <li className="text-black dark:text-white">|</li>
+                <li className="sidebar-link">
+                  <a
+                    href="https://mail.google.com/mail/?view=cm&to=kaan@kmpcodes.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Contact
+                  </a>
                 </li>
               </ul>
             </div>
@@ -80,8 +97,52 @@ export default function MobileHeader() {
             >
               Get Notified When New Blog Drops
             </Link>
-            <section className="mt-8">
-              <h3 className="sr-only">Blog Posts</h3>
+
+            {/* Books Section */}
+            <section aria-label="Books Navigation" className="mt-6">
+              <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 px-1">
+                📚 Books
+              </h3>
+              {books.map((book) => (
+                <Link
+                  key={book.id}
+                  href={`/books/${book.slug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setShowMenu(false)}
+                  className="group flex items-center gap-3 p-2 rounded-xl bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all cursor-pointer"
+                >
+                  <div className="shrink-0 w-10 h-14 rounded-md overflow-hidden">
+                    <Image
+                      src={book.cover}
+                      alt={book.title}
+                      width={40}
+                      height={56}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1 w-full">
+                    <span className="text-sm font-medium text-gray-800 dark:text-gray-200 group-hover:text-black dark:group-hover:text-white transition-colors leading-tight">
+                      {book.title}
+                    </span>
+                    <div className="flex justify-between">
+                      <span className="text-[11px] dark:text-gray-400 text-gray-500">
+                        {book.date}
+                      </span>
+                      <span className="text-[11px] dark:text-gray-400 text-gray-500">
+                        {book.pages} pages
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </section>
+
+            {/* Blogs Section */}
+            <section aria-label="Blog Posts Navigation" className="mt-6">
+              <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 px-1">
+                📝 Blog Posts
+              </h3>
               <ul role="list" className="flex flex-col gap-4">
                 {blogPosts
                   .sort((a, b) => b.id - a.id)

@@ -2,13 +2,16 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { blogPosts } from "@/constants";
+import { blogPosts, books } from "@/constants";
 import { Shell, FileText, ChevronLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
   const pathname = usePathname();
+  const router = useRouter();
   return (
     <aside
       className={`
@@ -16,7 +19,7 @@ const Sidebar = () => {
         transition-all duration-300 ease-in-out
         ${
           isOpen
-            ? "overflow-y-auto basis-0 grow-[1]"
+            ? "overflow-y-auto scrollbar-custom basis-0 grow-[1]"
             : "overflow-hidden w-[50px]"
         }
         overflow-hidden py-8 px-3  shadow-lg 
@@ -41,7 +44,10 @@ const Sidebar = () => {
         }`}
       >
         <header>
-          <h2 className="flex items-center justify-center gap-[3px] dark:text-white text-black text-xl">
+          <h2
+            className="flex items-center justify-center gap-[3px] dark:text-white text-black text-xl cursor-pointer"
+            onClick={() => router.push("/")}
+          >
             <Shell size={20} aria-hidden="true" />
             DeepIntoDev
           </h2>
@@ -63,7 +69,22 @@ const Sidebar = () => {
             </li>
             <span className="text-black dark:text-white">|</span>
             <li className="sidebar-link">
-              <a href="mailto:kaan@kmpcodes.com" itemProp="email">
+              <a
+                href="https://buymeacoffee.com/kaanmetep"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Support Me
+              </a>
+            </li>
+            <span className="text-black dark:text-white">|</span>
+            <li className="sidebar-link">
+              <a
+                href="https://mail.google.com/mail/?view=cm&to=kaan@kmpcodes.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                itemProp="email"
+              >
                 Contact
               </a>
             </li>
@@ -75,7 +96,50 @@ const Sidebar = () => {
         >
           Get Notified When New Blog Drops
         </Link>
-        <nav aria-label="Other Posts Navigation" className="mt-6" itemScope>
+        {/* Books Section */}
+        <section aria-label="Books Navigation" className="mt-6">
+          <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 px-1">
+            📚 Books
+          </h3>
+          {books.map((book) => (
+            <Link
+              key={book.id}
+              href={`/books/${book.slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-3 p-2 rounded-xl bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all cursor-pointer"
+            >
+              <div className="shrink-0 w-10 h-14 rounded-md overflow-hidden">
+                <Image
+                  src={book.cover}
+                  alt={book.title}
+                  width={40}
+                  height={56}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="flex flex-col gap-1 w-full">
+                <span className="text-sm font-medium text-gray-800 dark:text-gray-200 group-hover:text-black dark:group-hover:text-white transition-colors leading-tight">
+                  {book.title}
+                </span>
+                <div className="flex justify-between">
+                  <span className="text-[11px] dark:text-gray-400 text-gray-500">
+                    {book.date}
+                  </span>
+                  <span className="text-[11px] dark:text-gray-400 text-gray-500">
+                    {book.pages} pages
+                  </span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </section>
+
+        {/* Blogs Section */}
+        <section aria-label="Blog Posts Navigation" className="mt-6" itemScope>
+          <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 px-1">
+            📝 Blog Posts
+          </h3>
           <ul role="list" className="flex flex-col gap-4">
             {blogPosts
               .sort((a, b) => b.id - a.id)
@@ -124,7 +188,7 @@ const Sidebar = () => {
                 );
               })}
           </ul>
-        </nav>
+        </section>
       </div>
     </aside>
   );

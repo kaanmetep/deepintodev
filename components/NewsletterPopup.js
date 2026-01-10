@@ -7,15 +7,15 @@ export default function NewsletterPopup() {
   const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
-    // Local storage'dan popup'ın daha önce gösterilip gösterilmediğini kontrol et
+    // Check if popup has been shown before from local storage
     const hasShownPopup = localStorage.getItem("hasShownNewsletterPopup");
     if (hasShownPopup) return;
 
-    // 45 saniye sonra popup'ı göster
+    // Show popup after 45 seconds
     const timer = setTimeout(() => {
       setShowPopup(true);
       localStorage.setItem("hasShownNewsletterPopup", "true");
-    }, 45000); // 45 saniye
+    }, 45000); // 45 seconds
 
     return () => clearTimeout(timer);
   }, []);
