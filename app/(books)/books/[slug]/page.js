@@ -91,6 +91,17 @@ const BookPage = ({ params }) => {
     }
   }, [currentPage, slug, loading, bookData]);
 
+  // Scroll to top when page changes
+  useEffect(() => {
+    // Find and scroll all scrollable containers to top
+    const scrollContainers = document.querySelectorAll(
+      ".overflow-y-auto.scrollbar-custom"
+    );
+    scrollContainers.forEach((container) => {
+      container.scrollTop = 0;
+    });
+  }, [currentPage]);
+
   // Convert currentPage when page mode changes
   useEffect(() => {
     if (
@@ -390,7 +401,7 @@ const BookPage = ({ params }) => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-2 2xl:p-4 bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-950">
+    <div className="min-h-screen flex flex-col items-center justify-center p-2 2xl:p-4">
       {/* Dark Mode Toggle */}
       <button
         onClick={toggleDarkMode}
