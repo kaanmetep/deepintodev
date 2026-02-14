@@ -401,7 +401,7 @@ const BookPage = ({ params }) => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-2 2xl:p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center p-2 2xl:p-4 overflow-x-hidden">
       {/* Dark Mode Toggle */}
       <button
         onClick={toggleDarkMode}
@@ -469,7 +469,7 @@ const BookPage = ({ params }) => {
         </div>
 
         {/* Navigation Buttons */}
-        <div className="absolute top-1/2 -translate-y-1/2 -left-5 sm:-left-7 md:-left-10 2xl:-left-20">
+        <div className="absolute top-1/2 -translate-y-1/2 -left-5 sm:-left-7 md:-left-10 2xl:-left-20 z-20">
           <button
             onClick={goToPrevPage}
             disabled={currentPage === 0}
@@ -479,7 +479,7 @@ const BookPage = ({ params }) => {
           </button>
         </div>
 
-        <div className="absolute top-1/2 -translate-y-1/2 -right-5 sm:-right-7 md:-right-10 2xl:-right-20">
+        <div className="absolute top-1/2 -translate-y-1/2 -right-5 sm:-right-7 md:-right-10 2xl:-right-20 z-20">
           <button
             onClick={goToNextPage}
             disabled={currentPage >= totalItems - 1}

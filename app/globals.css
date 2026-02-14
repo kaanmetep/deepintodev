@@ -44,24 +44,31 @@ body {
 .scrollbar-custom {
   scrollbar-width: thin; /* Firefox */
   scrollbar-color: rgba(156, 163, 175, 0.5) transparent; /* Firefox - thumb and track color */
+  scrollbar-gutter: stable; /* Reserve space for scrollbar - always visible */
 }
 
 /* Webkit browsers (Chrome, Safari, Edge) */
 .scrollbar-custom::-webkit-scrollbar {
   width: 6px;
   height: 6px;
+  -webkit-appearance: none; /* Safari - always show scrollbar */
+  appearance: none;
 }
 
 .scrollbar-custom::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(0, 0, 0, 0.05); /* Light background to make scrollbar always visible in Safari */
   border-radius: 10px;
   margin: 8px 0;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .scrollbar-custom::-webkit-scrollbar-thumb {
   background: rgba(156, 163, 175, 0.4);
   border-radius: 10px;
   transition: background 0.2s ease;
+  -webkit-appearance: none; /* Safari - always show scrollbar */
+  appearance: none;
 }
 
 .scrollbar-custom::-webkit-scrollbar-thumb:hover {
@@ -75,6 +82,10 @@ body {
 /* Dark mode scrollbar */
 .dark .scrollbar-custom {
   scrollbar-color: rgba(107, 114, 128, 0.5) transparent; /* Firefox */
+}
+
+.dark .scrollbar-custom::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05); /* Light background for dark mode to make scrollbar always visible in Safari */
 }
 
 .dark .scrollbar-custom::-webkit-scrollbar-thumb {
